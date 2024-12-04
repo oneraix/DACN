@@ -8,4 +8,6 @@ router.get('/', userController.getAllUsers);  // Sử dụng GET để lấy t�
 router.post('/register', userController.registerUser);  // Đổi thành registerUser
 router.post('/login', userController.loginUser);  // Đổi thành loginUser
 
+
+
 module.exports = router;
