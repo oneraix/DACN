@@ -5,8 +5,7 @@ const path = require('path');
 
 
 const viewRoutes = require('./apps/routes/viewRoutes');  // Đường dẫn tới viewRoutes
-const userRoutes = require('./apps/routes/userRoutes'); // Đảm bảo đường dẫn đúng
-const homestayRoutes = require('./apps/routes/homestayRoutes'); // Đảm bảo đường dẫn đúng
+const apiRoutes = require('./apps/routes/apiRoutes');
 
 // Set view engine to EJS
 app.set('view engine', 'ejs');
@@ -20,9 +19,8 @@ app.use('/user', express.static(path.join(__dirname, 'public', 'user')));//cấ
 app.use('/global', express.static(path.join(__dirname, 'public', 'global')));//cấu hình file tinh4 dùng chung
 
 // Routes
-app.use('/api/users', userRoutes);  // Đảm bảo là /routes/userRoutes
-app.use('/api/homestays', homestayRoutes);  // Đảm bảo là /routes/homestayRoutes
-app.use('/',viewRoutes);
+app.use('/api', apiRoutes);  
+app.use('/',viewRoutes);//render view
 
 
 

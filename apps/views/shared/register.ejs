@@ -14,7 +14,7 @@
 
     <!-- Favicon and Touch Icons  -->
     <link rel="shortcut icon" href="global/assets/images/favico.png">
-    <link rel="global/apple-touch-icon-precomposed" href="global/assets/images/favico.png">
+    <link rel="apple-touch-icon-precomposed" href="global/assets/images/favico.png">
 
 </head>
 
@@ -31,9 +31,8 @@
 
     <!-- /preload -->
 
-    <div id="wrglobal/apper">
+    <div id="wrapper">
         <div id="pagee" class="clearfix">
-
             <main id="main">
                 <section class="login">
                     <div class="tf-container">
@@ -41,124 +40,88 @@
                             <div class="col-lg-12">
                                 <div class="login-wrap flex">
                                     <div class="image">
-                                        <img src="./global/assets/images/page/sign-up.jpg" alt="image">
+                                        <img src="global/assets/images/page/sign-up.jpg" alt="image">
                                     </div>
                                     <div class="content">
                                         <div class="inner-header-login">
-                                            <h3 class="title">Welcome to P2P Homestay</h3>
-                                            <div class="flex-three">
-                                            </div>
+                                            <h3 class="title">Create an account to get started</h3>
                                         </div>
-                                        <form id="login-form" class="login-user">
+                                        <form action="/" id="sign-up" class="login-user">
                                             <div class="row">
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <div class="input-wrap">
-                                                        <label>Account</label>
-                                                        <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Enter your username or email" required>
+                                                        <label>User Name</label>
+                                                        <input type="text" placeholder="Enter your user name*"> <!--không khoảng trắng kí tự đặc biệt-->
                                                     </div>
                                                 </div>
-                                        
-                                                <div class="col-lg-12">
+                                                <div class="col-md-6">
                                                     <div class="input-wrap">
-                                                        <div class="flex-two">
-                                                            <label>Your password</label>
-                                                            <a href="#" class="mb-15">Forgot Password?</a>
-                                                        </div>
-                                                        <input type="password" id="password" name="password" placeholder="Enter your password*" required>
+                                                        <label>Email</label>
+                                                        <input type="email" placeholder="Enter your email*"><!--phải đúng định dạng gmail-->
                                                     </div>
                                                 </div>
-                                        
+                                                <div class="col-md-6">
+                                                    <div class="input-wrap">
+                                                        <label>Name</label>
+                                                        <input type="tel" placeholder="Enter your full name*">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-wrap">
+                                                        <label>Your password</label>
+                                                        <input type="password" placeholder="Enter your password*">
+                                                    </div>
+                                                </div>
                                                 <div class="col-lg-12 mb-40">
                                                     <div class="input-wrap-social ">
                                                         <span class="or">or</span>
                                                         <div class="flex-three">
                                                             <a href="#" class="login-social flex-three">
-                                                                <img src="./global/assets/images/page/gg.png" alt="image">
+                                                                <img src="global/assets/images/page/gg.png" alt="image">
                                                                 <span>Sign in with Google</span>
                                                             </a>
                                                             <a href="#" class="login-social flex-three">
-                                                                <img src="./global/assets/images/page/fb.png" alt="image">
-                                                                <span>Sign in with Facebook</span>
+                                                                <img src="global/assets/images/page/fb.png" alt="image">
+                                                                <span>Sign in with facebook</span>
                                                             </a>
                                                         </div>
+
                                                     </div>
                                                 </div>
-                                        
                                                 <div class="col-lg-12 mb-30">
-                                                    <button type="submit" class="btn-submit">Sign in</button>
+                                                    <button type="submit " class="btn-submit">Sign Up</button>
                                                 </div>
-                                        
+                                                <div class="col-lg-12 mb-30">
+                                                    <div class="checkbox">
+                                                        <input id="check-policy" type="checkbox" name="check"
+                                                            value="check">
+                                                        <label for="check-policy">By signing up, you agree to
+                                                            Customers.ai’s Terms Of Service and Privacy Policy</label>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-12">
                                                     <div class="flex-three">
-                                                        <span class="account">Don’t have an account?</span>
-                                                        <a href="/register" class="link-login">Register</a>
+                                                        <span class="account">Don,t you have an account?</span>
+                                                        <a href="login.html" class="link-login">Login</a>
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </form>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
-
             </main>
-
-            <!-- Bottom -->
         </div>
         <!-- /#page -->
     </div>
 
-    <!-- Modal Popup Bid -->
-
-    <a id="scroll-top" class="button-go"></a>
 
     <!-- Javascript -->
-
-    <script>
-        // Lắng nghe sự kiện submit của form
-        document.getElementById('login-form').addEventListener('submit', async function (event) {
-            event.preventDefault();  // Ngừng hành động mặc định của form
-    
-            // Lấy giá trị từ các input
-            const usernameOrEmail = document.getElementById('usernameOrEmail').value;
-            const password = document.getElementById('password').value;
-    
-            // Kiểm tra dữ liệu đầu vào
-            if (!usernameOrEmail || !password) {
-                alert('Vui lòng nhập đầy đủ thông tin');
-                return;
-            }
-    
-            try {
-                // Gửi request đăng nhập tới API
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ usernameOrEmail, password }),
-                });
-    
-                const data = await response.json();
-    
-                // Kiểm tra nếu đăng nhập thành công
-                if (response.status === 200) {
-                    // Lưu token vào localStorage hoặc sessionStorage
-                    localStorage.setItem('token', data.token);
-    
-                    // Chuyển hướng người dùng sau khi đăng nhập thành công
-                    window.location.href = '/'; 
-                } else {
-                    alert(data.message || 'Đăng nhập thất bại');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại');
-            }
-        });
-    </script>
     <script src="global/app/js/jquery.min.js"></script>
     <script src="global/app/js/jquery.nice-select.min.js"></script>
     <script src="global/app/js/bootstrap.min.js"></script>

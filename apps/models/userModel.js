@@ -4,24 +4,39 @@ const bcrypt = require('bcrypt');
 const User = require('../entity/userEntity'); // Sử dụng entity User
 
 class UserModel {
-  // Đăng ký người dùng mới
   static async createUser(userData) {
-    const { username, email, password, full_name, phone, address, role = 'guest' } = userData;
+    const { username, email, password, full_name } = userData;
+    const query = `INSERT INTO Users (username, email, password, full_name, status) 
+                   VALUES (?, ?, ?, ?, 'active')`;
 
-    const query = `INSERT INTO Users (username, email, password, full_name, phone, address, role, status)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, 'active')`;
-
-    const values = [username, email, password, full_name, phone, address, role];
+    const values = [username, email, password, full_name];
     return new Promise((resolve, reject) => {
       db.query(query, values, (err, result) => {
         if (err) {
           return reject(err);
         }
-        const newUser = new User(result.insertId, username, email, password, role, full_name, phone, address);
-        resolve(newUser);
+        resolve(result); 
       });
     });
   }
+
+  //lấy thông tin tài khoản theo user hoặc email
+  static async getUserByUsernameOrEmail(usernameOrEmail) {
+    const query = 'SELECT * FROM Users WHERE username = ? OR email = ?';
+    return new Promise((resolve, reject) => {
+      db.query(query, [usernameOrEmail, usernameOrEmail], (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+        if (result.length === 0) {
+          return resolve(null);
+        }
+        resolve(result[0]);
+      });
+    });
+  }
+
+
 
   // Lấy thông tin người dùng theo username
   static getUserByUsername(username) {
@@ -39,7 +54,7 @@ class UserModel {
     });
   }
 
-  // Cập nhật thông tin người dùng
+  // Cập nhật thông tin tài khoản
   static updateUserProfile(user_id, updatedData) {
     const { full_name, phone, address } = updatedData;
     const query = 'UPDATE Users SET full_name = ?, phone = ?, address = ? WHERE user_id = ?';
@@ -53,7 +68,7 @@ class UserModel {
     });
   }
 
-  // Lấy toàn bộ người dùng
+  // Lấy danh sách tài khoản
   static getAllUsers() {
     const query = 'SELECT * FROM Users';
     return new Promise((resolve, reject) => {
