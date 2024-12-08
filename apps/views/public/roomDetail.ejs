@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="/global/app/css/app.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/magnific-popup.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/textanimation.css">
+    <link rel="stylesheet" href="/global/app/css/map.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <!-- Favicon and Touch Icons -->
+    <link rel="shortcut icon" href="/global/assets/images/favico.png">
+    <link rel="apple-touch-icon-precomposed" href="/global/assets/images/favico.png">
+    
+    <meta charset="utf-8">
+    <title>Vitour - </title>
+    <meta name="author" content="themesflat.com">
+
+    <style>
+        .image-gallery-single img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body class="body header-fixed ">
+
+    <div class="preload preload-container">
+        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+        </svg>
+    </div>
+
+    <!-- /preload -->
+
+    <div id="wrapper">
+        <div id="pagee" class="clearfix">
+            <%- include('../partials/header') %>
+            <main id="main">
+                <section class="tour-single">
+                    <div class="tf-container">
+                        <div class="row">
+                            <!-- Empty row, can be used for other content later -->
+                        </div>
+                        <div class="row pd-main">
+                            <div class="col-lg-12">
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-information" role="tabpanel" aria-labelledby="pills-information-tab" tabindex="0">
+                                        <div class="row mb-50">
+                                            <div class="col-lg-12">
+                                                <div class="inner-heading-wrap flex-two">
+                                                    <div class="inner-heading">
+                                                        <h2 class="title" id="homestay-name">Loading...</h2> <!-- Tên Homestay -->
+                                                        <ul class="flex-three list-wrap-heading">
+                                                            <li class="flex-three">
+                                                                <i class="icon-user"></i>
+                                                                <span id="max-guests">Max Guests: Loading...</span> <!-- Số lượng khách tối đa -->
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-bed"></i> <!-- Thêm icon giường -->
+                                                                <span id="beds">Beds: Loading...</span> <!-- Số giường -->
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-room"></i> <!-- Thêm icon phòng -->
+                                                                <span id="rooms">Rooms: Loading...</span> <!-- Số phòng -->
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-18"></i>
+                                                                <span id="location">Loading...</span> <!-- Địa chỉ -->
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="inner-price">
+                                                        <p class="price-sale text-main"><span id="price">0.00VND</span><span>/Đêm<span></span></p>            <!-- Giá -->
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="row mb-40 image-gallery-single" id="image-gallery">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-8">
+                                                <div class="information-content-tour">
+                                                    <!-- Description Section -->
+                                                    <div class="description-wrap mb-40">
+                                                        <span class="description">Description:</span>
+                                                        <p class="des" id="description">Loading...</p> <!-- Mô tả -->
+                                                    </div>
+
+                                                    <!-- Amenities Section -->
+                                                    <div class="expect-wrap">
+                                                        <h4 class="title mb-40">Room Amenities</h4>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <ul class="listing-icon" id="amenitiesList1">
+                                                                    <!-- Amenities will be added dynamically -->
+                                                                </ul>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <ul class="listing-icon" id="amenitiesList2">
+                                                                    <!-- Amenities will be added dynamically -->
+                                                                </ul>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <ul class="listing-icon" id="amenitiesList3">
+                                                                    <!-- Amenities will be added dynamically -->
+                                                                </ul>
+                                                            </div>
+                                                        </div>  
+                                                    </div>
+
+                                                    <!-- Map Section -->
+                                                    <div class="map2 relative mb-32">
+                                                        <i class="icon-18"></i>
+                                                        <p id="address">Loading...</p> <!-- Địa chỉ -->
+                                                    </div>
+                                                    <div id="map" style="height: 400px; width: 100%;z-index: 0"></div>
+                                                    
+                                                    <!-- Gallery Section -->
+                                                    <div class="gallery-content-tour" id="gallery">
+                                                        <!-- Images will be dynamically added here -->
+                                                    </div>
+                                                    <!-- Review Section (Empty for now) -->
+                                                    <div class="review-content-tour">
+                                                    <div class="custom-review mb-80">
+                                                        <h4 class="title-review mb-37">Customer Review</h4>
+                                                        <!-- Review section to be added later -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>  
+                                            <div class="col-lg-4">
+                                                <div class="side-bar-right">
+                                                    <div class="sidebar-widget">
+                                                        <h6 class="block-heading">Book This Home</h6>
+                                                        <form action="/" id="form-book-tour">
+                                                            <div class="input-wrap mb-30">
+                                                                <p>Check-in</p>
+                                                                <input type="date" id="check-in-date">
+                                                            </div>
+                                                            <div class="input-wrap mb-30">
+                                                                <p>Checkout</p>
+                                                                <input type="date" id="check-out-date">
+                                                            </div>
+                                                            <div class="input-wrap-sellect mb-30">
+                                                                <span class="label">Guests</span>
+                                                                <div class="flex-two mb-15">
+                                                                    <p>Adults (Age 13+)</p>
+                                                                    <div class="nice-select" tabindex="0">
+                                                                        <span class="current" id="adults-count">1</span>
+                                                                        <ul class="list" id="adults-options">
+                                                                            <!-- Options will be populated dynamically -->
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-two mb-15">
+                                                                    <p>Children (Under 13)</p>
+                                                                    <div class="nice-select" tabindex="0">
+                                                                        <span class="current" id="children-count">0</span>
+                                                                        <ul class="list" id="children-options">
+                                                                            <!-- Options will be populated dynamically -->
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-two mb-40">
+                                                                <span class="label">Total:</span>
+                                                                <span class="total text-main" id="total-price">0 VND</span>
+                                                            </div>
+                                                            <button type="submit">Proceed Booking</button>
+                                                        </form>
+                                                        
+                                                    </div>
+                                                    <div class="sidebar-widget">
+                                                        <h6 class="block-heading">Book With Confidence</h6>
+                                                        <ul class="category-confidence">
+                                                            <li class="flex-three">
+                                                                <i class="icon-customer-service-1"></i>
+                                                                <span>Customer care available 24/7</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-Vector-6"></i>
+                                                                <span>Hand-picked Tours & Activities</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-insurance-1"></i>
+                                                                <span>Free Travel Insurance</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-price-tag-1-1"></i>
+                                                                <span>No-hassle best price guarantee</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>         
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <%- include('../partials/footer') %>
+        </div>
+        <!-- /#page -->
+    </div>
+
+
+    <a id="scroll-top" class="button-go"></a>
+
+    <script>
+        // Lấy ID homestay từ URL
+        const path = window.location.pathname;
+        const regex = /\/roomdetail\/(\d+)/;
+        const match = path.match(regex);
+    
+        if (match) {
+            const homestayId = match[1];  // Lấy ID từ URL
+    
+            // Hàm gọi API để lấy dữ liệu homestay
+            async function fetchHomestayData(id) {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/homestay/${id}`);  // URL API của bạn
+                    const homestay = await response.json();
+    
+                    if (response.ok) {
+                        // Cập nhật thông tin homestay vào trang
+                        document.getElementById('homestay-name').innerText = homestay.name;
+                        document.getElementById('max-guests').innerText = `Max Guests: ${homestay.max_guests}`;
+                        document.getElementById('location').innerText = homestay.location;
+                        document.getElementById('price').innerText = `${homestay.price}VND`;
+    
+                        // Cập nhật thông tin số giường và số phòng
+                        document.getElementById('beds').innerText = homestay.beds ? `Beds: ${homestay.beds}` : 'Beds: N/A';
+                        document.getElementById('rooms').innerText = homestay.rooms ? `Rooms: ${homestay.rooms}` : 'Rooms: N/A';
+                        
+                        // Gọi hàm render bản đồ với địa chỉ từ API
+                        fetchAndRenderMap(homestay.location);
+                        // Cập nhật mô tả
+                        document.getElementById('description').innerText = homestay.description;
+    
+                        // Cập nhật tiện nghi
+                        const amenities = homestay.amenities.split(',').map(item => item.trim());
+                        // Chia tiện nghi thành ba cột
+                        const columns = [amenitiesList1, amenitiesList2, amenitiesList3];
+                        amenities.forEach((amenity, index) => {
+                        const columnIndex = index % 3;  // Chia đều vào 3 cột
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('flex-three');
+                        listItem.innerHTML = `<i class="icon-10"></i><p>${amenity}</p>`;
+                        columns[columnIndex].appendChild(listItem);
+                        });
+
+                        // Cập nhật gallery ảnh
+                        const gallery = document.getElementById('image-gallery');
+                        const images = homestay.images.split(',');
+                        const firstThreeImages = images.slice(0, 3);
+                        firstThreeImages.forEach((image, index) => {
+                            const imageElement = document.createElement('div');
+                            if (index === 0) {
+                                imageElement.classList.add('col-12', 'col-sm-6');
+                            } else {
+                                imageElement.classList.add('col-6', 'col-sm-3');
+                            }
+                           imageElement.innerHTML = `<img src="${image.trim()}" alt="image" class="item1">`;
+                            gallery.appendChild(imageElement);
+                        });
+    
+                        // Cập nhật địa chỉ
+                        document.getElementById('address').innerText = homestay.location;
+    
+                        // Cập nhật thông tin số khách
+                        updateGuestOptions(homestay.max_guests);
+    
+                        // Cập nhật tính năng chọn ngày và tính tổng tiền
+                        setupDateAndPriceCalculation(homestay.price, homestay.max_guests);
+    
+                    } else {
+                        console.error('Error fetching homestay data');
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch homestay data:', error);
+                }
+            }
+    
+            // Gọi hàm để lấy dữ liệu homestay khi trang được tải
+            fetchHomestayData(homestayId);
+        } else {
+            console.error('Homestay ID not found in URL');
+        }
+        async function fetchAndRenderMap(address) {
+    try {
+        // Gọi API OpenStreetMap Nominatim để lấy tọa độ
+        const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+
+        const response = await fetch(geocodeUrl);
+        const geocodeData = await response.json();
+
+        if (geocodeData.length > 0) {
+            const lat = parseFloat(geocodeData[0].lat);
+            const lon = parseFloat(geocodeData[0].lon);
+
+            // Render bản đồ với Leaflet
+            const map = L.map('map').setView([lat, lon], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Thêm marker hiển thị địa chỉ
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup(`<b>${address}</b>`)
+                .openPopup();
+        } else {
+            console.error('Không tìm thấy tọa độ từ địa chỉ.');
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy tọa độ từ địa chỉ:', error);
+    }
+}
+
+        
+        // Cập nhật các lựa chọn khách (người lớn và trẻ em) dựa trên max_guests
+        function updateGuestOptions(maxGuests) {
+            const adultsOptions = document.getElementById('adults-options');
+            const childrenOptions = document.getElementById('children-options');
+    
+            let adultsHTML = '';
+            let childrenHTML = '';
+    
+            for (let i = 1; i <= maxGuests; i++) {
+                adultsHTML += `<li data-value="${i}" class="option">${i}</li>`;
+                if (i <= maxGuests / 2) {  // Giới hạn trẻ em tối đa 50% số người lớn
+                    childrenHTML += `<li data-value="${i}" class="option">${i}</li>`;
+                }
+            }
+    
+            adultsOptions.innerHTML = adultsHTML;
+            childrenOptions.innerHTML = childrenHTML;
+    
+            document.getElementById('adults-count').innerText = '1';
+            document.getElementById('children-count').innerText = '0';
+        }
+    
+        // Thiết lập các sự kiện cho check-in, check-out và tính tổng tiền
+        function setupDateAndPriceCalculation(pricePerNight, maxGuests) {
+            const checkInInput = document.getElementById('check-in-date');
+            const checkOutInput = document.getElementById('check-out-date');
+            const adultsSelect = document.getElementById('adults-count');
+            const childrenSelect = document.getElementById('children-count');
+            const totalPriceElement = document.getElementById('total-price');
+    
+            // Sự kiện thay đổi ngày check-in hoặc check-out
+            checkInInput.addEventListener('change', handleDateChange);
+            checkOutInput.addEventListener('change', handleDateChange);
+            adultsSelect.addEventListener('change', calculateTotal);
+            childrenSelect.addEventListener('change', calculateTotal);
+    
+            // Kiểm tra và tính toán tổng tiền khi thay đổi ngày
+            function handleDateChange() {
+                const checkInDate = new Date(checkInInput.value);
+                const checkOutDate = new Date(checkOutInput.value);
+    
+                // Kiểm tra ngày check-out không được nhỏ hơn hoặc bằng ngày check-in
+                if (checkOutDate <= checkInDate) {
+                    alert('Checkout date cannot be earlier than or equal to check-in date.');
+                    checkOutInput.value = '';  // Reset checkout date
+                    totalPriceElement.innerText = '0 VNĐ';  // Reset total
+                    return;
+                }
+    
+                calculateTotal();  // Tính tổng tiền lại khi thay đổi ngày
+            }
+    
+            // Hàm tính tổng tiền
+            function calculateTotal() {
+                const checkInDate = new Date(checkInInput.value);
+                const checkOutDate = new Date(checkOutInput.value);
+    
+                if (!checkInDate || !checkOutDate) return;
+    
+                // Tính số đêm
+                const nights = (checkOutDate - checkInDate) / (1000 * 3600 * 24);
+    
+                const adultsCount = parseInt(adultsSelect.innerText);
+                const childrenCount = parseInt(childrenSelect.innerText);
+    
+                // Tổng tiền là (giá mỗi đêm) * (số đêm) * (số người lớn) + (số trẻ em tính nửa người lớn)
+                const totalAmount = pricePerNight * nights * (adultsCount + (childrenCount / 2));
+                totalPriceElement.innerText = `${totalAmount} VNĐ`;
+            }
+        }
+    </script>
+    
+    
+    <!-- Javascript -->
+    <script src="/global/app/js/jquery.min.js"></script>
+    <script src="/global/app/js/jquery.nice-select.min.js"></script>
+    <script src="/global/app/js/bootstrap.min.js"></script>
+    <script src="/global/app/js/swiper-bundle.min.js"></script>
+    <script src="/global/app/js/swiper.js"></script>
+    <script src="/global/app/js/plugin.js"></script>
+    <script src="/global/app/js/jquery.fancybox.js"></script>
+    <script src="/global/app/js/map.min.js"></script>
+    <script src="/global/app/js/map.js"></script>
+    <script src="/global/app/js/shortcodes.js"></script>
+    <script src="/global/app/js/main.js"></script>
+    <script src="/global/app/js/count-down.js"></script>
+    <script src="/global/app/js/countto.js"></script>
+    <script src="/global/app/js/jquery.magnific-popup.min.js"></script>
+    <script src="/global/app/js/price-ranger.js"></script>
+    <script src="/global/app/js/textanimation.js"></script>
+    <script src="/global/app/js/wow.min.js"></script>
+    
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <title>Vitour - Travel & Tour Booking HTML Template</title>
+
+    <meta name="author" content="themesflat.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="/global/app/css/app.css">
+    <link rel="stylesheet" href="/global/app/css/map.min.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="/global/assets/images/favico.png">
+    <link rel="apple-touch-icon-precomposed" href="/global/assets/images/favico.png">
+
+</head>
+
+<body class="body header-fixed ">
+
+    <div class="preload preload-container">
+        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+        </svg>
+    </div>
+
+    <!-- /preload -->
+
+    <div id="wrapper">
+
+        <div id="pagee" class="clearfix">
+            <%- include('../partials/hostSidebar') %>
+            <div class="has-dashboard">
+                <%- include('../partials/hostHeader') %>
+                <%- body %>
+                <%- include('../partials/hostFooter') %>
+            </div>
+        </div>
+
+    </div>
+  
+
+    <a id="scroll-top" class="button-go"></a>
+
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            ...
+        </div>
+    </div>
+
+    <!-- Javascript -->
+    <script src="/global/app/js/jquery.min.js"></script>
+    <script src="/global/app/js/jquery.nice-select.min.js"></script>
+    <script src="/global/app/js/bootstrap.min.js"></script>
+    <script src="/global/app/js/tinymce/tinymce.min.js"></script>
+    <script src="/global/app/js/tinymce/tinymce-custom.js"></script>
+    <script src="/global/app/js/swiper-bundle.min.js"></script>
+    <script src="/global/app/js/swiper.js"></script>
+    <script src="/global/app/js/plugin.js"></script>
+    <script src="/global/app/js/map.min.js"></script>
+    <script src="/global/app/js/map.js"></script>
+    <script src="/global/app/js/shortcodes.js"></script>
+    <script src="/global/app/js/main.js"></script>
+
+</body>
+
+</html>

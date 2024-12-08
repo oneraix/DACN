@@ -56,7 +56,7 @@
         if ($(document.body).hasClass("counter-scroll")) {
             var a = 0;
             $(window).scroll(function () {
-                var oTop = $(".tf-countto").offset().top - window.innerHeight;
+                var oTop = $(".tf-countto").offset()?.top - window.innerHeight || 0;
                 if (a === 0 && $(window).scrollTop() > oTop) {
                     if ($().countTo) {
                         $(".tf-countto")

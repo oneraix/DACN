@@ -1,0 +1,131 @@
+<main id="main">
+  <section class="profile-dashboard">
+      <div class="inner-header mb-40">
+          <h3 class="title">Add Tour</h3>
+          <p class="des">There are many variations of passages of Lorem Ipsum</p>
+      </div>
+      <form action="/" id="form-add-homestay" class="form-add-homestay">
+          <div class="widget-dash-board pr-256 mb-75">
+            <h4 class="title-add-homestay mb-30">Create New Homestay</h4>
+        
+            <!-- Phần Thông Tin Cơ Bản -->
+            <div class="grid-input-2 mb-45">
+              <div class="input-wrap">
+                <label>Homestay Name</label>
+                <input type="text" name="name" placeholder="Enter homestay name" required>
+              </div>
+              <div class="input-wrap">
+                <label>Category</label>
+                <div class="nice-select" tabindex="0">
+                  <span class="current">Select Category</span>
+                  <ul class="list">
+                    <li data-value="Nhà" class="option">Nhà</li>
+                    <li data-value="Căn hộ" class="option">Căn hộ</li>
+                    <li data-value="Nhà nghĩ" class="option">Nhà nghĩ</li>
+                    <li data-value="Khách sạn" class="option">Khách sạn</li>
+                  </ul>
+                </div>
+                <input type="hidden" name="category" value="">
+              </div>
+            </div>
+        
+            <div class="input-wrap mb-45">
+              <label>Description</label>
+              <textarea name="description" rows="5" placeholder="Write a brief description" required></textarea>
+            </div>
+        
+            <div class="input-wrap mb-45">
+              <label>Price Per Night (VND)</label>
+              <input type="number" name="price" placeholder="Enter price per night" required>
+            </div>
+        
+            <!-- Phần Địa Chỉ -->
+            <h4 class="title-add-homestay mb-30">Location</h4>
+            <div class="grid-input-2 mb-45">
+              <div class="input-wrap">
+                <label>Country</label>
+                <div class="nice-select" tabindex="0">
+                  <span class="current">Select Country</span>
+                  <ul class="list">
+                    <li data-value="Vietnam" class="option">Vietnam</li>
+                    <li data-value="USA" class="option">USA</li>
+                    <li data-value="Japan" class="option">Japan</li>
+                    <li data-value="France" class="option">France</li>
+                  </ul>
+                </div>
+                <input type="hidden" name="country" value="">
+              </div>
+              <div class="input-wrap">
+                <label>City</label>
+                <div class="nice-select" tabindex="0">
+                  <span class="current">Select City</span>
+                  <ul class="list">
+                    <li data-value="Hanoi" class="option">Hanoi</li>
+                    <li data-value="Ho Chi Minh" class="option">Ho Chi Minh</li>
+                    <li data-value="Da Nang" class="option">Da Nang</li>
+                    <li data-value="Tokyo" class="option">Tokyo</li>
+                  </ul>
+                </div>
+                <input type="hidden" name="city" value="">
+              </div>
+            </div>
+        
+            <div class="input-wrap mb-45">
+              <label>District</label>
+              <div class="nice-select" tabindex="0">
+                <span class="current">Select District</span>
+                <ul class="list">
+                  <li data-value="Ba Dinh" class="option">Ba Dinh</li>
+                  <li data-value="Hai Ba Trung" class="option">Hai Ba Trung</li>
+                  <li data-value="Thanh Khe" class="option">Thanh Khe</li>
+                  <li data-value="Shinjuku" class="option">Shinjuku</li>
+                </ul>
+              </div>
+              <input type="hidden" name="district" value="">
+            </div>
+        
+            <div class="input-wrap mb-45">
+              <label>Detailed Address</label>
+              <input type="text" name="address" placeholder="Enter detailed address" required>
+            </div>
+        
+            <!-- Phần Tiện Ích -->
+            <h4 class="title-add-homestay mb-30">Amenities</h4>
+            <div class="row mb-60">
+              <div class="col-lg-4">
+                <div class="checkbox">
+                  <input id="laundry" type="checkbox" name="amenities[]" value="Laundry Service">
+                  <label for="laundry">Laundry Service</label>
+                </div>
+                <div class="checkbox">
+                  <input id="food" type="checkbox" name="amenities[]" value="Food & Drinks">
+                  <label for="food">Food & Drinks</label>
+                </div>
+                <div class="checkbox">
+                  <input id="pool" type="checkbox" name="amenities[]" value="Swimming Pool">
+                  <label for="pool">Swimming Pool</label>
+                </div>
+                <div class="checkbox">
+                  <input id="wifi" type="checkbox" name="amenities[]" value="Free WiFi">
+                  <label for="wifi">Free WiFi</label>
+                </div>
+              </div>
+            </div>
+        
+            <!-- Phần Tải Ảnh -->
+            <h4 class="title-add-homestay mb-30">Upload Photos</h4>
+            <div class="input-wrap mb-45">
+              <label>Upload up to 10 photos</label>
+              <input type="file" name="images[]" accept="image/*" multiple required>
+              <small class="text-main">Supported formats: JPG, PNG. Max 2MB each.</small>
+            </div>
+            <div id="image-preview"></div>
+        
+            <!-- Nút Lưu -->
+            <div class="input-wrap">
+              <button type="submit" class="button-add">Save Homestay</button>
+            </div>
+          </div>
+        </form>
+  </section>
+</main>

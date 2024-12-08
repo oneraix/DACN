@@ -1,16 +1,35 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const userService = require('../services/userService');
+const emailValidator = require('email-validator');//kiểm tra định dạng email
+
 // Đăng ký người dùng mới
 exports.register = async (req, res) => {
     const { username, email, full_name, password } = req.body;
-    if (!username || !email || !full_name || !password) {
-        return res.status(400).json({ message: 'All fields are required' });// Kiểm tra xem tất cả các trường có được điền đầy đủ không
+
+    if (!username || !email || !full_name || !password) {    // Kiểm tra xem tất cả các trường có được điền đầy đủ không
+        return res.status(400).json({ message: 'All fields are required' });
     }
+
+    if (!emailValidator.validate(email)) {    // Kiểm tra định dạng email
+        return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Kiểm tra xem username có chứa ký tự đặc biệt hoặc trống không
+    const usernameRegex = /^[a-zA-Z0-9]+$/;  // Chỉ cho phép chữ cái và số, không có ký tự đặc biệt
+    if (!usernameRegex.test(username)) {
+        return res.status(400).json({ message: 'Username can only contain alphanumeric characters' });
+    }
+
     try {
+        const existingUser = await userService.checkUserExistence(username, email);        // Kiểm tra xem email hoặc username đã tồn tại trong DB chưa
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username or email already exists' });
+        }
+
         const result = await userService.register({ username, email, full_name, password });        // Gọi service để thực hiện đăng ký người dùng
 
-        return res.status(201).json(result); // Trả về thông tin người dùng đã đăng ký thành công
+        return res.status(201).json(result);        // Trả về thông tin người dùng đã đăng ký thành công
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: 'Server error', error: err.message });

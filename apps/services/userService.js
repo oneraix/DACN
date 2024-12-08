@@ -3,15 +3,22 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/userModel');
 
+
 //Đăng kí
 exports.register = async (userData) => {
   const { username, email, password, full_name } = userData;
-  const existingUser = await userModel.getUserByUsernameOrEmail(username);  // Kiểm tra xem email hoặc username đã tồn tại trong DB chưa
+  const existingUser = await userModel.getUserByUsernameOrEmail(username);    // Kiểm tra xem email hoặc username đã tồn tại trong DB chưa
   if (existingUser) {
       throw new Error('Username or email already exists');
   }
   const hashedPassword = await bcrypt.hash(password, 10);  // Mã hóa mật khẩu
-  const newUser = await userModel.createUser({username,email,password: hashedPassword,full_name});  // Tạo người dùng mới trong cơ sở dữ liệu
+
+  const newUser = await userModel.createUser({  // Tạo người dùng mới trong cơ sở dữ liệu
+      username,
+      email,
+      password: hashedPassword,
+      full_name
+  });
 
   return {
       message: 'User registered successfully',
@@ -23,25 +30,23 @@ exports.register = async (userData) => {
       }
   };
 };
-// Đăng nhập người dùng
-// exports.loginUser = async (username, password) => {
-//     try {
-//       const user = await User.getUserByUsername(username);  // Lấy người dùng theo username
-//       if (!user) {
-//         throw new Error('User not found');
-//       }
-  
-//       const isMatch = await bcrypt.compare(password, user.password);  // Kiểm tra mật khẩu
-//       if (!isMatch) {
-//         throw new Error('Invalid credentials');
-//       }
-  
-//       const token = jwt.sign({ userId: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-//       return { message: 'Login successful', token };
-//     } catch (err) {
-//       throw err;  
-//     }
-//   };
+
+// Kiểm tra xem email hoặc username đã tồn tại trong DB chưa
+exports.checkUserExistence = async (username, email) => {
+    const user = await userModel.getUserByUsernameOrEmail(username);  // Kiểm tra người dùng theo username
+    if (user) {
+        return user;  // Nếu tìm thấy người dùng, trả về thông tin người dùng
+    }
+    
+    const userByEmail = await userModel.getUserByUsernameOrEmail(email);  // Kiểm tra người dùng theo email
+    if (userByEmail) {
+        return userByEmail;  // Nếu tìm thấy người dùng qua email, trả về thông tin
+    }
+
+    return null;  // Nếu không tìm thấy người dùng nào
+};
+
+
 //Đăng nhập
 exports.login = async (usernameOrEmail, password) => {
   try {
@@ -66,6 +71,7 @@ exports.login = async (usernameOrEmail, password) => {
       throw new Error('Server error');
   }
 };
+
 
 exports.verifyToken = async (token) => {
   try {
