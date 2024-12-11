@@ -187,6 +187,55 @@ class HomestayModel {
     });
   }
 
+  static searchHomestay(filters = {}) {
+    const { location, priceMin, priceMax, guests, rooms } = filters;
+  
+    let query = 'SELECT * FROM homestays WHERE 1=1';
+    const params = [];
+  
+    if (location) {
+      query += ' AND location LIKE ?';
+      params.push(`%${location}%`);
+    }
+    if (priceMin !== undefined) {
+      query += ' AND price >= ?';
+      params.push(priceMin);
+    }
+    if (priceMax !== undefined) {
+      query += ' AND price <= ?';
+      params.push(priceMax);
+    }
+    if (guests !== undefined) {
+      query += ' AND max_guests >= ?';
+      params.push(guests);
+    }
+    if (rooms !== undefined) {
+      query += ' AND rooms >= ?';
+      params.push(rooms);
+    }
+  
+    if (Object.keys(filters).length === 0) {
+      query = 'SELECT * FROM homestays ORDER BY created_at DESC LIMIT 12';
+      return new Promise((resolve, reject) => {
+        db.query(query, (err, result) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(result);
+        });
+      });
+    }
+  
+    return new Promise((resolve, reject) => {
+      db.query(query, params, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(result);
+      });
+    });
+  }
+  
 
 }
 

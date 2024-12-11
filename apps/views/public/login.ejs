@@ -76,10 +76,6 @@
                                                                 <img src="./global/assets/images/page/gg.png" alt="image">
                                                                 <span>Sign in with Google</span>
                                                             </a>
-                                                            <a href="#" class="login-social flex-three">
-                                                                <img src="./global/assets/images/page/fb.png" alt="image">
-                                                                <span>Sign in with Facebook</span>
-                                                            </a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -147,7 +143,7 @@
                 if (response.status === 200) {
                     // Lưu token vào localStorage hoặc sessionStorage
                     localStorage.setItem('token', data.token);
-    
+                    localStorage.setItem('user', JSON.stringify(data.user));
                     // Chuyển hướng người dùng sau khi đăng nhập thành công
                     window.location.href = '/'; 
                 } else {

@@ -1,3 +1,11 @@
+<style>.user-avatar {
+    width: 50px; /* Chiều rộng giới hạn */
+    height: 50px; /* Chiều cao giới hạn */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    border-radius: 50%; /* Nếu muốn ảnh tròn */
+}
+</style>
+
 <header class="main-header flex">
     <!-- Header Lower -->
     <div id="header">
@@ -8,98 +16,14 @@
                     <div class="col-lg-12">
                         <div class="inner-container flex justify-space align-center">
                             <!-- Logo Box -->
-                            <div class="header-search flex-three">
-                                <div class="icon-bars">
-                                    <i class="icon-Vector3"></i>
-                                </div>
-                                <form action="/" class="search-dashboard">
-                                    <i class="icon-Vector5"></i>
-                                    <input type="search" placeholder="Search tours">
-                                </form>
-
-                            </div>
-
-                            <div class="nav-outer flex align-center">
-                                <!-- Main Menu -->
-                                <nav class="main-menu show navbar-expand-md">
-                                    <div class="navbar-collapse collapse clearfix"
-                                        id="navbarSupportedContent">
-                                        <ul class="navigation clearfix">
-                                            <li><a href="/">Home</a></li>
-                                            <li class="dropdown2 current"><a href="#">Dashboard</a>
-                                                <ul>
-                                                    <li><a href="dashboard.html">Dashboard </a></li>
-                                                    <li><a href="my-booking.html">My booking</a></li>
-                                                    <li><a href="my-listing.html">My Listing</a></li>
-                                                    <li class="current"><a href="add-tour.html">Add
-                                                            Tour</a></li>
-                                                    <li><a href="my-favorite.html">My Favorites</a></li>
-                                                    <li><a href="my-profile.html">My profile</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="contact-us.html">Contact</a></li>
-                                        </ul>
-                                    </div>
-                                </nav>
-                                <!-- Main Menu End-->
-                            </div>
-                            <div class="header-account flex align-center">
-                                <div class="dropdown notification">
-                                    <a class="icon-notification" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="icon-notification-1"></i>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                      <li>
-                                        <div class="message-item  flex-three">
-                                            <div class="image">
-                                                <i class="icon-26"></i>
-                                            </div>
-                                            <div>
-                                                <div class="body-title">Discount available</div>
-                                                <div class="text-tiny">Morbi sapien massa, ultricies at rhoncus at, ullamcorper nec diam</div>
-                                            </div>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div class="message-item  flex-three">
-                                            <div class="image">
-                                                <i class="icon-26"></i>
-                                            </div>
-                                            <div>
-                                                <div class="body-title">Discount available</div>
-                                                <div class="text-tiny">Morbi sapien massa, ultricies at rhoncus at, ullamcorper nec diam</div>
-                                            </div>
-                                        </div>
-                                      </li>
-                                      <li>
-                                        <div class="message-item  flex-three">
-                                            <div class="image">
-                                                <i class="icon-26"></i>
-                                            </div>
-                                            <div>
-                                                <div class="body-title">Discount available</div>
-                                                <div class="text-tiny">Morbi sapien massa, ultricies at rhoncus at, ullamcorper nec diam</div>
-                                            </div>
-                                        </div>
-                                      </li>
-                                      
+                            <div class="header-account flex align-center" style="margin-left: auto;">
+                                <div class="user-area">
+                                    <ul class="flex align-center">
+                                        <li id="user-menu">
+                                            <!-- Nội dung sẽ được cập nhật bằng JavaScript -->
+                                        </li>
                                     </ul>
-                                </div> 
-                                <div class="dropdown account">
-                                    <a type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="./assets/images/page/avata.jpg" alt="image">
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                      <li><a  href="#">Account</a></li>
-                                      <li><a  href="#">Setting</a></li>
-                                      <li><a  href="#">Support</a></li>
-                                      <li><a  href="login.html">Logout</a></li>
-                                    </ul>
-                                </div> 
-                                <div class="mobile-nav-toggler mobile-button">
-                                    <i class="icon-bar"></i>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -124,6 +48,80 @@
             </div>
         </nav>
     </div>
-    <!-- End Mobile Menu -->
-
+    <!-- End Mobile Menu -->   
 </header>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userMenu = document.getElementById('user-menu');
+    
+        // Lấy dữ liệu từ localStorage
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+    
+        if (token && user) {
+            const { user_id, role } = user; // Lấy thông tin user_id và role
+    
+            // Gọi API để lấy đường dẫn ảnh đại diện
+            fetch(`/api/users/image/${user_id}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user image');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const avatarUrl = data.profile_picture; // Đường dẫn ảnh trả về từ API
+                    const profileUrl = getProfilePage(role); // Lấy URL trang tài khoản dựa trên role
+    
+                    // Hiển thị thông tin người dùng với avatar và menu dropdown
+                    userMenu.innerHTML = `
+                        <div class="dropdown">
+                            <a class="dropdown-toggle flex align-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="${avatarUrl}" alt="Avatar" class="user-avatar">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="${profileUrl}">Tài khoản</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#">Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    `;
+    
+                    // Thêm sự kiện xử lý đăng xuất
+                    document.getElementById('logout').addEventListener('click', () => {
+                        localStorage.removeItem('token'); // Xóa token khỏi localStorage
+                        localStorage.removeItem('user'); // Xóa thông tin user khỏi localStorage
+                        window.location.href = '/login'; // Chuyển hướng đến trang đăng nhập
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching user image:', error);
+                    // Hiển thị mặc định nút đăng nhập nếu không lấy được ảnh
+                    userMenu.innerHTML = `
+                        <a href="/login" class="login-btn flex align-center">
+                            <span>Đăng nhập</span>
+                        </a>
+                    `;
+                });
+        } else {
+            // Nếu không có dữ liệu đăng nhập, hiển thị nút Đăng nhập
+            userMenu.innerHTML = `
+                <a href="/login" class="login-btn flex align-center">
+                    <span>Đăng nhập</span>
+                </a>
+            `;
+        }
+    
+        // Hàm lấy URL trang tài khoản dựa trên vai trò
+        function getProfilePage(role) {
+            switch (role) {
+                case 'admin':
+                    return '/admin';
+                case 'host':
+                    return '/host';
+                default:
+                    return '/user/profile';
+            }
+        }
+    });
+    
+</script>

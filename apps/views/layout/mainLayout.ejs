@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/global/app/css/app.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/magnific-popup.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/textanimation.css">
+    <link rel="stylesheet" href="/global/app/css/map.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <!-- Favicon and Touch Icons -->
+    <link rel="shortcut icon" href="/global/assets/images/favico.png">
+    <link rel="apple-touch-icon-precomposed" href="/global/assets/images/favico.png">
+    
+    <meta charset="utf-8">
+    <title>Vitour - </title>
+    <meta name="author" content="themesflat.com">
+
+    <style>
+        .image-gallery-single img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body class="body header-fixed ">
+
+    <div class="preload preload-container">
+        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+        </svg>
+    </div>
+
+    <!-- /preload -->
+
+    <div id="wrapper">
+        <div id="pagee" class="clearfix">
+            <%- include('../partials/header') %>
+            <main id="main">
+                <%- body %>
+            </main>
+            <%- include('../partials/footer') %>
+        </div>
+        <!-- /#page -->
+    </div>
+
+
+    <a id="scroll-top" class="button-go"></a>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight">
+        <div class="offcanvas-header">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="logo-canvas">
+                <img src="/global/assets/images/logo.png" alt="image">
+            </div>
+            <p class="des">Khám phá và trải nghiệm các homestay độc đáo trên khắp mọi nơi. 
+                Với giao diện thân thiện, bạn có thể dễ dàng tìm kiếm, đặt chỗ, và tận hưởng không gian ấm cúng, tiện nghi.
+            </p>
+            <ul class="canvas-info">
+                <li class="flex-three">
+                    <i class="icon-noun-mail-5780740-1"></i>
+                    <p>vominhhieu1087@gmail.com</p>
+                </li>
+                <li class="flex-three">
+                    <i class="icon-Group-9"></i>
+                    <p>0964504537</p>
+                </li>
+                <li class="flex-three">
+                    <i class="icon-Layer-19"></i>
+                    <p>Thủ đức,thành phố Hồ Chí Minh</p>
+                </li>
+            </ul>
+            <ul class="social flex-three">
+                <li>
+                    <a href="https://fb.com/minhi113" target="_blank" rel="noopener noreferrer">
+                        <i class="icon-icon-2"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.instagram.com/minhi113/" target="_blank" rel="noopener noreferrer">
+                        <i class="icon-8"></i>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    
+
+
+
+    <!-- Javascript -->
+    <script src="/global/app/js/jquery.min.js"></script>
+    <script src="/global/app/js/jquery.nice-select.min.js"></script>
+    <script src="/global/app/js/bootstrap.min.js"></script>
+    <script src="/global/app/js/swiper-bundle.min.js"></script>
+    <script src="/global/app/js/swiper.js"></script>
+    <script src="/global/app/js/plugin.js"></script>
+    <script src="/global/app/js/jquery.fancybox.js"></script>
+    <script src="/global/app/js/map.min.js"></script>
+    <script src="/global/app/js/map.js"></script>
+    <script src="/global/app/js/shortcodes.js"></script>
+    <script src="/global/app/js/main.js"></script>
+    <script src="/global/app/js/count-down.js"></script>
+    <script src="/global/app/js/countto.js"></script>
+    <script src="/global/app/js/jquery.magnific-popup.min.js"></script>
+    <script src="/global/app/js/price-ranger.js"></script>
+    <script src="/global/app/js/textanimation.js"></script>
+    <script src="/global/app/js/wow.min.js"></script>
+    
+</body>
+
+</html>

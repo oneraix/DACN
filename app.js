@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
-
+require('dotenv').config()
 
 const viewRoutes = require('./apps/routes/viewRoutes');  // Đường dẫn tới viewRoutes
 const apiRoutes = require('./apps/routes/apiRoutes');

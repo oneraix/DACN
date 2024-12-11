@@ -10,40 +10,93 @@
     <link rel="stylesheet" type="text/css" href="/global/app/css/textanimation.css">
     <link rel="stylesheet" href="/global/app/css/map.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <!-- Favicon and Touch Icons -->
     <link rel="shortcut icon" href="/global/assets/images/favico.png">
     <link rel="apple-touch-icon-precomposed" href="/global/assets/images/favico.png">
-    
+
     <meta charset="utf-8">
     <title>Vitour - </title>
     <meta name="author" content="themesflat.com">
 
+
     <style>
+        select {
+            appearance: none;
+            /* Xóa bỏ kiểu mặc định của trình duyệt */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            width: 50%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Tạo hiệu ứng khi hover vào dropdown */
+        select:hover {
+            border-color: #a5a5a5;
+        }
+
+        /* Tạo mũi tên dropdown custom */
+        select::-ms-expand {
+            display: none;
+            /* Ẩn mũi tên mặc định của trình duyệt */
+        }
+
+        select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6"><path d="M5 6l5-5H0z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+        /* Cải thiện bố cục của các input và dropdown */
+        .input-wrap-sellect {
+            position: relative;
+        }
+
+        /* Thiết kế button để trông đẹp hơn */
+        button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
         .image-gallery-single img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
+        #rating-stars i {
+            color: gray;
+            cursor: pointer;
+        }
+
+        /* Khi sao được chọn */
+        #rating-stars i.selected {
+            color: gold;
+            /* Màu vàng cho sao đã chọn */
+        }
     </style>
 </head>
 
 <body class="body header-fixed ">
-
-    <div class="preload preload-container">
-        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
-            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
-            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
-            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
-            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
-        </svg>
-    </div>
-
-    <!-- /preload -->
-
     <div id="wrapper">
         <div id="pagee" class="clearfix">
-            <%- include('../partials/header') %>
             <main id="main">
                 <section class="tour-single">
                     <div class="tf-container">
@@ -53,24 +106,29 @@
                         <div class="row pd-main">
                             <div class="col-lg-12">
                                 <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="pills-information" role="tabpanel" aria-labelledby="pills-information-tab" tabindex="0">
+                                    <div class="tab-pane fade show active" id="pills-information" role="tabpanel"
+                                        aria-labelledby="pills-information-tab" tabindex="0">
                                         <div class="row mb-50">
                                             <div class="col-lg-12">
                                                 <div class="inner-heading-wrap flex-two">
                                                     <div class="inner-heading">
-                                                        <h2 class="title" id="homestay-name">Loading...</h2> <!-- Tên Homestay -->
+                                                        <h2 class="title" id="homestay-name">Loading...</h2>
+                                                        <!-- Tên Homestay -->
                                                         <ul class="flex-three list-wrap-heading">
                                                             <li class="flex-three">
                                                                 <i class="icon-user"></i>
-                                                                <span id="max-guests">Max Guests: Loading...</span> <!-- Số lượng khách tối đa -->
+                                                                <span id="max-guests">Max Guests: Loading...</span>
+                                                                <!-- Số lượng khách tối đa -->
                                                             </li>
                                                             <li class="flex-three">
                                                                 <i class="icon-bed"></i> <!-- Thêm icon giường -->
-                                                                <span id="beds">Beds: Loading...</span> <!-- Số giường -->
+                                                                <span id="beds">Beds: Loading...</span>
+                                                                <!-- Số giường -->
                                                             </li>
                                                             <li class="flex-three">
                                                                 <i class="icon-room"></i> <!-- Thêm icon phòng -->
-                                                                <span id="rooms">Rooms: Loading...</span> <!-- Số phòng -->
+                                                                <span id="rooms">Rooms: Loading...</span>
+                                                                <!-- Số phòng -->
                                                             </li>
                                                             <li class="flex-three">
                                                                 <i class="icon-18"></i>
@@ -79,10 +137,12 @@
                                                         </ul>
                                                     </div>
                                                     <div class="inner-price">
-                                                        <p class="price-sale text-main"><span id="price">0.00VND</span><span>/Đêm<span></span></p>            <!-- Giá -->
+                                                        <p class="price-sale text-main"><span
+                                                                id="price">0.00VND</span><span>/Đêm<span></span></p>
+                                                        <!-- Giá -->
                                                     </div>
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                         <div class="row mb-40 image-gallery-single" id="image-gallery">
@@ -115,7 +175,7 @@
                                                                     <!-- Amenities will be added dynamically -->
                                                                 </ul>
                                                             </div>
-                                                        </div>  
+                                                        </div>
                                                     </div>
 
                                                     <!-- Map Section -->
@@ -124,20 +184,58 @@
                                                         <p id="address">Loading...</p> <!-- Địa chỉ -->
                                                     </div>
                                                     <div id="map" style="height: 400px; width: 100%;z-index: 0"></div>
-                                                    
+
                                                     <!-- Gallery Section -->
                                                     <div class="gallery-content-tour" id="gallery">
                                                         <!-- Images will be dynamically added here -->
                                                     </div>
-                                                    <!-- Review Section (Empty for now) -->
-                                                    <div class="review-content-tour">
-                                                    <div class="custom-review mb-80">
-                                                        <h4 class="title-review mb-37">Customer Review</h4>
-                                                        <!-- Review section to be added later -->
+                                                </div>
+                                                <div class="review-content-tour">
+                                                    <div class="form-review bg-1">
+                                                        <h4 class="title-review mb-60">Leave a Comment</h4>
+                                                        <!-- Thông báo nếu chưa đăng nhập -->
+                                                        <div id="not-logged-in-message" class="alert alert-warning"
+                                                            style="display: none;">
+                                                            You must be logged in to leave a review.
+                                                        </div>
+                                                        <!-- Form review -->
+                                                        <div id="review-form-container" style="display: none;">
+                                                            <!-- Rating Section -->
+                                                            <div class="inner-review flex-one mb-50">
+                                                                <div class="inner-review-item">
+                                                                    <span class="text-review">Rating Score</span>
+                                                                    <div class="stars" id="rating-stars">
+                                                                        <i class="icon-Star" data-value="1"></i>
+                                                                        <i class="icon-Star" data-value="2"></i>
+                                                                        <i class="icon-Star" data-value="3"></i>
+                                                                        <i class="icon-Star" data-value="4"></i>
+                                                                        <i class="icon-Star" data-value="5"></i>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Review Text and Submit -->
+                                                            <form action="/" id="form-review">
+                                                                <div class="row">
+                                                                    <div class="col-lg-12">
+                                                                        <fieldset class="relative input-wrap mb-37">
+                                                                            <i class="icon-content"></i>
+                                                                            <textarea name="review" id="review-text"
+                                                                                rows="6" cols="50"
+                                                                                placeholder="Write your review here"></textarea>
+                                                                        </fieldset>
+                                                                    </div>
+                                                                    <div class="col-lg-12 text-right">
+                                                                        <button type="submit"
+                                                                            class="btn btn-primary submit">Post
+                                                                            Comment</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
+
                                             </div>
-                                        </div>  
                                             <div class="col-lg-4">
                                                 <div class="side-bar-right">
                                                     <div class="sidebar-widget">
@@ -155,30 +253,24 @@
                                                                 <span class="label">Guests</span>
                                                                 <div class="flex-two mb-15">
                                                                     <p>Adults (Age 13+)</p>
-                                                                    <div class="nice-select" tabindex="0">
-                                                                        <span class="current" id="adults-count">1</span>
-                                                                        <ul class="list" id="adults-options">
-                                                                            <!-- Options will be populated dynamically -->
-                                                                        </ul>
-                                                                    </div>
+                                                                    <select id="adults-count">
+                                                                        <!-- Options will be populated dynamically -->
+                                                                    </select>
                                                                 </div>
                                                                 <div class="flex-two mb-15">
                                                                     <p>Children (Under 13)</p>
-                                                                    <div class="nice-select" tabindex="0">
-                                                                        <span class="current" id="children-count">0</span>
-                                                                        <ul class="list" id="children-options">
-                                                                            <!-- Options will be populated dynamically -->
-                                                                        </ul>
-                                                                    </div>
+                                                                    <select id="children-count">
+                                                                        <!-- Options will be populated dynamically -->
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                             <div class="flex-two mb-40">
                                                                 <span class="label">Total:</span>
-                                                                <span class="total text-main" id="total-price">0 VND</span>
+                                                                <span class="total text-main" id="total-price">0
+                                                                    VND</span>
                                                             </div>
                                                             <button type="submit">Proceed Booking</button>
                                                         </form>
-                                                        
                                                     </div>
                                                     <div class="sidebar-widget">
                                                         <h6 class="block-heading">Book With Confidence</h6>
@@ -203,7 +295,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>         
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -211,55 +303,55 @@
                     </div>
                 </section>
             </main>
-            <%- include('../partials/footer') %>
         </div>
-        <!-- /#page -->
     </div>
 
 
     <a id="scroll-top" class="button-go"></a>
 
+
+    <!-- Hiển thị thông tin homestay -->
     <script>
         // Lấy ID homestay từ URL
         const path = window.location.pathname;
         const regex = /\/roomdetail\/(\d+)/;
         const match = path.match(regex);
-    
+
         if (match) {
             const homestayId = match[1];  // Lấy ID từ URL
-    
+
             // Hàm gọi API để lấy dữ liệu homestay
             async function fetchHomestayData(id) {
                 try {
-                    const response = await fetch(`http://localhost:3000/api/homestay/${id}`);  // URL API của bạn
+                    const response = await fetch(`/api/homestay/${id}`);  // URL API của bạn
                     const homestay = await response.json();
-    
+
                     if (response.ok) {
                         // Cập nhật thông tin homestay vào trang
                         document.getElementById('homestay-name').innerText = homestay.name;
                         document.getElementById('max-guests').innerText = `Max Guests: ${homestay.max_guests}`;
                         document.getElementById('location').innerText = homestay.location;
                         document.getElementById('price').innerText = `${homestay.price}VND`;
-    
+
                         // Cập nhật thông tin số giường và số phòng
                         document.getElementById('beds').innerText = homestay.beds ? `Beds: ${homestay.beds}` : 'Beds: N/A';
                         document.getElementById('rooms').innerText = homestay.rooms ? `Rooms: ${homestay.rooms}` : 'Rooms: N/A';
-                        
+
                         // Gọi hàm render bản đồ với địa chỉ từ API
                         fetchAndRenderMap(homestay.location);
                         // Cập nhật mô tả
                         document.getElementById('description').innerText = homestay.description;
-    
+
                         // Cập nhật tiện nghi
                         const amenities = homestay.amenities.split(',').map(item => item.trim());
                         // Chia tiện nghi thành ba cột
                         const columns = [amenitiesList1, amenitiesList2, amenitiesList3];
                         amenities.forEach((amenity, index) => {
-                        const columnIndex = index % 3;  // Chia đều vào 3 cột
-                        const listItem = document.createElement('li');
-                        listItem.classList.add('flex-three');
-                        listItem.innerHTML = `<i class="icon-10"></i><p>${amenity}</p>`;
-                        columns[columnIndex].appendChild(listItem);
+                            const columnIndex = index % 3;  // Chia đều vào 3 cột
+                            const listItem = document.createElement('li');
+                            listItem.classList.add('flex-three');
+                            listItem.innerHTML = `<i class="icon-10"></i><p>${amenity}</p>`;
+                            columns[columnIndex].appendChild(listItem);
                         });
 
                         // Cập nhật gallery ảnh
@@ -273,19 +365,19 @@
                             } else {
                                 imageElement.classList.add('col-6', 'col-sm-3');
                             }
-                           imageElement.innerHTML = `<img src="${image.trim()}" alt="image" class="item1">`;
+                            imageElement.innerHTML = `<img src="${image.trim()}" alt="image" class="item1">`;
                             gallery.appendChild(imageElement);
                         });
-    
+
                         // Cập nhật địa chỉ
                         document.getElementById('address').innerText = homestay.location;
-    
+
                         // Cập nhật thông tin số khách
                         updateGuestOptions(homestay.max_guests);
-    
+
                         // Cập nhật tính năng chọn ngày và tính tổng tiền
                         setupDateAndPriceCalculation(homestay.price, homestay.max_guests);
-    
+
                     } else {
                         console.error('Error fetching homestay data');
                     }
@@ -293,67 +385,78 @@
                     console.error('Failed to fetch homestay data:', error);
                 }
             }
-    
+
             // Gọi hàm để lấy dữ liệu homestay khi trang được tải
             fetchHomestayData(homestayId);
         } else {
             console.error('Homestay ID not found in URL');
         }
         async function fetchAndRenderMap(address) {
-    try {
-        // Gọi API OpenStreetMap Nominatim để lấy tọa độ
-        const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+            try {
+                // Gọi API OpenStreetMap Nominatim để lấy tọa độ
+                const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
 
-        const response = await fetch(geocodeUrl);
-        const geocodeData = await response.json();
+                const response = await fetch(geocodeUrl);
+                const geocodeData = await response.json();
 
-        if (geocodeData.length > 0) {
-            const lat = parseFloat(geocodeData[0].lat);
-            const lon = parseFloat(geocodeData[0].lon);
+                if (geocodeData.length > 0) {
+                    const lat = parseFloat(geocodeData[0].lat);
+                    const lon = parseFloat(geocodeData[0].lon);
 
-            // Render bản đồ với Leaflet
-            const map = L.map('map').setView([lat, lon], 15);
+                    // Render bản đồ với Leaflet
+                    const map = L.map('map').setView([lat, lon], 15);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
 
-            // Thêm marker hiển thị địa chỉ
-            L.marker([lat, lon]).addTo(map)
-                .bindPopup(`<b>${address}</b>`)
-                .openPopup();
-        } else {
-            console.error('Không tìm thấy tọa độ từ địa chỉ.');
+                    // Thêm marker hiển thị địa chỉ
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup(`<b>${address}</b>`)
+                        .openPopup();
+                } else {
+                    console.error('Không tìm thấy tọa độ từ địa chỉ.');
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy tọa độ từ địa chỉ:', error);
+            }
         }
-    } catch (error) {
-        console.error('Lỗi khi lấy tọa độ từ địa chỉ:', error);
-    }
-}
 
-        
+    </script>
+
+    <!-- FormBooking -->
+    <script>
         // Cập nhật các lựa chọn khách (người lớn và trẻ em) dựa trên max_guests
         function updateGuestOptions(maxGuests) {
-            const adultsOptions = document.getElementById('adults-options');
-            const childrenOptions = document.getElementById('children-options');
-    
-            let adultsHTML = '';
-            let childrenHTML = '';
-    
+            const adultsSelect = document.getElementById('adults-count');
+            const childrenSelect = document.getElementById('children-count');
+
+            // Xóa tất cả các options hiện tại
+            adultsSelect.innerHTML = '';
+            childrenSelect.innerHTML = '';
+
+            // Thêm options cho người lớn
             for (let i = 1; i <= maxGuests; i++) {
-                adultsHTML += `<li data-value="${i}" class="option">${i}</li>`;
-                if (i <= maxGuests / 2) {  // Giới hạn trẻ em tối đa 50% số người lớn
-                    childrenHTML += `<li data-value="${i}" class="option">${i}</li>`;
-                }
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                adultsSelect.appendChild(option);
             }
-    
-            adultsOptions.innerHTML = adultsHTML;
-            childrenOptions.innerHTML = childrenHTML;
-    
-            document.getElementById('adults-count').innerText = '1';
-            document.getElementById('children-count').innerText = '0';
+
+            // Thêm options cho trẻ em (giới hạn trẻ em tối đa 50% người lớn)
+            for (let i = 0; i <= maxGuests / 2; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                childrenSelect.appendChild(option);
+            }
+
+            // Đặt giá trị mặc định cho người lớn là 1 và trẻ em là 0
+            adultsSelect.value = 1;
+            childrenSelect.value = 0;
         }
-    
+
         // Thiết lập các sự kiện cho check-in, check-out và tính tổng tiền
         function setupDateAndPriceCalculation(pricePerNight, maxGuests) {
             const checkInInput = document.getElementById('check-in-date');
@@ -361,18 +464,18 @@
             const adultsSelect = document.getElementById('adults-count');
             const childrenSelect = document.getElementById('children-count');
             const totalPriceElement = document.getElementById('total-price');
-    
+
             // Sự kiện thay đổi ngày check-in hoặc check-out
             checkInInput.addEventListener('change', handleDateChange);
             checkOutInput.addEventListener('change', handleDateChange);
             adultsSelect.addEventListener('change', calculateTotal);
             childrenSelect.addEventListener('change', calculateTotal);
-    
+
             // Kiểm tra và tính toán tổng tiền khi thay đổi ngày
             function handleDateChange() {
                 const checkInDate = new Date(checkInInput.value);
                 const checkOutDate = new Date(checkOutInput.value);
-    
+
                 // Kiểm tra ngày check-out không được nhỏ hơn hoặc bằng ngày check-in
                 if (checkOutDate <= checkInDate) {
                     alert('Checkout date cannot be earlier than or equal to check-in date.');
@@ -380,31 +483,205 @@
                     totalPriceElement.innerText = '0 VNĐ';  // Reset total
                     return;
                 }
-    
+
                 calculateTotal();  // Tính tổng tiền lại khi thay đổi ngày
             }
-    
+
             // Hàm tính tổng tiền
             function calculateTotal() {
                 const checkInDate = new Date(checkInInput.value);
                 const checkOutDate = new Date(checkOutInput.value);
-    
+
                 if (!checkInDate || !checkOutDate) return;
-    
+
                 // Tính số đêm
                 const nights = (checkOutDate - checkInDate) / (1000 * 3600 * 24);
-    
-                const adultsCount = parseInt(adultsSelect.innerText);
-                const childrenCount = parseInt(childrenSelect.innerText);
-    
-                // Tổng tiền là (giá mỗi đêm) * (số đêm) * (số người lớn) + (số trẻ em tính nửa người lớn)
-                const totalAmount = pricePerNight * nights * (adultsCount + (childrenCount / 2));
+
+                const adultsCount = parseInt(adultsSelect.value);
+                const childrenCount = parseInt(childrenSelect.value);
+
+                // Tổng tiền là (giá mỗi đêm) * (số đêm)
+                const totalAmount = pricePerNight * nights;
+
                 totalPriceElement.innerText = `${totalAmount} VNĐ`;
             }
         }
+
+        // Gửi yêu cầu tạo booking khi nhấn nút "Proceed Booking"
+        document.getElementById('form-book-tour').addEventListener('submit', function (event) {
+            event.preventDefault();  // Ngăn chặn hành động gửi form mặc định
+
+            const token = localStorage.getItem('token');  // Lấy token từ localStorage
+            if (!token) {
+                alert('Token expired or not found. Please log in again.');
+                window.location.href = '/login';  // Chuyển hướng đến trang đăng nhập
+                return;
+            }
+
+            // Lấy ID homestay từ URL
+            const path = window.location.pathname;
+            const regex = /\/roomdetail\/(\d+)/;
+            const match = path.match(regex);
+            const homestayId = match ? match[1] : null;  // Lấy homestay ID từ URL (nếu có)
+
+            if (!homestayId) {
+                alert('Homestay ID not found.');
+                return;
+            }
+
+            // Lấy dữ liệu từ form
+            const checkInDate = document.getElementById('check-in-date').value;
+            const checkOutDate = document.getElementById('check-out-date').value;
+            const adultsCount = document.getElementById('adults-count').value;
+            const childrenCount = document.getElementById('children-count').value;
+
+            // Kiểm tra nếu dữ liệu còn thiếu
+            if (!checkInDate || !checkOutDate || !adultsCount || !childrenCount) {
+                alert('Please fill in all the required fields.');
+                return;
+            }
+
+            // Tạo đối tượng dữ liệu để gửi đi
+            const bookingData = {
+                homestay_id: homestayId,
+                check_in: checkInDate,
+                check_out: checkOutDate,
+                adults_count: parseInt(adultsCount),
+                children_count: parseInt(childrenCount)
+            };
+
+            // Gửi request tới API
+            fetch('http://localhost:3000/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`  // Gửi token trong header
+                },
+                body: JSON.stringify(bookingData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Booking successful!');
+                        // Xử lý khi booking thành công (ví dụ: chuyển hướng hoặc hiển thị thông báo)
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while making the booking.');
+                });
+        });
+
     </script>
-    
-    
+
+
+    <!-- Form Comment -->
+    <script>
+        document.getElementById('form-review').addEventListener('submit', function (event) {
+            event.preventDefault(); // Ngăn chặn reload trang khi submit form
+
+            const user = JSON.parse(localStorage.getItem('user')); // Lấy đối tượng user từ localStorage
+            if (!user || !user.user_id) {
+                alert('You must be logged in to leave a review.');
+                return;
+            }
+
+            const homestayId = window.location.pathname.split('/').pop(); // Lấy ID homestay từ URL
+            const reviewText = document.getElementById('review-text').value;
+
+            // Kiểm tra nếu chưa chọn sao hoặc chưa viết review
+            if (selectedRating === 0 || reviewText.trim() === '') {
+                alert('Please fill in both rating and review.');
+                return;
+            }
+
+            // Gửi dữ liệu review qua API
+            const reviewData = {
+                guest_id: user.user_id,
+                homestay_id: homestayId,
+                rating: selectedRating,
+                review_text: reviewText
+            };
+
+            fetch('http://localhost:3000/api/createreviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert('Review submitted successfully!');
+                        document.getElementById('review-text').value = ''; // Clear the textarea
+                        selectedRating = 0; // Reset rating
+                        updateStarRating(); // Reset stars
+                    } else {
+                        alert('Failed to submit review. Please try again later.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting review:', error);
+                    alert('There was an error. Please try again later.');
+                });
+        });
+
+        // Kiểm tra trạng thái đăng nhập khi trang được tải
+        window.onload = function () {
+            // Đảm bảo rằng việc kiểm tra đăng nhập được thực hiện khi trang đã tải xong
+            checkLoginStatus();
+        };
+
+        // Hàm kiểm tra đăng nhập và hiển thị hoặc ẩn form review
+        function checkLoginStatus() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const formReviewContainer = document.getElementById('review-form-container');
+            const notLoggedInMessage = document.getElementById('not-logged-in-message');
+
+            if (user && user.user_id) {
+                // Người dùng đã đăng nhập, hiển thị form review
+                formReviewContainer.style.display = 'block';
+                notLoggedInMessage.style.display = 'none';
+            } else {
+                // Người dùng chưa đăng nhập, ẩn form review
+                formReviewContainer.style.display = 'none';
+                notLoggedInMessage.style.display = 'block';
+            }
+        }
+
+        // Xử lý khi người dùng chọn sao (rating)
+        let selectedRating = 0;
+
+        const stars = document.querySelectorAll('#rating-stars .icon-Star');
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                selectedRating = parseInt(this.getAttribute('data-value'));
+                updateStarRating();
+            });
+        });
+
+        // Cập nhật giao diện sao (highlight sao đã chọn)
+        function updateStarRating() {
+            stars.forEach(star => {
+                const ratingValue = parseInt(star.getAttribute('data-value'));
+                if (ratingValue <= selectedRating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        // Hàm gửi dữ liệu review cho API (đã được sửa đổi trong phần trên)
+
+    </script>
+
+
+
+
     <!-- Javascript -->
     <script src="/global/app/js/jquery.min.js"></script>
     <script src="/global/app/js/jquery.nice-select.min.js"></script>
@@ -423,7 +700,7 @@
     <script src="/global/app/js/price-ranger.js"></script>
     <script src="/global/app/js/textanimation.js"></script>
     <script src="/global/app/js/wow.min.js"></script>
-    
+
 </body>
 
 </html>

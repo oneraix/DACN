@@ -1,26 +1,30 @@
 const jwt = require('jsonwebtoken');
 
-const authenticateToken = (req, res, next) => {
-    const token = req.header('Authorization')?.split(' ')[1]; // Lấy token từ header Authorization
-    if (!token) return res.status(403).json({ message: 'Access denied. No token provided.' });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Xác thực token
-        req.user = decoded;  // Lưu thông tin user vào req.user để dùng sau
-        next();  // Tiếp tục xử lý request
-    } catch (err) {
-        res.status(400).json({ message: 'Invalid or expired token' });
-    }
-};
-
-// Phân quyền cho role 'admin'
-const authorizeRole = (roles) => {
+// Middleware để xác thực token và kiểm tra quyền
+const authenticateUser = (requiredRole = null) => {
     return (req, res, next) => {
-        if (!roles.includes(req.user.role)) {
-            return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });
+      const token = req.header('Authorization')?.replace('Bearer ', ''); // Lấy token từ header
+  
+      if (!token) {
+        return res.status(401).json({ message: 'Authorization token is required' });
+      }
+  
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Giải mã token và xác thực
+        req.user = decoded; // Lưu thông tin người dùng vào request
+  
+        // Kiểm tra quyền nếu cần thiết
+        if (requiredRole && !requiredRole.includes(req.user.role)) {
+          return res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
         }
-        next();
+  
+        next(); // Tiếp tục xử lý request nếu token hợp lệ
+      } catch (error) {
+        console.error('Token verification error:', error.message);
+        return res.status(401).json({ message: 'Invalid or expired token' }); // Trả về lỗi nếu token không hợp lệ hoặc hết hạn
+      }
     };
-};
+  };
+  
 
-module.exports = { authenticateToken, authorizeRole };
+module.exports = authenticateUser;

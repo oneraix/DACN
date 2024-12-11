@@ -86,3 +86,16 @@ exports.verifyToken = async (token) => {
 exports.getAllUsers = () => {
   return userModel.getAllUsers();
 };
+
+exports.getUserImageById = async (user_id) => {
+  try {
+    const userImage = await userModel.getUserImageById(user_id); // Gọi hàm từ model
+    if (!userImage || !userImage.profile_picture) {
+      throw new Error('No profile picture found for this user'); // Trường hợp không có ảnh
+    }
+    return userImage.profile_picture; // Trả về ảnh profile
+  } catch (error) {
+    console.error('Service error:', error.message);
+    throw error;
+  }
+};

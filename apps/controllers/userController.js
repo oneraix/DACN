@@ -32,3 +32,18 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Database error', error: err.message });
   }
 };
+
+exports.getUserImageById = async (req, res) => {
+  const { id } = req.params; // Lấy user_id từ params
+
+  try {
+    const profileImage = await userService.getUserImageById(id); // Gọi hàm trong service
+    if (!profileImage) {
+      return res.status(404).json({ message: 'User not found or no profile picture' });
+    }
+    res.json({ profile_picture: profileImage }); // Trả về ảnh profile
+  } catch (error) {
+    console.error('Controller error:', error.message);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};

@@ -1,66 +1,103 @@
-// apps/models/reviewModel.js
-const db = require('../config/database'); // Kết nối với cơ sở dữ liệu
-const Review = require('./reviewEntity'); // Sử dụng entity Review
+const db = require('../config/database');
 
 class ReviewModel {
-  // Thêm đánh giá mới
-  static createReview(reviewData) {
-    const { guest_id, homestay_id, rating, review_text } = reviewData;
+    // Tạo review
+    static createReview({ guest_id, homestay_id, rating, review_text }) {
+        const query = `
+            INSERT INTO reviews (guest_id, homestay_id, rating, review_text)
+            VALUES (?, ?, ?, ?)
+        `;
+        return new Promise((resolve, reject) => {
+            db.query(query, [guest_id, homestay_id, rating, review_text], (err, result) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
 
-    const query = `INSERT INTO Reviews (guest_id, homestay_id, rating, review_text)
-                   VALUES (?, ?, ?, ?)`;
+    // Lấy review theo homestay_id
+    static getReviewsByHomestayId(homestay_id) {
+        const query = `
+            SELECT r.review_id, r.guest_id, r.homestay_id, r.rating, r.review_text, r.created_at, 
+                   u.username AS guest_name
+            FROM reviews r
+            JOIN users u ON r.guest_id = u.user_id
+            WHERE r.homestay_id = ?
+            ORDER BY r.created_at DESC
+        `;
+        return new Promise((resolve, reject) => {
+            db.query(query, [homestay_id], (err, results) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    reject(err);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    }
 
-    const values = [guest_id, homestay_id, rating, review_text];
-    return new Promise((resolve, reject) => {
-      db.query(query, values, (err, result) => {
-        if (err) {
-          return reject(err);
+    // Lấy review theo tên homestay hoặc 20 review mới nhất
+    static getReviewsByHomestayName(homestay_name = '') {
+        let query;
+        const params = [];
+
+        if (homestay_name) {
+            query = `
+                SELECT r.review_id, r.guest_id, r.homestay_id, r.rating, r.review_text, r.created_at, 
+                       h.name AS homestay_name, u.username AS guest_name
+                FROM reviews r
+                JOIN homestays h ON r.homestay_id = h.homestay_id
+                JOIN users u ON r.guest_id = u.user_id
+                WHERE h.name LIKE ?
+                ORDER BY r.created_at DESC
+            `;
+            params.push(`%${homestay_name}%`);
+        } else {
+            query = `
+                SELECT r.review_id, r.guest_id, r.homestay_id, r.rating, r.review_text, r.created_at, 
+                       h.name AS homestay_name, u.username AS guest_name
+                FROM reviews r
+                JOIN homestays h ON r.homestay_id = h.homestay_id
+                JOIN users u ON r.guest_id = u.user_id
+                ORDER BY r.created_at DESC
+                LIMIT 20
+            `;
         }
-        const newReview = new Review(result.insertId, guest_id, homestay_id, rating, review_text);
-        resolve(newReview);
+
+        return new Promise((resolve, reject) => {
+            db.query(query, params, (err, results) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    reject(err);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    }
+
+    static deleteReviewById(review_id) {
+      const query = 'DELETE FROM reviews WHERE review_id = ?';
+      return new Promise((resolve, reject) => {
+          db.query(query, [review_id], (err, result) => {
+              if (err) {
+                  console.error('Database error:', err);
+                  reject(err);
+              } else {
+                  resolve(result);
+              }
+          });
       });
-    });
   }
 
-  // Lấy thông tin đánh giá theo ID
-  static getReviewById(review_id) {
-    const query = 'SELECT * FROM Reviews WHERE review_id = ?';
-    return new Promise((resolve, reject) => {
-      db.query(query, [review_id], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result[0]);
-      });
-    });
-  }
 
-  // Lấy tất cả đánh giá của homestay
-  static getReviewsByHomestayId(homestay_id) {
-    const query = 'SELECT * FROM Reviews WHERE homestay_id = ?';
-    return new Promise((resolve, reject) => {
-      db.query(query, [homestay_id], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result);
-      });
-    });
-  }
-
-  // Cập nhật thông tin đánh giá
-  static updateReview(review_id, updatedData) {
-    const { rating, review_text } = updatedData;
-    const query = 'UPDATE Reviews SET rating = ?, review_text = ? WHERE review_id = ?';
-    return new Promise((resolve, reject) => {
-      db.query(query, [rating, review_text, review_id], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result);
-      });
-    });
-  }
 }
+
+
 
 module.exports = ReviewModel;

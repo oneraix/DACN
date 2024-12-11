@@ -52,19 +52,6 @@ const deleteHomestay = async (id) => {
 };
 
 
-/**
- * Service: Tìm kiếm homestay theo các điều kiện
- * @param {Object} filters - Các điều kiện tìm kiếm
- * @returns {Array} - Danh sách homestays phù hợp
- */
-const searchHomestay = async (filters) => {
-  try {
-    const homestays = await Homestay.searchHomestay(filters);
-    return homestays;
-  } catch (error) {
-    throw new Error('Error searching homestays: ' + error.message);
-  }
-};
 
 /**
  * Lấy tất cả amenities
@@ -78,5 +65,19 @@ const getAllAmenities = async () => {
     throw new Error('Error fetching amenities: ' + error.message);
   }
 };
+
+
+const searchHomestay = async (filters = {}) => {
+  try {
+    const homestays = await HomestayModel.searchHomestay(filters); // Gọi phương thức trong Model để lấy dữ liệu homestay
+    return homestays;
+  } catch (error) {
+    throw new Error('Error fetching homestays: ' + error.message);
+  }
+};
+
+
+
+
 
 module.exports = { createHomestay, getAllHomestays, getHomestayById, updateHomestay, deleteHomestay, searchHomestay, getAllAmenities };

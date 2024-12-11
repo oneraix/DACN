@@ -82,4 +82,40 @@ const getBookingsByUserId = async (user_id) => {
   }
 };
 
-module.exports = { createBooking, getAllBookings, getBookingById, updateBooking, deleteBooking, calculateTotalAmount, getBookingsByUserId };
+
+const getPendingBookingsByHostId = async (host_id) => {
+  try {
+    const bookings = await Booking.getPendingBookingsByHostId(host_id);
+    return bookings;
+  } catch (error) {
+    throw new Error('Error fetching pending bookings: ' + error.message);  // Ném lại lỗi cho controller
+  }
+};
+
+
+const updateBookingStatus = async (id, status) => {
+  try {
+    // Gọi phương thức Model để cập nhật trạng thái booking
+    const updatedBooking = await Booking.updateBookingStatus(id, status);
+    
+    // Trả về kết quả nếu cập nhật thành công
+    return updatedBooking;
+  } catch (error) {
+    // Ném lỗi nếu có sự cố xảy ra trong quá trình cập nhật
+    throw new Error('Error updating booking status: ' + error.message);
+  }
+};
+
+const getPendingBookingsByUserId = async (user_id) => {
+  try {
+    // Gọi model để lấy dữ liệu từ database
+    const bookings = await Booking.getPendingBookingsByUserId(user_id);
+    return bookings;  // Trả về danh sách booking
+  } catch (error) {
+    throw new Error('Error fetching pending bookings: ' + error.message);  // Ném lỗi nếu có vấn đề
+  }
+};
+
+module.exports = { createBooking, getAllBookings, getBookingById, 
+  updateBooking, deleteBooking, calculateTotalAmount, getBookingsByUserId, 
+  getPendingBookingsByHostId, updateBookingStatus,getPendingBookingsByUserId };

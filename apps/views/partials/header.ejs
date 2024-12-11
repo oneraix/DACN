@@ -1,5 +1,13 @@
            <!-- Main Header -->
-           <header class="main-header flex">
+<style>.user-avatar {
+    width: 50px; /* Chiều rộng giới hạn */
+    height: 50px; /* Chiều cao giới hạn */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    border-radius: 50%; /* Nếu muốn ảnh tròn */
+}
+</style>
+
+        <header class="main-header flex">
             <!-- Header Lower -->
             <div id="header">
                 <div class="header-lower">
@@ -13,81 +21,16 @@
                                     </div>
                                     <div class="logo-box">
                                         <div class="logo">
-                                            <a href="index.html">
+                                            <a href="/">
                                                 <img src="/global/assets/images/logo.png" alt="Logo">
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="nav-outer flex align-center">
-                                        <!-- Main Menu -->
-                                        <nav class="main-menu show navbar-expand-md">
-                                            <div class="navbar-collapse collapse clearfix"
-                                                id="navbarSupportedContent">
-                                                <ul class="navigation clearfix">
-                                                    <li><a href="/">Home</a></li>
-                                                    <li class="dropdown2">
-                                                        <a href="#">Category</a>
-                                                        <ul>
-                                                            <li><a href="archieve-tour.html">Archieve tour</a>
-
-                                                            </li>
-                                                            <li><a href="tour-package-v2.html">Tour left sidebar</a>
-
-                                                            </li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="dropdown2"><a href="#">Location</a>
-                                                        <ul>
-                                                            <li><a href="tour-destination-v1.html">Destination
-                                                                    V1</a></li>
-                                                            <li><a href="tour-destination-v2.html">Destination
-                                                                    V2</a></li>
-                                                            <li><a href="tour-destination-v3.html">Destination
-                                                                    V3</a></li>
-                                                            <li><a href="single-destination.html">Destination
-                                                                    Single</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li class="dropdown2 "><a href="#">Blog</a>
-                                                        <ul>
-                                                            <li><a href="blog.html">Blog</a></li>
-                                                            <li><a href="blog-details.html">Blog Detail</a></li>
-                                                        </ul>
-                                                    </li>
-
-                                                    <li class="dropdown2"><a href="#">About</a>
-                                                        <ul>
-                                                            <li><a href="terms-condition.html">Terms & Condition</a>
-                                                            </li>
-                                                            <li><a href="help-center.html">Help center</a></li>
-                                                        </ul>
-                                                    </li>
-                                                    <li><a href="contact-us.html">Contact</a></li>
-                                                </ul>
-                                            </div>
-                                        </nav>
-                                        <!-- Main Menu End-->
-                                    </div>
-                                    <div class="header-account flex align-center">                                       
-                                        <div class="search-mobie relative">
-                                            <div class="dropdown">
-                                                <a  type="button" class="show-search" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="icon-Vector5"></i>
-                                                </a>
-                                                <ul class="dropdown-menu top-search">
-                                                    <form action="/" id="search-bar-widget">
-                                                        <input type="text" placeholder="Search here...">
-                                                        <button type="button"><i class="icon-search-2"></i></button>
-                                                    </form>
-                                                </ul>
-                                              </div>                                             
-                                        </div>
-                                        <div class="register">
+                                    <div class="header-account flex align-center">
+                                        <div class="user-area">
                                             <ul class="flex align-center">
-                                                <li>
-                                                    <a href="login.html" class="flex-three">
-                                                       <img src="/global/assets/images/page/avata.jpg" alt="image">
-                                                    </a>
+                                                <li id="user-menu">
+                                                    <!-- Nội dung sẽ được cập nhật bằng JavaScript -->
                                                 </li>
                                             </ul>
                                         </div>
@@ -108,4 +51,81 @@
 
         </header>
         <!-- End Main Header -->
+
+<!-- Header Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userMenu = document.getElementById('user-menu');
+    
+        // Lấy dữ liệu từ localStorage
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+    
+        if (token && user) {
+            const { user_id, role } = user; // Lấy thông tin user_id và role
+    
+            // Gọi API để lấy đường dẫn ảnh đại diện
+            fetch(`/api/users/image/${user_id}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user image');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const avatarUrl = data.profile_picture; // Đường dẫn ảnh trả về từ API
+                    const profileUrl = getProfilePage(role); // Lấy URL trang tài khoản dựa trên role
+    
+                    // Hiển thị thông tin người dùng với avatar và menu dropdown
+                    userMenu.innerHTML = `
+                        <div class="dropdown">
+                            <a class="dropdown-toggle flex align-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="${avatarUrl}" alt="Avatar" class="user-avatar">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="${profileUrl}">Tài khoản</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#">Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    `;
+    
+                    // Thêm sự kiện xử lý đăng xuất
+                    document.getElementById('logout').addEventListener('click', () => {
+                        localStorage.removeItem('token'); // Xóa token khỏi localStorage
+                        localStorage.removeItem('user'); // Xóa thông tin user khỏi localStorage
+                        window.location.href = '/login'; // Chuyển hướng đến trang đăng nhập
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching user image:', error);
+                    // Hiển thị mặc định nút đăng nhập nếu không lấy được ảnh
+                    userMenu.innerHTML = `
+                        <a href="/login" class="login-btn flex align-center">
+                            <span>Đăng nhập</span>
+                        </a>
+                    `;
+                });
+        } else {
+            // Nếu không có dữ liệu đăng nhập, hiển thị nút Đăng nhập
+            userMenu.innerHTML = `
+                <a href="/login" class="login-btn flex align-center">
+                    <span>Đăng nhập</span>
+                </a>
+            `;
+        }
+    
+        // Hàm lấy URL trang tài khoản dựa trên vai trò
+        function getProfilePage(role) {
+            switch (role) {
+                case 'admin':
+                    return '/admin';
+                case 'host':
+                    return '/host';
+                default:
+                    return '/user/profile';
+            }
+        }
+    });
+    
+</script>
 

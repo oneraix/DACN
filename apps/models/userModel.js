@@ -3,7 +3,7 @@ const db = require('../config/database'); // Kết nối với cơ sở dữ li�
 const bcrypt = require('bcrypt');
 const User = require('../entity/userEntity'); // Sử dụng entity User
 
-class UserModel {
+class userModel {
   static async createUser(userData) {
     const { username, email, password, full_name } = userData;
     const query = `INSERT INTO Users (username, email, password, full_name, status) 
@@ -80,6 +80,25 @@ class UserModel {
       });
     });
   }
+
+
+  static getUserImageById(user_id) {
+    const query = 'SELECT profile_picture FROM users WHERE user_id = ?'; // Truy vấn database
+    return new Promise((resolve, reject) => {
+      db.query(query, [user_id], (err, result) => {
+        if (err) {
+          console.error('Database error:', err);
+          return reject(err);
+        }
+        if (result.length === 0) {
+          return resolve(null); // Không tìm thấy user
+        }
+        resolve(result[0]); // Trả về dòng đầu tiên
+      });
+    });
+  }
 }
 
-module.exports = UserModel;
+
+
+module.exports = userModel;
