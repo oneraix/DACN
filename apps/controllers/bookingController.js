@@ -105,7 +105,7 @@ const calculateTotalAmount = async (req, res) => {
 
 // lấy các booking pending của host
 const getPendingBookingsByHostId = async (req, res) => {
-  const { user_id } = req.user;  
+  const { user_id } = req.user;
 
   try {
     const bookings = await bookingService.getPendingBookingsByHostId(user_id);
@@ -122,7 +122,7 @@ const updateBookingStatus = async (req, res) => {
   try {
     // Gọi service để cập nhật trạng thái booking
     const updatedBooking = await bookingService.updateBookingStatus(id, status);
-    
+
     if (updatedBooking) {
       res.status(200).json({
         message: 'Booking status updated successfully',
@@ -150,7 +150,45 @@ const getPendingBookingsByUserId = async (req, res) => {
   }
 };
 
+const getBookingWaitingPayment = async (req, res) => {
+  const user_id = req.user.user_id; // user_id được giải mã từ token
+  try {
+    // Gọi service để lấy dữ liệu
+    const bookings = await bookingService.getBookingWaitingPayment(user_id);
+
+    if (bookings.length > 0) {
+      // Đảm bảo các giá trị số được định dạng chính xác
+      const formattedBookings = bookings.map(booking => ({
+        ...booking,
+        total_amount: parseFloat(booking.total_amount).toFixed(2), // Định dạng total_amount
+      }));
+
+      res.status(200).json(formattedBookings); // Trả về danh sách booking
+    } else {
+      res.status(404).json({ message: "No bookings found" }); // Không có booking nào
+    }
+  } catch (error) {
+    console.error("Error fetching bookings:", error); // Log lỗi
+    res.status(500).json({ message: "Error fetching bookings: " + error.message }); // Xử lý lỗi
+  }
+};
 
 
-module.exports = { createBooking, getAllBookings, getBookingById, updateBooking, deleteBooking, calculateTotalAmount, 
- getPendingBookingsByHostId, updateBookingStatus, getPendingBookingsByUserId };
+const getAllBookingsForAdmin = async (req, res) => {
+  try {
+      const bookings = await bookingService.getAllBookingsForAdmin();
+      res.status(200).json({
+          data: bookings
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error fetching all bookings for admin.' });
+  }
+};
+
+
+
+module.exports = {
+  createBooking, getAllBookings, getBookingById, updateBooking, deleteBooking, calculateTotalAmount,
+  getPendingBookingsByHostId, updateBookingStatus, getPendingBookingsByUserId, getBookingWaitingPayment, getAllBookingsForAdmin
+};

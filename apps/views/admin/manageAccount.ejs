@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Management</title>
+    <style>
+        /* Các style giữ nguyên */
+        /* Body styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            padding: 30px;
+        }
+
+        /* Main container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e6f7ff;
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-update {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-update:hover {
+            background-color: #218838;
+        }
+
+        .btn-status {
+            background-color: #ff5733;
+            color: white;
+        }
+
+        .btn-status.active {
+            background-color: #28a745;
+        }
+
+        .btn-status:hover {
+            background-color: #e04e45;
+        }
+
+        .btn-status.active:hover {
+            background-color: #218838;
+        }
+
+        /* Pagination styling */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Mobile responsiveness */
+        @media screen and (max-width: 768px) {
+            table, th, td {
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .btn {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Account Management</h2>
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- User data will be populated here -->
+        </tbody>
+    </table>
+    
+    <!-- Pagination controls -->
+    <div id="pagination" class="pagination">
+        <!-- Page buttons will be added here -->
+    </div>
+</div>
+
+<script>
+    const apiUrl = 'http://localhost:3000/api/users'; // Update with your actual API URL
+    const token = localStorage.getItem('token'); // Get the token from localStorage or cookie
+    const usersPerPage = 5; // Number of users per page
+    let currentPage = 1;
+    let allUsers = [];
+
+    if (!token) {
+        alert('You need to be logged in to access this page');
+        window.location.href = '/login'; // Redirect to login page if no token
+    }
+
+    // Fetch user list from the API
+    async function getUsers() {
+        try {
+            const response = await fetch(`${apiUrl}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Send token in the header
+                }
+            });
+
+            const data = await response.json();
+            allUsers = data; // Save all users to a global variable
+            displayUserList(data); // Display the user list on the current page
+            setupPagination(data.length); // Set up pagination buttons
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
+    // Display users in the table based on the current page
+    function displayUserList(users) {
+        const userTableBody = document.querySelector('#userTable tbody');
+        userTableBody.innerHTML = ''; // Clear the table before inserting new data
+
+        // Slice users array to get the users for the current page
+        const start = (currentPage - 1) * usersPerPage;
+        const end = start + usersPerPage;
+        const usersToDisplay = users.slice(start, end);
+
+        usersToDisplay.forEach(user => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td><input type="text" id="username-${user.user_id}" value="${user.username}" disabled /></td>
+                <td><input type="email" id="email-${user.user_id}" value="${user.email}" disabled /></td>
+                <td><input type="text" id="full_name-${user.user_id}" value="${user.full_name}" /></td>
+                <td><input type="text" id="address-${user.user_id}" value="${user.address}" /></td>
+                <td><input type="text" id="phone-${user.user_id}" value="${user.phone}" /></td>
+                <td>
+                    <select id="role-${user.user_id}">
+                        <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                        <option value="host" ${user.role === 'host' ? 'selected' : ''}>Host</option>
+                    </select>
+                </td>
+                <td>
+                    <button id="statusBtn-${user.user_id}" class="btn btn-status ${user.status === 'active' ? 'active' : ''}">
+                        ${user.status === 'active' ? 'Ban' : 'Activate'}
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-update" onclick="updateUser(${user.user_id})">Update</button>
+                </td>
+            `;
+            
+            // Add event listener to the status button
+            const statusBtn = row.querySelector(`#statusBtn-${user.user_id}`);
+            statusBtn.addEventListener('click', () => confirmStatusChange(user.user_id, user.status));
+            
+            userTableBody.appendChild(row);
+        });
+    }
+
+    // Set up pagination buttons
+    function setupPagination(totalUsers) {
+        const totalPages = Math.ceil(totalUsers / usersPerPage);
+        const paginationElement = document.getElementById('pagination');
+        paginationElement.innerHTML = ''; // Clear existing pagination
+
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            button.onclick = () => changePage(i);
+            if (i === currentPage) {
+                button.disabled = true; // Disable the current page button
+            }
+            paginationElement.appendChild(button);
+        }
+    }
+
+    // Change the page
+    function changePage(pageNumber) {
+        currentPage = pageNumber;
+        displayUserList(allUsers);
+        setupPagination(allUsers.length); // Update pagination buttons
+    }
+
+    // Update user info
+    async function updateUser(user_id) {
+        const full_name = document.getElementById(`full_name-${user_id}`).value;
+        const address = document.getElementById(`address-${user_id}`).value;
+        const phone = document.getElementById(`phone-${user_id}`).value;
+        const role = document.getElementById(`role-${user_id}`).value;
+
+        const updatedUser = { full_name, address, phone, role };
+
+        try {
+            const response = await fetch(`${apiUrl}/${user_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(updatedUser)
+            });
+
+            if (response.ok) {
+                alert('User information updated successfully!');
+                getUsers(); // Reload the user list after update
+            } else {
+                alert('Failed to update user information.');
+            }
+        } catch (error) {
+            console.error('Error updating user info:', error);
+        }
+    }
+
+    // Confirm status change (Active <-> Banned)
+    function confirmStatusChange(user_id, currentStatus) {
+        const newStatus = currentStatus === 'active' ? 'banned' : 'active';
+        const confirmation = confirm(`Are you sure you want to ${newStatus === 'active' ? 'activate' : 'ban'} this user?`);
+
+        if (confirmation) {
+            toggleStatus(user_id, newStatus);
+        }
+    }
+
+    // Toggle user status (Active <-> Banned)
+    async function toggleStatus(user_id, newStatus) {
+        try {
+            const response = await fetch(`${apiUrl}/${user_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                alert(`User status changed to ${newStatus}`);
+                getUsers(); // Reload the user list after status change
+            } else {
+                alert('Failed to change status.');
+            }
+        } catch (error) {
+            console.error('Error toggling status:', error);
+        }
+    }
+
+    // Fetch the user list when the page loads
+    getUsers();
+</script>
+
+</body>
+</html>

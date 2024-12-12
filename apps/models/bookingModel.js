@@ -148,7 +148,6 @@ class BookingModel {
     });
   }
 
-
   // Phương thức lấy tất cả bookings của người dùng theo user_id
 
   static getPendingBookingsByHostId(host_id) {
@@ -214,6 +213,62 @@ class BookingModel {
       });
     });
   }
+
+  static getBookingWaitingPayment(user_id) {
+    const query = `
+        SELECT 
+            b.booking_id,          -- Thêm trường booking_id
+            h.name AS homestay_name,
+            b.booking_date,
+            b.check_in,
+            b.check_out,
+            b.total_amount
+        FROM bookings b
+        JOIN homestays h ON b.homestay_id = h.homestay_id
+        WHERE b.user_id = ?
+          AND b.status = 'confirmed'
+          AND b.payment_status = 'pending';
+    `;
+
+    return new Promise((resolve, reject) => {
+      db.query(query, [user_id], (err, results) => {
+          if (err) {
+              console.error("Model - Database query error:", err); // Log lỗi query
+              return reject(err);
+          }
+  
+          // Chuyển đổi total_amount về kiểu số và thêm booking_id vào kết quả
+          const formattedResults = results.map(row => ({
+              ...row,
+              total_amount: row.total_amount ? parseFloat(row.total_amount) : 0, // Nếu NULL, gán giá trị 0
+          }));
+          resolve(formattedResults);
+      });
+    });
+}
+
+
+static getAllBookingsForAdmin() {
+  const query = `
+      SELECT b.booking_id, u.full_name AS guest_name, b.check_in, b.check_out, b.total_amount,
+             h.name AS homestay_name, u2.full_name AS host_name, b.adults_count, b.children_count
+      FROM bookings b
+      JOIN homestays h ON b.homestay_id = h.homestay_id
+      JOIN users u ON b.user_id = u.user_id
+      JOIN users u2 ON h.host_id = u2.user_id
+  `;
+
+  return new Promise((resolve, reject) => {
+      db.query(query, (err, result) => {
+          if (err) {
+              return reject(err);
+          }
+          resolve(result);
+      });
+  });
+}
+
+
 }
 
 

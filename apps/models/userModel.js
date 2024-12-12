@@ -36,8 +36,6 @@ class userModel {
     });
   }
 
-
-
   // Lấy thông tin người dùng theo username
   static getUserByUsername(username) {
     const query = 'SELECT * FROM Users WHERE username = ?';
@@ -56,17 +54,56 @@ class userModel {
 
   // Cập nhật thông tin tài khoản
   static updateUserProfile(user_id, updatedData) {
-    const { full_name, phone, address } = updatedData;
-    const query = 'UPDATE Users SET full_name = ?, phone = ?, address = ? WHERE user_id = ?';
+    const { full_name, phone, address, status, role } = updatedData;
+
+    // Xây dựng một đối tượng để lưu trữ các trường được cập nhật
+    const updateFields = [];
+    const updateValues = [];
+
+    // Kiểm tra xem mỗi trường có được thay đổi hay không, nếu có thì thêm vào mảng updateFields
+    if (full_name !== undefined) {
+        updateFields.push('full_name = ?');
+        updateValues.push(full_name);
+    }
+    if (phone !== undefined) {
+        updateFields.push('phone = ?');
+        updateValues.push(phone);
+    }
+    if (address !== undefined) {
+        updateFields.push('address = ?');
+        updateValues.push(address);
+    }
+    if (status !== undefined) {
+        updateFields.push('status = ?');
+        updateValues.push(status);
+    }
+    if (role !== undefined) {
+        updateFields.push('role = ?');
+        updateValues.push(role);
+    }
+
+    // Nếu không có trường nào được cập nhật, trả về ngay lập tức
+    if (updateFields.length === 0) {
+        return Promise.resolve('No data to update');
+    }
+
+    // Thêm user_id vào cuối mảng giá trị để truyền vào query
+    updateValues.push(user_id);
+
+    // Tạo câu lệnh SQL động
+    const query = `UPDATE Users SET ${updateFields.join(', ')} WHERE user_id = ?`;
+
     return new Promise((resolve, reject) => {
-      db.query(query, [full_name, phone, address, user_id], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result);
-      });
+        db.query(query, updateValues, (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(result);  // Trả về kết quả query
+        });
     });
-  }
+}
+
+
 
   // Lấy danh sách tài khoản
   static getAllUsers() {

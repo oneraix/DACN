@@ -1,23 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Homestay</title>
+    <style>
+      .checkbox {
+          margin-bottom: 10px;
+          display: inline-flex; /* Đảm bảo checkbox và label căn chỉnh ngang */
+          align-items: center;
+          margin-right: 20px; /* Tăng khoảng cách giữa các checkbox */
+      }
+      .row {
+          display: flex;
+          flex-wrap: wrap; /* Cho phép phần tử gói gọn ra hàng mới */
+          gap: 20px; /* Tăng khoảng cách giữa các tiện ích */
+      }
+      .col-lg-2 {
+          width: calc(20% - 20px); /* Mỗi tiện ích chiếm 20% chiều rộng, trừ khoảng cách */
+          padding: 5px;
+      }
+      .w-100 {
+          width: 100%;
+      }
+  
+      /* Căn chỉnh label cho checkbox theo chiều ngang */
+      .checkbox input[type="checkbox"] {
+          margin-right: 5px; /* Khoảng cách giữa checkbox và label */
+      }
+  
+      /* Đảm bảo văn bản trong label không bị ngắt dòng */
+      .checkbox label {
+          white-space: nowrap; /* Không cho văn bản bị ngắt dòng */
+          overflow: hidden;
+          text-overflow: ellipsis; /* Nếu văn bản dài, hiển thị ba dấu chấm ở cuối */
+      }
+  </style>
+</head>
+<body>
 <main id="main">
   <section class="profile-dashboard">
       <div class="inner-header mb-40">
-          <h3 class="title">Add Tour</h3>
-          <p class="des">There are many variations of passages of Lorem Ipsum</p>
+          <h3 class="title">Thêm Homestay</h3>
+          <p class="des">Tạo một homestay mới và thêm tiện ích cho nó.</p>
       </div>
       <form action="/" id="form-add-homestay" class="form-add-homestay">
           <div class="widget-dash-board pr-256 mb-75">
-            <h4 class="title-add-homestay mb-30">Create New Homestay</h4>
-        
+            <h4 class="title-add-homestay mb-30">Tạo Homestay Mới</h4>
+
             <!-- Phần Thông Tin Cơ Bản -->
             <div class="grid-input-2 mb-45">
               <div class="input-wrap">
-                <label>Homestay Name</label>
-                <input type="text" name="name" placeholder="Enter homestay name" required>
+                <label>Tên Homestay</label>
+                <input type="text" name="name" placeholder="Nhập tên homestay" required>
               </div>
               <div class="input-wrap">
-                <label>Category</label>
+                <label>Loại Hình</label>
                 <div class="nice-select" tabindex="0">
-                  <span class="current">Select Category</span>
+                  <span class="current">Chọn Loại Hình</span>
                   <ul class="list">
                     <li data-value="Nhà" class="option">Nhà</li>
                     <li data-value="Căn hộ" class="option">Căn hộ</li>
@@ -29,40 +69,57 @@
               </div>
             </div>
         
-            <div class="input-wrap mb-45">
-              <label>Description</label>
-              <textarea name="description" rows="5" placeholder="Write a brief description" required></textarea>
-            </div>
-        
-            <div class="input-wrap mb-45">
-              <label>Price Per Night (VND)</label>
-              <input type="number" name="price" placeholder="Enter price per night" required>
-            </div>
-        
-            <!-- Phần Địa Chỉ -->
-            <h4 class="title-add-homestay mb-30">Location</h4>
             <div class="grid-input-2 mb-45">
               <div class="input-wrap">
-                <label>Country</label>
+                  <label>Số Giường</label>
+                  <input type="number" name="beds" placeholder="Nhập số giường" required>
+              </div>
+              <div class="input-wrap">
+                  <label>Số Phòng</label>
+                  <input type="number" name="rooms" placeholder="Nhập số phòng" required>
+              </div>
+              <div class="input-wrap">
+                  <label>Số Khách Tối Đa</label>
+                  <input type="number" name="max_guests" placeholder="Nhập số khách tối đa" required>
+              </div>
+          </div>
+
+            <div class="input-wrap mb-45">
+              <label>Mô Tả</label>
+              <textarea name="description" rows="5" placeholder="Viết mô tả ngắn gọn" required></textarea>
+            </div>
+        
+            <div class="input-wrap mb-45">
+              <label>Giá Phòng Mỗi Đêm (VND)</label>
+              <input type="number" name="price" placeholder="Nhập giá mỗi đêm" required>
+            </div>
+        
+
+
+            <!-- Phần Địa Chỉ -->
+            <h4 class="title-add-homestay mb-30">Vị Trí</h4>
+            <div class="grid-input-2 mb-45">
+              <div class="input-wrap">
+                <label>Quốc Gia</label>
                 <div class="nice-select" tabindex="0">
-                  <span class="current">Select Country</span>
+                  <span class="current">Chọn Quốc Gia</span>
                   <ul class="list">
-                    <li data-value="Vietnam" class="option">Vietnam</li>
-                    <li data-value="USA" class="option">USA</li>
-                    <li data-value="Japan" class="option">Japan</li>
-                    <li data-value="France" class="option">France</li>
+                    <li data-value="Vietnam" class="option">Việt Nam</li>
+                    <li data-value="USA" class="option">Mỹ</li>
+                    <li data-value="Japan" class="option">Nhật Bản</li>
+                    <li data-value="France" class="option">Pháp</li>
                   </ul>
                 </div>
                 <input type="hidden" name="country" value="">
               </div>
               <div class="input-wrap">
-                <label>City</label>
+                <label>Thành Phố</label>
                 <div class="nice-select" tabindex="0">
-                  <span class="current">Select City</span>
+                  <span class="current">Chọn Thành Phố</span>
                   <ul class="list">
-                    <li data-value="Hanoi" class="option">Hanoi</li>
-                    <li data-value="Ho Chi Minh" class="option">Ho Chi Minh</li>
-                    <li data-value="Da Nang" class="option">Da Nang</li>
+                    <li data-value="Hanoi" class="option">Hà Nội</li>
+                    <li data-value="Ho Chi Minh" class="option">Hồ Chí Minh</li>
+                    <li data-value="Da Nang" class="option">Đà Nẵng</li>
                     <li data-value="Tokyo" class="option">Tokyo</li>
                   </ul>
                 </div>
@@ -71,61 +128,81 @@
             </div>
         
             <div class="input-wrap mb-45">
-              <label>District</label>
+              <label>Quận/Huyện</label>
               <div class="nice-select" tabindex="0">
-                <span class="current">Select District</span>
+                <span class="current">Chọn Quận/Huyện</span>
                 <ul class="list">
-                  <li data-value="Ba Dinh" class="option">Ba Dinh</li>
-                  <li data-value="Hai Ba Trung" class="option">Hai Ba Trung</li>
-                  <li data-value="Thanh Khe" class="option">Thanh Khe</li>
+                  <li data-value="Ba Dinh" class="option">Ba Đình</li>
+                  <li data-value="Hai Ba Trung" class="option">Hai Bà Trưng</li>
+                  <li data-value="Thanh Khe" class="option">Thanh Khê</li>
                   <li data-value="Shinjuku" class="option">Shinjuku</li>
                 </ul>
               </div>
-              <input type="hidden" name="district" value="">
+              <input type="hidden" name="district" value=""/>
             </div>
         
             <div class="input-wrap mb-45">
-              <label>Detailed Address</label>
-              <input type="text" name="address" placeholder="Enter detailed address" required>
+              <label>Địa Chỉ Chi Tiết</label>
+              <input type="text" name="address" placeholder="Nhập địa chỉ chi tiết" required>
             </div>
         
             <!-- Phần Tiện Ích -->
-            <h4 class="title-add-homestay mb-30">Amenities</h4>
-            <div class="row mb-60">
-              <div class="col-lg-4">
-                <div class="checkbox">
-                  <input id="laundry" type="checkbox" name="amenities[]" value="Laundry Service">
-                  <label for="laundry">Laundry Service</label>
-                </div>
-                <div class="checkbox">
-                  <input id="food" type="checkbox" name="amenities[]" value="Food & Drinks">
-                  <label for="food">Food & Drinks</label>
-                </div>
-                <div class="checkbox">
-                  <input id="pool" type="checkbox" name="amenities[]" value="Swimming Pool">
-                  <label for="pool">Swimming Pool</label>
-                </div>
-                <div class="checkbox">
-                  <input id="wifi" type="checkbox" name="amenities[]" value="Free WiFi">
-                  <label for="wifi">Free WiFi</label>
-                </div>
-              </div>
+            <h4 class="title-add-homestay mb-30">Tiện Ích</h4>
+            <div class="row mb-60" id="amenities-container">
+              <!-- Các tiện ích sẽ được chèn vào đây -->
             </div>
         
             <!-- Phần Tải Ảnh -->
-            <h4 class="title-add-homestay mb-30">Upload Photos</h4>
+            <h4 class="title-add-homestay mb-30">Tải Lên Ảnh</h4>
             <div class="input-wrap mb-45">
-              <label>Upload up to 10 photos</label>
+              <label>Tải lên tối đa 10 ảnh</label>
               <input type="file" name="images[]" accept="image/*" multiple required>
-              <small class="text-main">Supported formats: JPG, PNG. Max 2MB each.</small>
+              <small class="text-main">Các định dạng hỗ trợ: JPG, PNG. Tối đa 2MB mỗi ảnh.</small>
             </div>
             <div id="image-preview"></div>
         
             <!-- Nút Lưu -->
             <div class="input-wrap">
-              <button type="submit" class="button-add">Save Homestay</button>
+              <button type="submit" class="button-add">Lưu Homestay</button>
             </div>
           </div>
         </form>
   </section>
 </main>
+
+<script>
+// Function to fetch amenities and render checkboxes dynamically
+function fetchAmenities() {
+    fetch('/api/amentities') // API endpoint của bạn
+        .then(response => response.json())
+        .then(data => {
+            const amenitiesContainer = document.getElementById('amenities-container');
+            const amenities = data; // Dữ liệu từ API là mảng các tiện ích
+            
+            let rowHtml = '';
+            amenities.forEach((amenity, index) => {
+                // HTML của mỗi tiện ích
+                rowHtml += `
+                    <div class="col-lg-2">
+                        <div class="checkbox">
+                            <input id="amenity-${amenity.amenity_id}" type="checkbox" name="amenities[]" value="${amenity.amenity_id}">
+                            <label for="amenity-${amenity.amenity_id}">${amenity.name}</label>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Chèn toàn bộ rowHtml vào container
+            amenitiesContainer.innerHTML = rowHtml;
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải tiện ích:', error);
+        });
+}
+
+// Initialize by fetching amenities
+fetchAmenities();
+</script>
+
+</body>
+</html>

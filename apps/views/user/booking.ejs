@@ -20,16 +20,27 @@
       background-color: #f4f4f4;
     }
 
-    .cancel-button {
+    .cancel-button, .pay-button {
       padding: 5px 10px;
-      background-color: #f44336;
       color: white;
       border: none;
       cursor: pointer;
     }
 
+    .cancel-button {
+      background-color: #f44336;
+    }
+
     .cancel-button:hover {
       background-color: #e53935;
+    }
+
+    .pay-button {
+      background-color: #4caf50;
+    }
+
+    .pay-button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
@@ -104,41 +115,41 @@
     }
 
     // Hàm hủy đặt phòng
- async function cancelBooking(bookingId) {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('Vui lòng đăng nhập.');
-    return;
-  }
+    async function cancelBooking(bookingId) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
 
-  if (!confirm('Bạn có chắc chắn muốn hủy đặt phòng này?')) {
-    return; // Nếu người dùng không xác nhận, thoát khỏi hàm
-  }
+      if (!confirm('Bạn có chắc chắn muốn hủy đặt phòng này?')) {
+        return; // Nếu người dùng không xác nhận, thoát khỏi hàm
+      }
 
-  try {
-    const response = await fetch(`/api/bookings/${bookingId}/status`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ status: 'cancelled' }) // Truyền trạng thái hủy
-    });
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'cancelled' }) // Truyền trạng thái hủy
+        });
 
-    const responseBody = await response.json();
+        const responseBody = await response.json();
 
-    if (!response.ok) {
-      console.error('API Error:', responseBody.message || 'Unknown error');
-      throw new Error(responseBody.message || 'Unknown error');
+        if (!response.ok) {
+          console.error('API Error:', responseBody.message || 'Unknown error');
+          throw new Error(responseBody.message || 'Unknown error');
+        }
+
+        alert(responseBody.message); // Hiển thị thông báo từ API
+        loadPendingBookings(); // Tải lại danh sách đặt phòng
+      } catch (error) {
+        console.error('Frontend Error:', error.message);
+        alert('Lỗi khi hủy đặt phòng: ' + error.message);
+      }
     }
-
-    alert(responseBody.message); // Hiển thị thông báo từ API
-    loadPendingBookings(); // Tải lại danh sách đặt phòng
-  } catch (error) {
-    console.error('Frontend Error:', error.message);
-    alert('Lỗi khi hủy đặt phòng: ' + error.message);
-  }
-}
 
     // Tải danh sách booking khi trang được tải
     document.addEventListener('DOMContentLoaded', loadPendingBookings);

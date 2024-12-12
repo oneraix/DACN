@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán Booking</title>
+  <style>
+    #booking-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #booking-table th, #booking-table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    #booking-table th {
+      background-color: #f4f4f4;
+    }
+
+    .cancel-button, .payment-button {
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .cancel-button:hover, .payment-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Danh Sách Đặt Phòng</h2>
+
+  <table id="booking-table">
+    <thead>
+      <tr>
+        <th>Tên Homestay</th>
+        <th>Ngày Đến</th>
+        <th>Ngày Đi</th>
+        <th>Tổng Tiền</th>
+        <th>Ngày Đặt</th>
+        <th>Hành Động</th>
+      </tr>
+    </thead>
+    <tbody id="booking-list">
+      <!-- Dữ liệu booking sẽ được hiển thị ở đây -->
+    </tbody>
+  </table>
+
+  <script>
+    // Hàm tải danh sách booking
+    async function loadPendingBookings() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/bookings/waitingpayment', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Lỗi khi tải danh sách đặt phòng chờ thanh toán.');
+        }
+
+        const bookings = await response.json();
+        const bookingList = document.getElementById('booking-list');
+        bookingList.innerHTML = '';
+
+        if (bookings.length === 0) {
+          bookingList.innerHTML = '<tr><td colspan="6">Không có đặt phòng chờ thanh toán.</td></tr>';
+        }
+
+        bookings.forEach(booking => {
+          const row = document.createElement('tr');
+          row.dataset.bookingId = booking.booking_id;
+
+          row.innerHTML = `
+            <td>${booking.homestay_name}</td>
+            <td>${booking.check_in}</td>
+            <td>${booking.check_out}</td>
+            <td>${booking.total_amount}</td>
+            <td>${booking.booking_date}</td>
+            <td>
+              <button class="payment-button" onclick="payBooking(${booking.booking_id}, ${booking.total_amount})">Thanh Toán</button>
+            </td>
+          `;
+          bookingList.appendChild(row);
+        });
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function payBooking(bookingId, totalAmount) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Vui lòng đăng nhập.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/bookings/pay', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ bookingId, totalAmount })
+    });
+
+    if (!response.ok) {
+      throw new Error('Lỗi khi tạo yêu cầu thanh toán.');
+    }
+
+    // Nếu backend trả về mã chuyển hướng, thực hiện chuyển hướng sang trang thanh toán
+    const data = await response.json();
+    if (data.paymentUrl) {
+      window.location.href = data.paymentUrl;  // Chuyển hướng đến VNPay
+    }
+  } catch (error) {
+    console.error('Thanh toán thất bại:', error);
+    alert('Có lỗi xảy ra khi thanh toán.');
+  }
+}
+
+
+// Tải danh sách booking khi trang được tải
+
+    document.addEventListener('DOMContentLoaded', loadPendingBookings);
+  </script>
+
+</body>
+</html>

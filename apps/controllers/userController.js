@@ -47,3 +47,43 @@ exports.getUserImageById = async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
+
+exports.getUsersList = async (req, res) => {
+  try {
+    // Gọi service để lấy danh sách người dùng
+    const users = await userService.getAllUsers();
+    
+    // Chọn các trường cần thiết
+    const usersList = users.map(user => ({
+      user_id: user.user_id,
+      username: user.username,
+      role: user.role,
+      email: user.email,
+      status: user.status,
+      full_name: user.full_name,
+      address: user.address,
+      profile_picture: user.profile_picture || null,  // Nếu không có profile picture, trả về null
+    }));
+
+    res.json(usersList);
+  } catch (err) {
+    res.status(500).json({ message: 'Database error', error: err.message });
+  }
+};
+
+
+// Cập nhật thông tin người dùng
+exports.updateUserInfo = async (req, res) => {
+  const { id } = req.params;  // Lấy user_id từ params
+  const updatedData = req.body;  // Lấy dữ liệu cập nhật từ body
+
+  try {
+    // Gọi service để cập nhật thông tin người dùng
+    const updatedUser = await userService.updateUserProfile(id, updatedData);
+    
+    res.json({ message: 'User updated successfully', updatedUser });
+  } catch (error) {
+    console.error('Controller error:', error.message);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};

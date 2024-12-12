@@ -7,18 +7,18 @@ class HomestayModel {
    * @returns {Object} - Homestay vừa được tạo
    */
   static createHomestay(data) {
-    const { host_id, name, description, location, price, amenities, images, available, beds, rooms, max_guests } = data;
+    const { host_id, name, description, location, category, price, amenities, images, beds, rooms, max_guests } = data;
     
     const query = `
       INSERT INTO homestays (
-        host_id, name, description, location, price, amenities, images,
-        available, beds, rooms, max_guests
+        host_id, name, description, location, category, price, amenities, images,
+        beds, rooms, max_guests
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     const values = [
-      host_id, name, description, location, price, amenities, images,
-      available, beds, rooms, max_guests
+      host_id, name, description, location, category, price, amenities, images,
+       beds, rooms, max_guests
     ];
 
     return new Promise((resolve, reject) => {

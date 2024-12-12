@@ -116,6 +116,31 @@ const getPendingBookingsByUserId = async (user_id) => {
   }
 };
 
+const getBookingWaitingPayment = async (user_id) => {
+  try {
+      // Gọi model để lấy danh sách booking
+      const bookings = await Booking.getBookingWaitingPayment(user_id);
+      return bookings;
+  } catch (error) {
+      throw new Error("Error fetching bookings: " + error.message);
+  }
+};
+
+
+const getAllBookingsForAdmin = async () => {
+  try {
+      // Lấy tất cả bookings từ database
+      const bookings = await Booking.getAllBookingsForAdmin();
+      return bookings;
+  } catch (error) {
+      throw new Error('Error in service layer: ' + error.message);
+  }
+};
+
+
+
+
 module.exports = { createBooking, getAllBookings, getBookingById, 
   updateBooking, deleteBooking, calculateTotalAmount, getBookingsByUserId, 
-  getPendingBookingsByHostId, updateBookingStatus,getPendingBookingsByUserId };
+  getPendingBookingsByHostId, updateBookingStatus,getPendingBookingsByUserId,
+  getBookingWaitingPayment, getAllBookingsForAdmin };

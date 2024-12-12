@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Booking Management</title>
+    <style>
+        /* Custom styles for pagination buttons */
+        .pagination-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .pagination-btns button {
+            width: 100px;
+        }
+        /* Custom button style for canceling booking */
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Quản lí Booking</h1>
+
+        <!-- Table to display bookings -->
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID Booking</th>
+                    <th>Full Name</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Total Amount</th>
+                    <th>Homestay Name</th>
+                    <th>Host Name</th>
+                    <th>Adults</th>
+                    <th>Children</th>
+                    <th>Actions</th> <!-- New column for actions -->
+                </tr>
+            </thead>
+            <tbody id="bookingTableBody">
+                <!-- Data will be populated here by JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-btns">
+            <button class="btn btn-primary" id="prevPageBtn" disabled>Previous</button>
+            <span id="paginationInfo"></span>
+            <button class="btn btn-primary" id="nextPageBtn">Next</button>
+        </div>
+    </div>
+
+    <!-- JavaScript dependencies -->
+
+    <script>
+        let currentPage = 1;
+        const pageSize = 10;
+        let allBookings = []; // This will hold all the booking data
+
+        // Function to fetch all bookings using fetch API
+        function fetchBookings() {
+            const token = localStorage.getItem('token'); // Get token from localStorage
+
+            if (!token) {
+                alert('Authentication token not found.');
+                return;
+            }
+
+            fetch('/api/bookingslist', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Add token to Authorization header
+                    'Content-Type': 'application/json'   // Set Content-Type to JSON
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                allBookings = data.data;  // Store the fetched bookings
+                renderBookings();  // Render the first page
+            })
+            .catch(error => {
+                console.error('Error fetching booking data:', error);
+                alert('Error fetching booking data');
+            });
+        }
+
+        // Function to render the bookings based on the current page
+        function renderBookings() {
+            const offset = (currentPage - 1) * pageSize;
+            const currentBookings = allBookings.slice(offset, offset + pageSize);
+
+            const tableBody = document.getElementById('bookingTableBody');
+            tableBody.innerHTML = '';  // Clear existing rows
+
+            currentBookings.forEach(booking => {
+                const row = `<tr>
+                    <td>${booking.booking_id}</td>
+                    <td>${booking.guest_name}</td>
+                    <td>${booking.check_in}</td>
+                    <td>${booking.check_out}</td>
+                    <td>${booking.total_amount}</td>
+                    <td>${booking.homestay_name}</td>
+                    <td>${booking.host_name}</td>
+                    <td>${booking.adults_count}</td>
+                    <td>${booking.children_count}</td>
+                    <td>
+                        <!-- Cancel button -->
+                        <button class="btn btn-cancel" onclick="cancelBooking(${booking.booking_id})">Cancel</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            const totalPages = Math.ceil(allBookings.length / pageSize);
+            document.getElementById('paginationInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+        }
+
+        // Function to cancel a booking
+        function cancelBooking(bookingId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Authentication token not found.');
+                return;
+            }
+
+            const confirmCancel = confirm("Are you sure you want to cancel this booking?");
+            if (!confirmCancel) return;
+
+            fetch(`/api/bookings/${bookingId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Booking canceled successfully');
+                    fetchBookings();  // Reload the bookings after cancellation
+                } else {
+                    alert('Error canceling booking');
+                }
+            })
+            .catch(error => {
+                console.error('Error canceling booking:', error);
+                alert('Error canceling booking');
+            });
+        }
+
+        // Next Page Button Click
+        document.getElementById('nextPageBtn').addEventListener('click', function() {
+            const totalPages = Math.ceil(allBookings.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderBookings();
+            }
+        });
+
+        // Previous Page Button Click
+        document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderBookings();
+            }
+        });
+
+        // Initial load
+        fetchBookings();
+    </script>
+</body>
+</html>

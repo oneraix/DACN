@@ -3,7 +3,7 @@ const homestayService = require('../services/homestayService');
 
 // Controller: Tạo mới homestay
 const createHomestay = async (req, res) => {
-  const { host_id, name, description, location, price, amenities, images, available, beds, rooms, max_guests } = req.body;
+  const { host_id, name, description, location, category, price, amenities, images, beds, rooms, max_guests } = req.body;
 
   try {
     const newHomestay = await homestayService.createHomestay({
@@ -11,10 +11,10 @@ const createHomestay = async (req, res) => {
       name,
       description,
       location,
+      category,
       price,
       amenities,
       images,
-      available,
       beds,
       rooms,
       max_guests

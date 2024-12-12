@@ -83,9 +83,9 @@ exports.verifyToken = async (token) => {
 };
 
 // Lấy tất cả người dùng
-exports.getAllUsers = () => {
-  return userModel.getAllUsers();
-};
+// exports.getAllUsers = () => {
+//   return userModel.getAllUsers();
+// };
 
 exports.getUserImageById = async (user_id) => {
   try {
@@ -97,5 +97,31 @@ exports.getUserImageById = async (user_id) => {
   } catch (error) {
     console.error('Service error:', error.message);
     throw error;
+  }
+};
+
+exports.getAllUsers = async () => {
+  try {
+    const users = await userModel.getAllUsers();  // Lấy tất cả người dùng từ model
+    return users;  // Trả về danh sách người dùng
+  } catch (err) {
+    console.error('Error in getAllUsers service:', err);
+    throw new Error('Server error');
+  }
+};
+
+
+// Cập nhật thông tin người dùng
+exports.updateUserProfile = async (user_id, updatedData) => {
+  try {
+    // Gọi model để cập nhật thông tin người dùng
+    const result = await userModel.updateUserProfile(user_id, updatedData);
+    if (result.affectedRows === 0) {
+      throw new Error('User not found or no changes made');
+    }
+    return updatedData;  // Trả về dữ liệu đã cập nhật
+  } catch (err) {
+    console.error('Error in updateUserProfile service:', err);
+    throw new Error('Server error');
   }
 };

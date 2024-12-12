@@ -1,52 +1,43 @@
-// apps/models/paymentModel.js
-const db = require('../config/database'); // Kết nối với cơ sở dữ liệu
-const Payment = require('./paymentEntity'); // Sử dụng entity Payment
+const db = require('../config/database');
 
-class PaymentModel {
-  // Thêm thanh toán mới
-  static createPayment(paymentData) {
-    const { booking_id, payment_method, amount, transaction_id } = paymentData;
-
-    const query = `INSERT INTO Payments (booking_id, payment_method, amount, payment_status, transaction_id)
-                   VALUES (?, ?, ?, 'pending', ?)`;
-
-    const values = [booking_id, payment_method, amount, transaction_id];
-    return new Promise((resolve, reject) => {
-      db.query(query, values, (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        const newPayment = new Payment(result.insertId, booking_id, payment_method, amount, transaction_id);
-        resolve(newPayment);
-      });
+// Thêm bản ghi thanh toán vào bảng payments
+const createPayment = async (bookingId, amount, transactionNo, responseCode) => {
+  const query = `
+    INSERT INTO payments (booking_id, amount, transaction_no, response_code, payment_status)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  
+  return new Promise((resolve, reject) => {
+    db.query(query, [bookingId, amount, transactionNo, responseCode, 'success'], (err, result) => {
+      if (err) {
+        console.error("Error inserting payment record:", err);
+        return reject(err);
+      }
+      resolve(result);
     });
-  }
+  });
+};
 
-  // Lấy thông tin thanh toán theo ID
-  static getPaymentById(payment_id) {
-    const query = 'SELECT * FROM Payments WHERE payment_id = ?';
-    return new Promise((resolve, reject) => {
-      db.query(query, [payment_id], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result[0]);
-      });
+// Cập nhật trạng thái thanh toán trong bảng bookings
+const updateBookingPaymentStatus = async (bookingId, status) => {
+  const query = `
+    UPDATE bookings
+    SET payment_status = ?
+    WHERE booking_id = ?
+  `;
+  
+  return new Promise((resolve, reject) => {
+    db.query(query, [status, bookingId], (err, result) => {
+      if (err) {
+        console.error("Error updating booking status:", err);
+        return reject(err);
+      }
+      resolve(result);
     });
-  }
+  });
+};
 
-  // Cập nhật trạng thái thanh toán
-  static updatePaymentStatus(payment_id, payment_status) {
-    const query = 'UPDATE Payments SET payment_status = ? WHERE payment_id = ?';
-    return new Promise((resolve, reject) => {
-      db.query(query, [payment_status, payment_id], (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(result);
-      });
-    });
-  }
-}
-
-module.exports = PaymentModel;
+module.exports = {
+  createPayment,
+  updateBookingPaymentStatus
+};
