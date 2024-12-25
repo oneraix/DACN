@@ -187,8 +187,23 @@ const getAllBookingsForAdmin = async (req, res) => {
 };
 
 
+const getBookedDatesByHomestayId = async (req, res) => {
+  const { homestayId } = req.params;
+
+  try {
+    const bookedDates = await bookingService.getBookedDatesByHomestayId(homestayId);
+    if (bookedDates.length > 0) {
+      res.status(200).json(bookedDates);
+    } else {
+      res.status(404).json({ message: 'No booked dates found for this homestay.' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   createBooking, getAllBookings, getBookingById, updateBooking, deleteBooking, calculateTotalAmount,
-  getPendingBookingsByHostId, updateBookingStatus, getPendingBookingsByUserId, getBookingWaitingPayment, getAllBookingsForAdmin
+  getPendingBookingsByHostId, updateBookingStatus, getPendingBookingsByUserId, getBookingWaitingPayment, getAllBookingsForAdmin,
+  getBookedDatesByHomestayId
 };

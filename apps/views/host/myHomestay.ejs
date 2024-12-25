@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danh Sách Homestay Của Host</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+
+    #homestay-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #homestay-table th, #homestay-table td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #homestay-table th {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    #homestay-table td {
+      background-color: #ffffff;
+    }
+
+    #homestay-table tr:hover td {
+      background-color: #f9f9f9;
+    }
+
+    .image-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .image-popup img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+    }
+
+    .popup-controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .popup-controls button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .popup-controls .close-popup {
+      background-color: #F44336;
+      color: white;
+    }
+
+    .popup-controls .close-popup:hover {
+      background-color: #D32F2F;
+    }
+
+    .popup-controls .prev-button {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    .popup-controls .prev-button:hover {
+      background-color: #1976D2;
+    }
+
+    .popup-controls .next-button {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .popup-controls .next-button:hover {
+      background-color: #388E3C;
+    }
+
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    td.description {
+      text-align: left;
+      width: 30%;
+    }
+
+    button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #388E3C;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Danh Sách Homestay Của Tôi</h2>
+
+<table id="homestay-table">
+  <thead>
+    <tr>
+      <th>Tên Homestay</th>
+      <th>Vị Trí</th>
+      <th>Mô Tả</th>
+      <th>Tiện Nghi</th>
+      <th>Hình Ảnh</th>
+    </tr>
+  </thead>
+  <tbody id="homestay-list">
+    <!-- Dữ liệu homestay sẽ được hiển thị tại đây -->
+  </tbody>
+</table>
+
+<div id="overlay" onclick="closePopup()"></div>
+<div class="image-popup" id="image-popup">
+  <img id="popup-image" src="" alt="Homestay Image">
+  <div class="popup-controls">
+    <button class="prev-button" onclick="prevImage()">Trước</button>
+    <button class="next-button" onclick="nextImage()">Sau</button>
+    <button class="close-popup" onclick="closePopup()">Đóng</button>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  let currentImageIndex = 0;
+  let currentImages = [];
+
+  async function loadHostHomestays() {
+    if (!token) {
+      alert('Vui lòng đăng nhập.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/homestays/host', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Lỗi khi lấy danh sách homestay.');
+      }
+
+      if (!Array.isArray(data.homestays)) {
+        throw new Error('Dữ liệu trả về không phải là mảng.');
+      }
+
+      const homestayList = document.getElementById('homestay-list');
+      homestayList.innerHTML = '';
+
+      data.homestays.forEach(homestay => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td>${homestay.homestay_name}</td>
+          <td>${homestay.location}</td>
+          <td class="description">${homestay.description}</td>
+          <td>${homestay.amenities.join(', ')}</td>
+          <td><button onclick="showImages('${homestay.images.join(',')}')">Xem Ảnh</button></td>
+        `;
+
+        homestayList.appendChild(row);
+      });
+    } catch (error) {
+      console.error('Error fetching homestays:', error.message);
+      alert('Lỗi khi tải danh sách homestay.');
+    }
+  }
+
+  function showImages(images) {
+    currentImages = images.split(',');
+    currentImageIndex = 0;
+    updatePopupImage();
+
+    const overlay = document.getElementById('overlay');
+    const popup = document.getElementById('image-popup');
+
+    overlay.style.display = 'block';
+    popup.style.display = 'block';
+  }
+
+  function updatePopupImage() {
+    const popupImage = document.getElementById('popup-image');
+    popupImage.src = currentImages[currentImageIndex];
+  }
+
+  function prevImage() {
+    if (currentImageIndex > 0) {
+      currentImageIndex--;
+      updatePopupImage();
+    }
+  }
+
+  function nextImage() {
+    if (currentImageIndex < currentImages.length - 1) {
+      currentImageIndex++;
+      updatePopupImage();
+    }
+  }
+
+  function closePopup() {
+    const overlay = document.getElementById('overlay');
+    const popup = document.getElementById('image-popup');
+
+    overlay.style.display = 'none';
+    popup.style.display = 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', loadHostHomestays);
+</script>
+
+</body>
+</html>

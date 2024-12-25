@@ -1,125 +1,84 @@
-const querystring = require('querystring');
+const https = require('https');
 const crypto = require('crypto');
-const qs = require('qs'); 
-const moment = require('moment');
-const config = require('../config/vnpay'); // Đảm bảo bạn đã import file config đúng
 
-// Tạo yêu cầu thanh toán VNPay
-const createVNPayTransaction = (bookingId, totalAmount, locale = 'vn') => {
-    const date = new Date();
-    const createDate = moment(date).format('YYYYMMDDHHmmss');  // Định dạng thời gian cần thiết
+const createMoMoPayment = async (bookingId, totalAmount, userId) => {
+    const partnerCode = 'MOMO';
+    const accessKey = 'F8BBA842ECF85';
+    const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+    const requestId = `${partnerCode}_${Date.now()}`;
+    const orderId = `${partnerCode}_BOOKING_${bookingId}_${Date.now()}`;
+    const orderInfo = `Payment for booking ${bookingId}`;
+    const redirectUrl = 'http://localhost:3000/payments/momo-success';
+    const ipnUrl = 'http://localhost:3000/api/payments/momo-callback';
+    const requestType = 'captureWallet';
+    const extraData = `userId=${userId}`;
+    const amount = totalAmount.toString();
 
-    
-    // Cấu hình từ file config
-    const tmnCode = config.vnp_TmnCode;
-    const secretKey = config.vnp_HashSecret;
-    const vnpUrl = config.vnp_Url;
-    const returnUrl = config.vnp_ReturnUrl;
+    // Tạo rawSignature
+    const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+    console.log('Raw Signature:', rawSignature);
 
-    // ID đơn hàng và số tiền
-    const amount = totalAmount * 100;  // Chuyển đổi thành tiền tệ VNPay yêu cầu
+    // Tạo signature
+    const signature = crypto.createHmac('sha256', secretKey).update(rawSignature).digest('hex');
+    console.log('Signature:', signature);
 
-    // Tạo tham số vnp_Params
-    const vnpParams = {
-        vnp_Version: '2.1.0',
-        vnp_Command: 'pay',
-        vnp_TmnCode: tmnCode,
-        vnp_Locale: locale,
-        vnp_CurrCode: 'VND',
-        vnp_TxnRef: bookingId,  // Mã giao dịch
-        vnp_OrderInfo: `Thanh toán cho booking ${bookingId}`,
-        vnp_OrderType: 'other',
-        vnp_Amount: amount.toString(),
-        vnp_ReturnUrl: returnUrl,
-        vnp_IpAddr: '192.168.1.1',
-        vnp_CreateDate: createDate,
-    };
+    // Dữ liệu gửi đến MoMo
+    const requestBody = JSON.stringify({
+        partnerCode,
+        accessKey,
+        requestId,
+        amount,
+        orderId,
+        orderInfo,
+        redirectUrl,
+        ipnUrl,
+        extraData,
+        requestType,
+        signature,
+        lang: 'en',
+    });
 
-    // Sắp xếp tham số theo thứ tự alphabet
-    const sortedParams = Object.keys(vnpParams)
-        .sort()
-        .map(key => `${key}=${encodeURIComponent(vnpParams[key])}`)
-        .join('&');
+    console.log('Request Body:', requestBody);
 
-    // Tạo chữ ký (secure hash)
-    const signData = sortedParams + '&vnp_HashSecret=' + secretKey;
-    const hmac = crypto.createHmac('sha512', secretKey);
-    const secureHash = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: 'test-payment.momo.vn',
+            port: 443,
+            path: '/v2/gateway/api/create',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(requestBody),
+            },
+        };
 
-    // Thêm chữ ký vào tham số
-    vnpParams['vnp_SecureHash'] = secureHash;
+        const req = https.request(options, (res) => {
+            let data = '';
 
-    // Tạo URL thanh toán bằng qs.stringify
-    const paymentUrl = vnpUrl + '?' + qs.stringify(vnpParams, { encode: false }) + '&vnp_SecureHash=' + secureHash;
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
 
-    return paymentUrl;
-};
+            res.on('end', () => {
+                const response = JSON.parse(data);
+                console.log('MoMo Response:', response);
 
-const verifySignature = (params, secureHash) => {
-    // Sắp xếp các tham số
-    const sortedParams = Object.keys(params)
-        .sort()
-        .map(key => `${key}=${encodeURIComponent(params[key])}`)
-        .join('&');
-
-    // Tạo chữ ký từ các tham số
-    const signData = sortedParams + '&vnp_HashSecret=' + config.vnp_HashSecret;
-    const hmac = crypto.createHmac('sha512', config.vnp_HashSecret);
-    const checkHash = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
-
-    // Kiểm tra chữ ký
-    return checkHash === secureHash;
-};
-
-
-// Xử lý thanh toán thành công
-const processPaymentSuccess = async (orderInfo, transactionNo, amount) => {
-    const bookingId = orderInfo.split(' ')[3]; // Giả sử OrderInfo là 'Thanh toán cho booking 12345'
-
-    try {
-        // Thêm bản ghi thanh toán vào bảng payments
-        await bookingModel.createPayment(bookingId, amount, transactionNo, '00');
-        // Cập nhật trạng thái thanh toán trong bảng bookings
-        await bookingModel.updateBookingPaymentStatus(bookingId, 'paid');
-
-        return { success: true };
-    } catch (error) {
-        console.error("Error processing payment success:", error);
-        return { success: false, message: error.message };
-    }
-};
-
-const handleVNPayReturn = async (req, res) => {
-    const { vnp_TransactionRef, vnp_TransactionNo, vnp_ResponseCode, vnp_OrderInfo, vnp_Amount, vnp_SecureHash } = req.query;
-
-    // Kiểm tra chữ ký (secure hash) từ VNPay
-    const isValidSignature = paymentService.verifySignature(req.query, vnp_SecureHash);
-
-    if (isValidSignature) {
-        if (vnp_ResponseCode === '00') {
-            try {
-                const amount = parseInt(vnp_Amount) / 100; // Chuyển số tiền từ đồng về VND
-                const result = await paymentService.processPaymentSuccess(vnp_OrderInfo, vnp_TransactionNo, amount);
-
-                if (result.success) {
-                    res.status(200).json({ message: 'Thanh toán thành công' });
+                if (response.resultCode === 0) {
+                    resolve(response.payUrl); // Trả về URL thanh toán thành công
                 } else {
-                    res.status(400).json({ message: result.message });
+                    reject(new Error(`MoMo payment failed: ${response.message}`));
                 }
-            } catch (error) {
-                res.status(500).json({ message: 'Lỗi khi xử lý thanh toán: ' + error.message });
-            }
-        } else {
-            res.status(400).json({ message: 'Thanh toán thất bại. Mã phản hồi: ' + vnp_ResponseCode });
-        }
-    } else {
-        res.status(400).json({ message: 'Chữ ký không hợp lệ' });
-    }
+            });
+        });
+
+        req.on('error', (e) => {
+            console.error(`Problem with MoMo request: ${e.message}`);
+            reject(e);
+        });
+
+        req.write(requestBody);
+        req.end();
+    });
 };
 
-module.exports = {
-    createVNPayTransaction,
-    verifySignature,
-    processPaymentSuccess,
-    handleVNPayReturn
-};
+module.exports = { createMoMoPayment };

@@ -1,4 +1,3 @@
-// models/homestayEntity.js
 class Homestay {
   constructor(homestay_id, host_id, name, description, location, price, amenities, images, available, created_at, updated_at, beds, rooms, max_guests) {
     this.homestay_id = homestay_id;
@@ -16,7 +15,6 @@ class Homestay {
     this.rooms = rooms;
     this.max_guests = max_guests;
   }
-  
 }
 
 module.exports = Homestay;

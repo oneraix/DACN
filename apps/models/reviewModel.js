@@ -96,6 +96,82 @@ class ReviewModel {
   }
 
 
+  static checkReviewPermission(user_id, homestay_id) {
+    const queryBooking = `
+        SELECT COUNT(*) AS booking_count
+        FROM bookings
+        WHERE user_id = ? AND homestay_id = ? AND status = 'completed'
+    `;
+
+    const queryReview = `
+        SELECT COUNT(*) AS review_count
+        FROM reviews
+        WHERE guest_id = ? AND homestay_id = ?
+    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(queryBooking, [user_id, homestay_id], (err, bookingResults) => {
+            if (err) {
+                console.error('Database error (Booking Check):', err);
+                return reject(err);
+            }
+
+            // Nếu không có booking hợp lệ, trả về false
+            if (bookingResults[0].booking_count === 0) {
+                return resolve(false);
+            }
+
+            // Tiếp tục kiểm tra nếu đã review chưa
+            db.query(queryReview, [user_id, homestay_id], (err, reviewResults) => {
+                if (err) {
+                    console.error('Database error (Review Check):', err);
+                    return reject(err);
+                }
+
+                // Trả về true nếu có booking hợp lệ và chưa review
+                resolve(reviewResults[0].review_count === 0);
+            });
+        });
+    });
+}
+
+
+
+static getReviewsByHomestayId(homestay_id) {
+    const query = `
+        SELECT 
+            r.review_id,
+            r.guest_id,
+            r.homestay_id,
+            r.rating,
+            r.review_text,
+            DATE_FORMAT(r.created_at, '%d %b %Y') as review_date,
+            u.username AS guest_name,
+            u.profile_picture AS guest_avatar
+        FROM 
+            reviews r
+        JOIN 
+            users u ON r.guest_id = u.user_id
+        WHERE 
+            r.homestay_id = ?
+        ORDER BY 
+            r.created_at DESC
+    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [homestay_id], (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+
+
 }
 
 

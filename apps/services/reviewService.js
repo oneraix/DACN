@@ -11,14 +11,14 @@ const createReview = async (reviewData) => {
 };
 
 // Service: Lấy review theo homestay_id
-const getReviewsByHomestayId = async (homestay_id) => {
-    try {
-        const reviews = await ReviewModel.getReviewsByHomestayId(homestay_id);
-        return reviews;
-    } catch (error) {
-        throw new Error('Error fetching reviews: ' + error.message);
-    }
-};
+// const getReviewsByHomestayId = async (homestay_id) => {
+//     try {
+//         const reviews = await ReviewModel.getReviewsByHomestayId(homestay_id);
+//         return reviews;
+//     } catch (error) {
+//         throw new Error('Error fetching reviews: ' + error.message);
+//     }
+// };
 
 // Service: Lấy review theo tên homestay hoặc 20 review mới nhất
 const getReviewsByHomestayName = async (homestay_name = '') => {
@@ -42,4 +42,37 @@ const deleteReviewById = async (review_id) => {
         throw new Error('Error deleting review: ' + error.message);
     }
 };
-module.exports = { createReview, getReviewsByHomestayId, getReviewsByHomestayName, deleteReviewById };
+
+const checkReviewPermission = async (user_id, homestay_id) => {
+    try {
+        const hasPermission = await ReviewModel.checkReviewPermission(user_id, homestay_id);
+
+        if (!hasPermission) {
+            return {
+                allowed: false,
+                message: "You either have no completed booking or have already reviewed this homestay."
+            };
+        }
+
+        return { allowed: true };
+    } catch (error) {
+        throw new Error('Error checking review permission: ' + error.message);
+    }
+};
+
+
+const getReviewsByHomestayId = async (homestay_id) => {
+    try {
+        const reviews = await ReviewModel.getReviewsByHomestayId(homestay_id);
+        return reviews;
+    } catch (error) {
+        throw new Error('Error fetching reviews: ' + error.message);
+    }
+};
+
+module.exports = {
+    getReviewsByHomestayId
+};
+
+
+module.exports = { createReview, getReviewsByHomestayId, getReviewsByHomestayName, deleteReviewById, checkReviewPermission };

@@ -1,53 +1,41 @@
-const paymentService = require('../services/paymentService');  // Import service xử lý thanh toán
-const bookingModel = require('../models/bookingModel');  // Import model booking
+const paymentService = require('../services/paymentService');
 
-// API xử lý yêu cầu thanh toán từ người dùng
-const createPayment = async (req, res) => {
-    const { bookingId, totalAmount } = req.body;  // Lấy thông tin từ request body
+// Tạo thanh toán MoMo
+const createMoMoPayment = async (req, res) => {
+    const { bookingId, totalAmount } = req.body;
+    const userId = req.user.user_id; // userId từ token đã giải mã
 
     try {
-        // Gọi service để tạo URL thanh toán VNPay
-        const paymentUrl = paymentService.createVNPayTransaction(bookingId, totalAmount);
-
-        // Chuyển hướng người dùng đến trang thanh toán VNPay (trực tiếp từ server)
-        res.json({ paymentUrl });
-        //res.redirect(paymentUrl);
+        const paymentUrl = await paymentService.createMoMoPayment(bookingId, totalAmount, userId);
+        res.status(200).json({ paymentUrl });
     } catch (error) {
-        console.error("Error creating VNPay transaction:", error);
-        res.status(500).json({ message: "Lỗi khi tạo yêu cầu thanh toán: " + error.message });
+        console.error('Error creating MoMo payment:', error.message);
+        res.status(500).json({ message: 'Failed to create MoMo payment.' });
     }
 };
 
-// API nhận kết quả từ VNPay (callback)
-const handleVNPayReturn = async (req, res) => {
-    const { vnp_TransactionRef, vnp_TransactionNo, vnp_ResponseCode, vnp_OrderInfo, vnp_Amount, vnp_SecureHash } = req.query;
+// Xử lý callback từ MoMo khi thanh toán hoàn thành
+const handleMoMoCallback = async (req, res) => {
+    const { orderId, resultCode, message } = req.body; // Lấy dữ liệu từ callback
 
-    // Kiểm tra chữ ký (secure hash) từ VNPay
-    const isValidSignature = paymentService.verifySignature(req.query, vnp_SecureHash);
-    
-    if (isValidSignature) {
-        if (vnp_ResponseCode === '00') {
-            try {
-                const amount = parseInt(vnp_Amount) / 100; // Chuyển số tiền từ đồng về VND
-                const result = await paymentService.processPaymentSuccess(vnp_OrderInfo, vnp_TransactionNo, amount);
-                
-                if (result.success) {
-                    res.status(200).json({ message: 'Thanh toán thành công' });
-                } else {
-                    res.status(400).json({ message: result.message });
-                }
-            } catch (error) {
-                res.status(500).json({ message: 'Lỗi khi xử lý thanh toán: ' + error.message });
-            }
+    try {
+        if (resultCode === 0) {
+            // Thanh toán thành công, cập nhật trạng thái booking và payment
+            const bookingId = orderId.split('_')[2]; // Lấy bookingId từ orderId
+            await paymentService.updatePaymentStatus(bookingId, 'success');
+            await paymentService.updateBookingStatus(bookingId, 'paid');
+
+            console.log(`Payment for booking ${bookingId} is successful.`);
+            res.status(200).send('Payment successful');
         } else {
-            res.status(400).json({ message: 'Thanh toán thất bại. Mã phản hồi: ' + vnp_ResponseCode });
+            // Thanh toán thất bại
+            console.error(`Payment failed: ${message}`);
+            res.status(400).send('Payment failed');
         }
-    } else {
-        res.status(400).json({ message: 'Chữ ký không hợp lệ' });
+    } catch (error) {
+        console.error('MoMo Callback Error:', error.message);
+        res.status(500).send('Error processing payment callback.');
     }
 };
 
-module.exports = {
-    createPayment,
-    handleVNPayReturn
-};
+module.exports = { createMoMoPayment, handleMoMoCallback };

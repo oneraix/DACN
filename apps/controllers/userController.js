@@ -1,5 +1,6 @@
 // apps/controllers/userController.js
 const userService = require('../services/userService');
+const { uploadFile } = require('../services/googleStorageService');
 
 // // Đăng ký người dùng mới
 // exports.registerUser = async (req, res) => {
@@ -33,17 +34,12 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getUserImageById = async (req, res) => {
-  const { id } = req.params; // Lấy user_id từ params
-
+exports.getUserInformationById = async (req, res) => {
+  const { user_id } = req.user; // Lấy user_id từ req.user
   try {
-    const profileImage = await userService.getUserImageById(id); // Gọi hàm trong service
-    if (!profileImage) {
-      return res.status(404).json({ message: 'User not found or no profile picture' });
-    }
-    res.json({ profile_picture: profileImage }); // Trả về ảnh profile
+    const userInfo = await userService.getUserInformationById(user_id); // Gọi hàm trong service
+    res.json(userInfo); // Trả về thông tin người dùng bao gồm profile_picture, full_name và role
   } catch (error) {
-    console.error('Controller error:', error.message);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
@@ -72,6 +68,46 @@ exports.getUsersList = async (req, res) => {
 };
 
 
+
+
+exports.getWishlistHomestays = async (req, res) => {
+  try {
+    // Lấy user_id từ middleware
+    const user_id = req.user?.user_id;
+
+    if (!user_id) {
+      return res.status(401).json({ success: false, message: 'Unauthorized: User not logged in' });
+    }
+
+    // Gọi service để lấy danh sách homestays trong wishlist
+    const wishlistHomestays = await userService.getWishlistHomestays(user_id);
+
+    if (!Array.isArray(wishlistHomestays)) {
+      return res.status(500).json({ success: false, message: 'Unexpected data format from service' });
+    }
+
+    // Chuẩn hóa dữ liệu trả về
+    const homestayList = wishlistHomestays.map(homestay => ({
+      homestay_id: homestay.homestay_id,
+      name: homestay.name,
+      location: homestay.location,
+      price: homestay.price,
+      max_guests: homestay.max_guests,
+      beds: homestay.beds,
+      rooms: homestay.rooms,
+      available: homestay.available,
+      image: homestay.image || null, // Trả về null nếu không có ảnh
+      review_count: homestay.review_count || 0,
+      average_rating: homestay.average_rating || 0,
+    }));
+
+    return res.status(200).json({ success: true, wishlist: homestayList });
+  } catch (error) {
+    console.error('Error fetching wishlist homestays:', error.message);
+    return res.status(500).json({ success: false, message: 'Error fetching wishlist homestays: ' + error.message });
+  }
+};
+
 // Cập nhật thông tin người dùng
 exports.updateUserInfo = async (req, res) => {
   const { id } = req.params;  // Lấy user_id từ params
@@ -79,11 +115,111 @@ exports.updateUserInfo = async (req, res) => {
 
   try {
     // Gọi service để cập nhật thông tin người dùng
-    const updatedUser = await userService.updateUserProfile(id, updatedData);
+    const updatedUser = await userService.updateUserInfo(id, updatedData);
     
     res.json({ message: 'User updated successfully', updatedUser });
   } catch (error) {
     console.error('Controller error:', error.message);
     res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+
+
+
+exports.getProfile = async (req, res) => {
+  try {
+      // Lấy thông tin từ token đã xác thực
+      const { user_id } = req.user;
+      // Gọi service để lấy thông tin người dùng
+      const profile = await userService.getProfile(user_id);
+
+      res.json({
+          success: true,
+          data: {
+              full_name: profile.full_name,
+              phone: profile.phone,
+              email: profile.email,
+              address: profile.address,
+              profile_picture: profile.profile_picture || '/global/assets/images/avata/default.png',
+          },
+      });
+  } catch (error) {
+      console.error('Error fetching profile:', error.message);
+      res.status(500).json({
+          success: false,
+          message: 'Failed to fetch profile',
+          error: error.message,
+      });
+  }
+};
+
+
+
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { user_id } = req.user; // Lấy user_id từ token
+    const { full_name, phone, email, address } = req.body;
+
+    let profile_picture = null;
+
+    // Kiểm tra và upload avatar nếu có file
+    if (req.file) {
+      const destination = `avatars/${user_id}_${Date.now()}_${req.file.originalname}`;
+      profile_picture = await uploadFile(req.file.buffer, destination);
+    }
+
+    // Gọi service để cập nhật thông tin người dùng (không có mật khẩu)
+    const updatedUser = await userService.updateUserProfile(user_id, {
+      full_name,
+      phone,
+      email,
+      address,
+      profile_picture,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update profile',
+      error: error.message,
+    });
+  }
+};
+
+
+
+exports.changePassword = async (req, res) => {
+  const { user_id } = req.user;
+  const { old_password, new_password } = req.body;
+
+  try {
+    const result = await userService.changeUserPassword(user_id, old_password, new_password);
+
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message,
+      });
+    }
+  } catch (error) {
+    console.error('Error changing password:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Thay đổi mật khẩu thất bại',
+      error: error.message || 'Có lỗi xảy ra khi thay đổi mật khẩu.',
+    });
   }
 };

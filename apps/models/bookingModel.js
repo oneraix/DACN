@@ -269,6 +269,41 @@ static getAllBookingsForAdmin() {
 }
 
 
+
+static getBookedDatesByHomestayId(homestayId) {
+  const query = `
+    SELECT DATE_FORMAT(check_in, '%Y-%m-%d') AS check_in, 
+           DATE_FORMAT(check_out, '%Y-%m-%d') AS check_out
+    FROM bookings 
+    WHERE homestay_id = ? AND status IN ('pending', 'confirmed')
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [homestayId], (err, results) => {
+      if (err) {
+        return reject(err);
+      }
+
+      const bookedDates = new Set();
+
+      results.forEach(({ check_in, check_out }) => {
+        let currentDate = new Date(check_in); // Tạo đối tượng Date từ check_in
+        const endDate = new Date(check_out);
+
+        // Lặp qua từng ngày từ check_in đến ngày trước check_out
+        while (currentDate < endDate) {
+          const formattedDate = currentDate.toISOString().split('T')[0]; // Chỉ lấy phần ngày yyyy-mm-dd
+          bookedDates.add(formattedDate);
+          currentDate.setDate(currentDate.getDate() + 1); // Tăng thêm 1 ngày
+        }
+      });
+
+      resolve([...bookedDates]); // Trả về danh sách các ngày đã được booking
+    });
+  });
+}
+
+
 }
 
 

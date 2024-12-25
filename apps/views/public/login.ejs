@@ -143,7 +143,7 @@
                 if (response.status === 200) {
                     // Lưu token vào localStorage hoặc sessionStorage
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                  //  localStorage.setItem('user', JSON.stringify(data.user));
                     // Chuyển hướng người dùng sau khi đăng nhập thành công
                     window.location.href = '/'; 
                 } else {

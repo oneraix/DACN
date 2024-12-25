@@ -1,60 +1,130 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thanh Toán Booking</title>
   <style>
-    #booking-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 0; /* Removed padding to align with sidebar and header */
     }
 
-    #booking-table th, #booking-table td {
-      padding: 10px;
-      border: 1px solid #ddd;
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      margin-top: 20px; /* Added margin for spacing from header */
+    }
+
+    #booking-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto; /* Adjusted margin for alignment */
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #booking-table th,
+    #booking-table td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
     }
 
     #booking-table th {
-      background-color: #f4f4f4;
-    }
-
-    .cancel-button, .payment-button {
-      padding: 5px 10px;
       background-color: #4CAF50;
       color: white;
-      border: none;
-      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
-    .cancel-button:hover, .payment-button:hover {
-      background-color: #45a049;
+    #booking-table td {
+      background-color: #ffffff;
+    }
+
+    #booking-table tr:hover td {
+      background-color: #f9f9f9;
+    }
+
+    .cancel-button,
+    .payment-button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+
+    .payment-button {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .payment-button:hover {
+      background-color: #388E3C;
+    }
+
+    .cancel-button {
+      background-color: #F44336;
+      color: white;
+    }
+
+    .cancel-button:hover {
+      background-color: #D32F2F;
+    }
+
+    @media (max-width: 768px) {
+      #booking-table th,
+      #booking-table td {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .cancel-button,
+      .payment-button {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <h2>Danh Sách Đặt Phòng</h2>
+  <div id="wrapper">
+    <div id="pagee" class="clearfix">
+      <main id="main">
+        <h2>Danh Sách Đặt Phòng</h2>
 
-  <table id="booking-table">
-    <thead>
-      <tr>
-        <th>Tên Homestay</th>
-        <th>Ngày Đến</th>
-        <th>Ngày Đi</th>
-        <th>Tổng Tiền</th>
-        <th>Ngày Đặt</th>
-        <th>Hành Động</th>
-      </tr>
-    </thead>
-    <tbody id="booking-list">
-      <!-- Dữ liệu booking sẽ được hiển thị ở đây -->
-    </tbody>
-  </table>
+        <table id="booking-table">
+          <thead>
+            <tr>
+              <th>Tên Homestay</th>
+              <th>Ngày Đến</th>
+              <th>Ngày Đi</th>
+              <th>Tổng Tiền</th>
+              <th>Ngày Đặt</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="booking-list">
+            <!-- Dữ liệu booking sẽ được hiển thị ở đây -->
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </div>
 
   <script>
-    // Hàm tải danh sách booking
     async function loadPendingBookings() {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -66,80 +136,80 @@
         const response = await fetch('/api/bookings/waitingpayment', {
           method: 'GET',
           headers: {
-            'Authorization': 'Bearer ' + token
-          }
+            'Authorization': 'Bearer ' + token,
+          },
         });
 
-        if (!response.ok) {
-          throw new Error('Lỗi khi tải danh sách đặt phòng chờ thanh toán.');
-        }
-
-        const bookings = await response.json();
+        const data = await response.json();
         const bookingList = document.getElementById('booking-list');
         bookingList.innerHTML = '';
 
-        if (bookings.length === 0) {
-          bookingList.innerHTML = '<tr><td colspan="6">Không có đặt phòng chờ thanh toán.</td></tr>';
+        if (!response.ok) {
+          if (data.message === "No bookings found") {
+            bookingList.innerHTML = '<tr><td colspan="6">Không có đặt phòng chờ thanh toán.</td></tr>';
+          } else {
+            throw new Error('Lỗi khi tải danh sách đặt phòng chờ thanh toán.');
+          }
+          return;
         }
 
-        bookings.forEach(booking => {
+        if (data.message === "No bookings found" || data.length === 0) {
+          bookingList.innerHTML = '<tr><td colspan="6">Không có đặt phòng chờ thanh toán.</td></tr>';
+          return;
+        }
+
+        data.forEach((booking) => {
           const row = document.createElement('tr');
           row.dataset.bookingId = booking.booking_id;
 
           row.innerHTML = `
-            <td>${booking.homestay_name}</td>
-            <td>${booking.check_in}</td>
-            <td>${booking.check_out}</td>
-            <td>${booking.total_amount}</td>
-            <td>${booking.booking_date}</td>
-            <td>
-              <button class="payment-button" onclick="payBooking(${booking.booking_id}, ${booking.total_amount})">Thanh Toán</button>
-            </td>
-          `;
+        <td>${booking.homestay_name}</td>
+        <td>${booking.check_in}</td>
+        <td>${booking.check_out}</td>
+        <td>${booking.total_amount}</td>
+        <td>${booking.booking_date}</td>
+        <td>
+          <button class="payment-button" onclick="payBooking(${booking.booking_id}, ${booking.total_amount})">Thanh Toán</button>
+        </td>
+      `;
           bookingList.appendChild(row);
         });
       } catch (error) {
-        alert(error.message);
+        console.error('Lỗi:', error.message);
+        alert('Có lỗi xảy ra khi tải danh sách đặt phòng.');
       }
     }
 
     async function payBooking(bookingId, totalAmount) {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('Vui lòng đăng nhập.');
-    return;
-  }
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
 
-  try {
-    const response = await fetch('/api/bookings/pay', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ bookingId, totalAmount })
-    });
+      try {
+        const response = await fetch('/api/payments/momo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ bookingId, totalAmount })
+        });
 
-    if (!response.ok) {
-      throw new Error('Lỗi khi tạo yêu cầu thanh toán.');
+        const data = await response.json();
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl; // Chuyển hướng đến trang thanh toán MoMo
+        }
+      } catch (error) {
+        console.error('Lỗi khi tạo thanh toán:', error.message);
+        alert('Có lỗi xảy ra khi thanh toán.');
+      }
     }
-
-    // Nếu backend trả về mã chuyển hướng, thực hiện chuyển hướng sang trang thanh toán
-    const data = await response.json();
-    if (data.paymentUrl) {
-      window.location.href = data.paymentUrl;  // Chuyển hướng đến VNPay
-    }
-  } catch (error) {
-    console.error('Thanh toán thất bại:', error);
-    alert('Có lỗi xảy ra khi thanh toán.');
-  }
-}
-
-
-// Tải danh sách booking khi trang được tải
 
     document.addEventListener('DOMContentLoaded', loadPendingBookings);
   </script>
 
 </body>
+
 </html>

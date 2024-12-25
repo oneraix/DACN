@@ -119,22 +119,219 @@ class userModel {
   }
 
 
-  static getUserImageById(user_id) {
-    const query = 'SELECT profile_picture FROM users WHERE user_id = ?'; // Truy vấn database
+
+  static getUserInformationById(user_id) {
+    const query = 'SELECT profile_picture, full_name, role FROM users WHERE user_id = ?';
     return new Promise((resolve, reject) => {
-      db.query(query, [user_id], (err, result) => {
-        if (err) {
-          console.error('Database error:', err);
-          return reject(err);
-        }
-        if (result.length === 0) {
-          return resolve(null); // Không tìm thấy user
-        }
-        resolve(result[0]); // Trả về dòng đầu tiên
-      });
+        db.query(query, [user_id], (err, rows) => {
+            if (err) {
+                console.error('Error fetching user information:', err);
+                return reject(err);
+            }
+            if (rows.length > 0) {
+                resolve(rows[0]);
+            } else {
+                reject(new Error('User not found'));
+            }
+        });
     });
+}
+
+
+static async getProfileById(user_id) {
+  const query = `
+      SELECT full_name, phone, email, address, profile_picture
+      FROM users
+      WHERE user_id = ?
+  `;
+  return new Promise((resolve, reject) => {
+      db.query(query, [user_id], (err, rows) => {
+          if (err) {
+              console.error('Error fetching user profile:', err.message);
+              return reject(err);
+          }
+          if (rows.length === 0) {
+              return resolve(null);
+          }
+          resolve(rows[0]);
+      });
+  });
+}
+
+
+static async getProfileById(user_id) {
+  const query = `
+      SELECT user_id, full_name, phone, email, address, password, profile_picture
+      FROM users
+      WHERE user_id = ?
+  `;
+  return new Promise((resolve, reject) => {
+      db.query(query, [user_id], (err, rows) => {
+          if (err) {
+              console.error('Error fetching user profile:', err.message);
+              return reject(err);
+          }
+          if (rows.length === 0) {
+              return resolve(null);
+          }
+          resolve(rows[0]);
+      });
+  });
+}
+
+// Hàm cập nhật thông tin người dùng
+static async updateUserInfo(user_id, updatedFields) {
+  const updateKeys = Object.keys(updatedFields);
+  const updateValues = Object.values(updatedFields);
+
+  if (updateKeys.length === 0) {
+      throw new Error('No fields to update');
+  }
+
+  const setClause = updateKeys.map((key) => `${key} = ?`).join(', ');
+  const query = `UPDATE users SET ${setClause} WHERE user_id = ?`;
+
+  return new Promise((resolve, reject) => {
+      db.query(query, [...updateValues, user_id], (err, result) => {
+          if (err) {
+              console.error('Error updating user profile:', err.message);
+              return reject(err);
+          }
+          resolve(result);
+      });
+  });
+}
+
+
+// Cập nhật thông tin người dùng
+static async updateUserProfile(user_id, updatedFields) {
+  const updateKeys = Object.keys(updatedFields);
+  const updateValues = Object.values(updatedFields);
+
+  if (updateKeys.length === 0) {
+    throw new Error('No fields to update');
+  }
+
+  // Xây dựng phần câu lệnh SET cho query SQL
+  const setClause = updateKeys.map((key) => `${key} = ?`).join(', ');
+  const query = `UPDATE users SET ${setClause} WHERE user_id = ?`;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [...updateValues, user_id], (err, result) => {
+      if (err) {
+        console.error('Error updating user profile:', err.message);
+        return reject(err);
+      }
+      resolve(result);
+    });
+  });
+}
+
+// Hàm lấy thông tin người dùng theo ID
+static async getProfileById(user_id) {
+  const query = `
+    SELECT user_id, full_name, phone, email, address, password, profile_picture
+    FROM users
+    WHERE user_id = ?
+  `;
+  return new Promise((resolve, reject) => {
+    db.query(query, [user_id], (err, rows) => {
+      if (err) {
+        console.error('Error fetching user profile:', err.message);
+        return reject(err);
+      }
+      if (rows.length === 0) {
+        return resolve(null);
+      }
+      resolve(rows[0]);
+    });
+  });
+}
+
+// Hàm lấy thông tin người dùng theo ID
+static async getProfileById(user_id) {
+  const query = `
+    SELECT user_id, full_name, phone, email, address, password, profile_picture
+    FROM users
+    WHERE user_id = ?
+  `;
+  return new Promise((resolve, reject) => {
+    db.query(query, [user_id], (err, rows) => {
+      if (err) {
+        console.error('Error fetching user profile:', err.message);
+        return reject(err);
+      }
+      if (rows.length === 0) {
+        return resolve(null);
+      }
+      resolve(rows[0]);
+    });
+  });
+}
+
+
+static async updateUserPassword(user_id, new_password) {
+  const hashedPassword = await bcrypt.hash(new_password, 10);
+
+  const query = `UPDATE users SET password = ? WHERE user_id = ?`;
+
+  try {
+    const result = await db.execute(query, [hashedPassword, user_id]);
+    // Nếu `db.execute` không trả về mảng, hãy sử dụng trực tiếp `result`
+    if (result.affectedRows > 0) {
+      return { success: true, message: 'Thay đổi mật khẩu thành công' };
+    } else {
+      return { success: false, message: 'Mật khẩu giống với mật khẩu hiện tại' };
+    }
+  } catch (err) {
+    console.error('Lỗi cập nhật mật khẩu:', err.message);
+    throw err;
   }
 }
+
+
+static getWishlistHomestays(userId) {
+  const query = `
+      SELECT 
+          h.homestay_id,
+          h.name,
+          REVERSE(SUBSTRING_INDEX(REVERSE(h.location), ',', 2)) AS location,
+          h.price,
+          h.max_guests,
+          h.beds,
+          h.rooms,
+          h.available,
+          SUBSTRING_INDEX(h.images, ',', 1) AS image,
+          COUNT(DISTINCT r.review_id) AS review_count,
+          ROUND(AVG(IFNULL(r.rating, 0)), 1) AS average_rating,
+          MAX(wl.created_at) AS latest_wishlist_time
+      FROM wishlist wl
+      INNER JOIN homestays h ON wl.homestay_id = h.homestay_id
+      LEFT JOIN reviews r ON h.homestay_id = r.homestay_id
+      WHERE wl.user_id = ?
+      GROUP BY h.homestay_id, h.name, h.location, h.price, h.max_guests, h.beds, h.rooms, h.available, h.images
+      ORDER BY latest_wishlist_time DESC;
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [userId], (err, result) => {
+      if (err) {
+        console.error('SQL Error:', err.message);
+        return reject(new Error('Error executing wishlist query: ' + err.message));
+      }
+      if (!Array.isArray(result)) {
+        console.error('Result is not an array:', result);
+        return reject(new Error('Unexpected result format from database'));
+      }
+      resolve(result);
+    });
+  });
+}
+
+
+
+}
+
 
 
 

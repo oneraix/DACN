@@ -1,208 +1,396 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Homestay</title>
-    <style>
-      .checkbox {
-          margin-bottom: 10px;
-          display: inline-flex; /* Đảm bảo checkbox và label căn chỉnh ngang */
-          align-items: center;
-          margin-right: 20px; /* Tăng khoảng cách giữa các checkbox */
-      }
-      .row {
-          display: flex;
-          flex-wrap: wrap; /* Cho phép phần tử gói gọn ra hàng mới */
-          gap: 20px; /* Tăng khoảng cách giữa các tiện ích */
-      }
-      .col-lg-2 {
-          width: calc(20% - 20px); /* Mỗi tiện ích chiếm 20% chiều rộng, trừ khoảng cách */
-          padding: 5px;
-      }
-      .w-100 {
-          width: 100%;
-      }
-  
-      /* Căn chỉnh label cho checkbox theo chiều ngang */
-      .checkbox input[type="checkbox"] {
-          margin-right: 5px; /* Khoảng cách giữa checkbox và label */
-      }
-  
-      /* Đảm bảo văn bản trong label không bị ngắt dòng */
-      .checkbox label {
-          white-space: nowrap; /* Không cho văn bản bị ngắt dòng */
-          overflow: hidden;
-          text-overflow: ellipsis; /* Nếu văn bản dài, hiển thị ba dấu chấm ở cuối */
-      }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thêm Homestay</title>
+  <style>
+    .checkbox {
+      margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      margin-right: 20px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .col-lg-2 {
+      width: calc(20% - 20px);
+      padding: 5px;
+    }
+
+    .checkbox input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
+    .checkbox label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   </style>
 </head>
+
 <body>
-<main id="main">
-  <section class="profile-dashboard">
+  <main id="main">
+    <section class="profile-dashboard">
       <div class="inner-header mb-40">
-          <h3 class="title">Thêm Homestay</h3>
-          <p class="des">Tạo một homestay mới và thêm tiện ích cho nó.</p>
+        <h3 class="title">Thêm Homestay</h3>
       </div>
-      <form action="/" id="form-add-homestay" class="form-add-homestay">
-          <div class="widget-dash-board pr-256 mb-75">
-            <h4 class="title-add-homestay mb-30">Tạo Homestay Mới</h4>
+      <form id="form-add-homestay">
+        <div class="widget-dash-board pr-256 mb-75">
+          <h4 class="title-add-homestay mb-30">Tạo Homestay Mới</h4>
 
-            <!-- Phần Thông Tin Cơ Bản -->
-            <div class="grid-input-2 mb-45">
-              <div class="input-wrap">
-                <label>Tên Homestay</label>
-                <input type="text" name="name" placeholder="Nhập tên homestay" required>
-              </div>
-              <div class="input-wrap">
-                <label>Loại Hình</label>
-                <div class="nice-select" tabindex="0">
-                  <span class="current">Chọn Loại Hình</span>
-                  <ul class="list">
-                    <li data-value="Nhà" class="option">Nhà</li>
-                    <li data-value="Căn hộ" class="option">Căn hộ</li>
-                    <li data-value="Nhà nghĩ" class="option">Nhà nghĩ</li>
-                    <li data-value="Khách sạn" class="option">Khách sạn</li>
-                  </ul>
-                </div>
-                <input type="hidden" name="category" value="">
-              </div>
+          <!-- Thông Tin Cơ Bản -->
+          <div class="grid-input-2 mb-45">
+            <div class="input-wrap">
+              <label>Tên Homestay</label>
+              <input type="text" id="name" placeholder="Nhập tên homestay" required>
             </div>
-        
-            <div class="grid-input-2 mb-45">
-              <div class="input-wrap">
-                  <label>Số Giường</label>
-                  <input type="number" name="beds" placeholder="Nhập số giường" required>
-              </div>
-              <div class="input-wrap">
-                  <label>Số Phòng</label>
-                  <input type="number" name="rooms" placeholder="Nhập số phòng" required>
-              </div>
-              <div class="input-wrap">
-                  <label>Số Khách Tối Đa</label>
-                  <input type="number" name="max_guests" placeholder="Nhập số khách tối đa" required>
-              </div>
-          </div>
-
-            <div class="input-wrap mb-45">
-              <label>Mô Tả</label>
-              <textarea name="description" rows="5" placeholder="Viết mô tả ngắn gọn" required></textarea>
-            </div>
-        
-            <div class="input-wrap mb-45">
-              <label>Giá Phòng Mỗi Đêm (VND)</label>
-              <input type="number" name="price" placeholder="Nhập giá mỗi đêm" required>
-            </div>
-        
-
-
-            <!-- Phần Địa Chỉ -->
-            <h4 class="title-add-homestay mb-30">Vị Trí</h4>
-            <div class="grid-input-2 mb-45">
-              <div class="input-wrap">
-                <label>Quốc Gia</label>
-                <div class="nice-select" tabindex="0">
-                  <span class="current">Chọn Quốc Gia</span>
-                  <ul class="list">
-                    <li data-value="Vietnam" class="option">Việt Nam</li>
-                    <li data-value="USA" class="option">Mỹ</li>
-                    <li data-value="Japan" class="option">Nhật Bản</li>
-                    <li data-value="France" class="option">Pháp</li>
-                  </ul>
-                </div>
-                <input type="hidden" name="country" value="">
-              </div>
-              <div class="input-wrap">
-                <label>Thành Phố</label>
-                <div class="nice-select" tabindex="0">
-                  <span class="current">Chọn Thành Phố</span>
-                  <ul class="list">
-                    <li data-value="Hanoi" class="option">Hà Nội</li>
-                    <li data-value="Ho Chi Minh" class="option">Hồ Chí Minh</li>
-                    <li data-value="Da Nang" class="option">Đà Nẵng</li>
-                    <li data-value="Tokyo" class="option">Tokyo</li>
-                  </ul>
-                </div>
-                <input type="hidden" name="city" value="">
-              </div>
-            </div>
-        
-            <div class="input-wrap mb-45">
-              <label>Quận/Huyện</label>
-              <div class="nice-select" tabindex="0">
-                <span class="current">Chọn Quận/Huyện</span>
+            <div class="input-wrap">
+              <label>Loại Hình</label>
+              <div class="nice-select" tabindex="0" id="category-dropdown">
+                <span class="current">Chọn Loại Hình</span>
                 <ul class="list">
-                  <li data-value="Ba Dinh" class="option">Ba Đình</li>
-                  <li data-value="Hai Ba Trung" class="option">Hai Bà Trưng</li>
-                  <li data-value="Thanh Khe" class="option">Thanh Khê</li>
-                  <li data-value="Shinjuku" class="option">Shinjuku</li>
+                  <!-- Loại hình sẽ được thêm động -->
                 </ul>
               </div>
-              <input type="hidden" name="district" value=""/>
-            </div>
-        
-            <div class="input-wrap mb-45">
-              <label>Địa Chỉ Chi Tiết</label>
-              <input type="text" name="address" placeholder="Nhập địa chỉ chi tiết" required>
-            </div>
-        
-            <!-- Phần Tiện Ích -->
-            <h4 class="title-add-homestay mb-30">Tiện Ích</h4>
-            <div class="row mb-60" id="amenities-container">
-              <!-- Các tiện ích sẽ được chèn vào đây -->
-            </div>
-        
-            <!-- Phần Tải Ảnh -->
-            <h4 class="title-add-homestay mb-30">Tải Lên Ảnh</h4>
-            <div class="input-wrap mb-45">
-              <label>Tải lên tối đa 10 ảnh</label>
-              <input type="file" name="images[]" accept="image/*" multiple required>
-              <small class="text-main">Các định dạng hỗ trợ: JPG, PNG. Tối đa 2MB mỗi ảnh.</small>
-            </div>
-            <div id="image-preview"></div>
-        
-            <!-- Nút Lưu -->
-            <div class="input-wrap">
-              <button type="submit" class="button-add">Lưu Homestay</button>
+              <input type="hidden" id="category" value="">
             </div>
           </div>
-        </form>
-  </section>
-</main>
 
-<script>
-// Function to fetch amenities and render checkboxes dynamically
-function fetchAmenities() {
-    fetch('/api/amentities') // API endpoint của bạn
-        .then(response => response.json())
-        .then(data => {
-            const amenitiesContainer = document.getElementById('amenities-container');
-            const amenities = data; // Dữ liệu từ API là mảng các tiện ích
-            
-            let rowHtml = '';
-            amenities.forEach((amenity, index) => {
-                // HTML của mỗi tiện ích
-                rowHtml += `
-                    <div class="col-lg-2">
-                        <div class="checkbox">
-                            <input id="amenity-${amenity.amenity_id}" type="checkbox" name="amenities[]" value="${amenity.amenity_id}">
-                            <label for="amenity-${amenity.amenity_id}">${amenity.name}</label>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Chèn toàn bộ rowHtml vào container
-            amenitiesContainer.innerHTML = rowHtml;
-        })
-        .catch(error => {
-            console.error('Lỗi khi tải tiện ích:', error);
+          <div class="grid-input-2 mb-45">
+            <div class="input-wrap">
+              <label>Số Giường</label>
+              <input type="number" id="beds" placeholder="Nhập số giường" required>
+            </div>
+            <div class="input-wrap">
+              <label>Số Phòng</label>
+              <input type="number" id="rooms" placeholder="Nhập số phòng" required>
+            </div>
+            <div class="input-wrap">
+              <label>Số Khách Tối Đa</label>
+              <input type="number" id="max-guests" placeholder="Nhập số khách tối đa" required>
+            </div>
+          </div>
+
+          <div class="input-wrap mb-45">
+            <label>Mô Tả</label>
+            <textarea id="description" rows="5" placeholder="Viết mô tả ngắn gọn" required></textarea>
+          </div>
+
+          <div class="input-wrap mb-45">
+            <label>Giá Phòng Mỗi Đêm (VND)</label>
+            <input type="number" id="price" placeholder="Nhập giá mỗi đêm" required>
+          </div>
+
+          <!-- Địa Chỉ -->
+          <h4 class="title-add-homestay mb-30">Vị Trí</h4>
+          <div class="grid-input-2 mb-45">
+            <div class="input-wrap">
+              <label>Quốc Gia</label>
+              <div class="nice-select" tabindex="0" id="country-dropdown">
+                <span class="current">Chọn Quốc Gia</span>
+                <ul class="list"></ul>
+              </div>
+              <input type="hidden" id="country" value="">
+            </div>
+            <div class="input-wrap">
+              <label>Tỉnh Thành</label>
+              <div class="nice-select" tabindex="0" id="province-dropdown">
+                <span class="current">Chọn Tỉnh Thành</span>
+                <ul class="list"></ul>
+              </div>
+              <input type="hidden" id="province" value="">
+            </div>
+          </div>
+          
+          <div class="input-wrap mb-45">
+            <label>Quận/Huyện</label>
+            <div class="nice-select" tabindex="0" id="district-dropdown">
+              <span class="current">Chọn Quận/Huyện</span>
+              <ul class="list"></ul>
+            </div>
+            <input type="hidden" id="district" value="">
+          </div>
+          
+          <div class="input-wrap mb-45">
+            <label>Phường/Xã</label>
+            <div class="nice-select" tabindex="0" id="ward-dropdown">
+              <span class="current">Chọn Phường/Xã</span>
+              <ul class="list"></ul>
+            </div>
+            <input type="hidden" id="ward" value="">
+          </div>
+          
+          <div class="input-wrap mb-45">
+            <label>Địa Chỉ Chi Tiết</label>
+            <input type="text" id="address" placeholder="Nhập địa chỉ chi tiết" required>
+          </div>
+
+          <!-- Tiện Ích -->
+          <h4 class="title-add-homestay mb-30">Tiện Ích</h4>
+          <div class="row mb-60" id="amenities-container"></div>
+
+          <!-- Tải Lên Ảnh -->
+          <h4 class="title-add-homestay mb-30">Tải Lên Ảnh</h4>
+          <div class="input-wrap mb-45">
+            <label>Tải lên tối đa 10 ảnh</label>
+            <input type="file" id="images" multiple accept="image/*">
+          </div>
+
+          <!-- Khu vực hiển thị ảnh xem trước -->
+          <div class="input-wrap mb-45">
+            <h4 class="title-add-homestay mb-30">Ảnh Xem Trước</h4>
+            <div id="image-preview-container" class="row"></div>
+          </div>
+
+          <!-- Nút Lưu -->
+          <div class="input-wrap">
+            <button type="button" id="submit-homestay" class="button-add">Lưu Homestay</button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Fetch and populate country data (hardcoded for now)
+      const countries = [
+        { id: "Vietnam", name: "Việt Nam" },
+        { id: "USA", name: "Hoa Kỳ" },
+        { id: "Japan", name: "Nhật Bản" },
+        { id: "France", name: "Pháp" }
+      ];
+  
+      const countryDropdown = document.getElementById('country-dropdown');
+      const countryList = countryDropdown.querySelector('.list');
+  
+      countries.forEach(country => {
+        const option = document.createElement('li');
+        option.classList.add('option');
+        option.setAttribute('data-value', country.id);
+        option.textContent = country.name;
+        countryList.appendChild(option);
+      });
+  
+      countryList.addEventListener('click', (event) => {
+        if (event.target.classList.contains('option')) {
+          const selectedValue = event.target.getAttribute('data-value');
+          const selectedText = event.target.textContent;
+          countryDropdown.querySelector('.current').textContent = selectedText;
+          document.getElementById('country').value = selectedValue;
+        }
+      });
+  
+      // Fetch and populate province data
+      const provinceDropdown = document.getElementById('province-dropdown');
+      const provinceList = provinceDropdown.querySelector('.list');
+  
+      async function loadProvinces() {
+        const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+        const data = await response.json();
+  
+        if (data.error === 0) {
+          provinceList.innerHTML = '';
+          data.data.forEach(province => {
+            const option = document.createElement('li');
+            option.classList.add('option');
+            option.setAttribute('data-value', province.id);
+            option.textContent = province.full_name;
+            provinceList.appendChild(option);
+          });
+  
+          provinceList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('option')) {
+              const selectedValue = event.target.getAttribute('data-value');
+              const selectedText = event.target.textContent;
+              provinceDropdown.querySelector('.current').textContent = selectedText;
+              document.getElementById('province').value = selectedValue;
+              loadDistricts(selectedValue);
+            }
+          });
+        }
+      }
+  
+      // Fetch and populate district data
+      const districtDropdown = document.getElementById('district-dropdown');
+      const districtList = districtDropdown.querySelector('.list');
+  
+      async function loadDistricts(provinceId) {
+        const response = await fetch(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+        const data = await response.json();
+  
+        if (data.error === 0) {
+          districtList.innerHTML = '';
+          data.data.forEach(district => {
+            const option = document.createElement('li');
+            option.classList.add('option');
+            option.setAttribute('data-value', district.id);
+            option.textContent = district.full_name;
+            districtList.appendChild(option);
+          });
+  
+          districtList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('option')) {
+              const selectedValue = event.target.getAttribute('data-value');
+              const selectedText = event.target.textContent;
+              districtDropdown.querySelector('.current').textContent = selectedText;
+              document.getElementById('district').value = selectedValue;
+              loadWards(selectedValue);
+            }
+          });
+        }
+      }
+  
+      // Fetch and populate ward data
+      const wardDropdown = document.getElementById('ward-dropdown');
+      const wardList = wardDropdown.querySelector('.list');
+  
+      async function loadWards(districtId) {
+        const response = await fetch(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+        const data = await response.json();
+  
+        if (data.error === 0) {
+          wardList.innerHTML = '';
+          data.data.forEach(ward => {
+            const option = document.createElement('li');
+            option.classList.add('option');
+            option.setAttribute('data-value', ward.id);
+            option.textContent = ward.full_name;
+            wardList.appendChild(option);
+          });
+  
+          wardList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('option')) {
+              const selectedValue = event.target.getAttribute('data-value');
+              const selectedText = event.target.textContent;
+              wardDropdown.querySelector('.current').textContent = selectedText;
+              document.getElementById('ward').value = selectedValue;
+            }
+          });
+        }
+      }
+  
+      await loadProvinces();
+  
+      // Fetch categories and amenities
+      async function fetchCategories() {
+        try {
+          const response = await fetch('/api/homestay/category');
+          const categories = await response.json();
+  
+          const dropdown = document.getElementById('category-dropdown');
+          const list = dropdown.querySelector('.list');
+          list.innerHTML = '';
+  
+          categories.forEach(category => {
+            const option = document.createElement('li');
+            option.classList.add('option');
+            option.setAttribute('data-value', category.category_id);
+            option.textContent = category.category_name;
+            list.appendChild(option);
+          });
+  
+          list.addEventListener('click', (event) => {
+            if (event.target.classList.contains('option')) {
+              const selectedValue = event.target.getAttribute('data-value');
+              const selectedText = event.target.textContent;
+              dropdown.querySelector('.current').textContent = selectedText;
+              document.getElementById('category').value = selectedValue;
+            }
+          });
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      }
+  
+      async function fetchAmenities() {
+        try {
+          const response = await fetch('/api/amentities');
+          const amenities = await response.json();
+  
+          const amenitiesContainer = document.getElementById('amenities-container');
+          amenitiesContainer.innerHTML = '';
+  
+          amenities.forEach(amenity => {
+            const html = `
+                      <div class="col-lg-2">
+                          <div class="checkbox">
+                              <input id="amenity-${amenity.amenity_id}" type="checkbox" name="amenities[]" value="${amenity.amenity_id}">
+                              <label for="amenity-${amenity.amenity_id}">${amenity.name}</label>
+                          </div>
+                      </div>
+                  `;
+            amenitiesContainer.innerHTML += html;
+          });
+        } catch (error) {
+          console.error('Error fetching amenities:', error);
+        }
+      }
+  
+      await fetchCategories();
+      await fetchAmenities();
+  
+      document.getElementById('submit-homestay').addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+  
+        if (!token) {
+          alert('Bạn cần đăng nhập để thực hiện thao tác này!');
+          return;
+        }
+  
+        const formData = new FormData();
+        formData.append('name', document.getElementById('name').value);
+        formData.append('category', document.getElementById('category').value);
+        formData.append('beds', document.getElementById('beds').value);
+        formData.append('rooms', document.getElementById('rooms').value);
+        formData.append('max_guests', document.getElementById('max-guests').value);
+        formData.append('description', document.getElementById('description').value);
+        formData.append('price', document.getElementById('price').value);
+        const address = document.getElementById('address').value;
+  const ward = document.getElementById('ward-dropdown').querySelector('.current').textContent;
+  const district = document.getElementById('district-dropdown').querySelector('.current').textContent;
+  const province = document.getElementById('province-dropdown').querySelector('.current').textContent;
+  const country = document.getElementById('country-dropdown').querySelector('.current').textContent;
+
+  formData.append('location', `${address}, ${ward}, ${district}, ${province}, ${country}`);
+  
+        const amenities = Array.from(document.querySelectorAll('#amenities-container input:checked')).map((checkbox) => checkbox.value);
+        formData.append('amenities', JSON.stringify(amenities));
+  
+        const imageFiles = Array.from(document.getElementById('images').files);
+        imageFiles.forEach((file) => {
+          formData.append('images', file);
         });
-}
-
-// Initialize by fetching amenities
-fetchAmenities();
-</script>
-
+  
+        try {
+          const response = await fetch('/api/homestay/create', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          });
+  
+          if (!response.ok) throw new Error('Error creating homestay');
+  
+          alert('Homestay created successfully!');
+          window.location.reload();
+        } catch (error) {
+          console.error('Error creating homestay:', error);
+          alert('Failed to create homestay.');
+        }
+      });
+    });
+  </script>
+  
 </body>
+
 </html>

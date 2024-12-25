@@ -4,10 +4,12 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Vitour - Travel & Tour Booking HTML Template</title>
+    <title>Nice Homestay</title>
 
     <meta name="author" content="themesflat.com">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 
     <link rel="stylesheet" href="global/app/css/app.css">
     <link rel="stylesheet" type="text/css" href="global/app/css/magnific-popup.css">
@@ -18,7 +20,109 @@
     <link rel="shortcut icon" href="global/assets/images/favico.png">
     <link rel="apple-touch-icon-precomposed" href="global/assets/images/favico.png">
 
-    
+    <style>
+        .tour-listing .favorite-heart {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #ddd;
+            /* Màu xám mặc định */
+            cursor: pointer;
+            z-index: 10;
+            /* Đảm bảo luôn hiển thị trên nội dung */
+        }
+
+        .tour-listing .favorite-heart.active {
+            color: red;
+            /* Màu đỏ khi đã thêm vào wishlist */
+        }
+
+        #homestay-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #homestay-table th,
+        #homestay-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        #homestay-table th {
+            background-color: #f4f4f4;
+        }
+
+        .tour-listing {
+            position: relative;
+            margin-bottom: 40px;
+            /* Thêm khoảng cách dưới mỗi homestay */
+        }
+
+
+        .tour-listing-image img {
+            width: 100%;
+            /* Chiều rộng full container */
+            height: 200px;
+            /* Chiều cao cố định */
+            object-fit: cover;
+            /* Cắt và giữ tỷ lệ hình ảnh */
+            border-radius: 8px;
+        }
+
+        .icons.flex-three {
+            display: flex;
+            /* Sắp xếp các phần tử ngang hàng */
+            justify-content: flex-start;
+            /* Canh lề trái */
+            align-items: center;
+            /* Căn giữa theo chiều dọc */
+            gap: 15px;
+            /* Tạo khoảng cách giữa các phần tử */
+            margin-top: 0px;
+            /* Khoảng cách phía trên */
+            font-size: 14px;
+            /* Kích thước chữ */
+            color: #555;
+            /* Màu chữ */
+        }
+
+        .icons.flex-three span {
+            white-space: nowrap;
+            /* Ngăn không cho các mục xuống dòng */
+        }
+
+        .tour-listing-content .icons.flex-three {
+            border-bottom: 1px solid #ddd;
+            /* Đường kẻ màu xám */
+            margin-bottom: 10px;
+            /* Khoảng cách dưới đường kẻ */
+            padding-bottom: 10px;
+            /* Khoảng cách giữa nội dung và đường kẻ */
+        }
+
+        .icon-Star {
+            font-size: 18px;
+            /* Kích thước sao */
+            margin-right: 2px;
+            /* Khoảng cách giữa các sao */
+        }
+
+        .icon-Star.active {
+            color: orange;
+            /* Màu cam cho sao đầy */
+        }
+
+        .icon-Star {
+            color: #ddd;
+            /* Màu xám cho sao trống */
+        }
+    </style>
+
+
+
 </head>
 
 <body class="body header-fixed counter-scroll">
@@ -168,59 +272,66 @@
                                                 <i class="icon-18"></i>
                                                 <div class="search-bar-group">
                                                     <label>Destination</label>
-                                                    <input type="text" id="destination" name="destination" placeholder="Nhập điểm đến" autocomplete="off" />
+                                                    <input type="text" id="destination" name="destination"
+                                                        placeholder="Nhập điểm đến" autocomplete="off" />
                                                     <ul id="suggestions-list" class="suggestions-list"></ul>
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- Price Min -->
                                             <div class="form-group flex">
                                                 <i class="icon-money"></i>
                                                 <div class="search-bar-group">
                                                     <label>Giá tối thiểu</label>
-                                                    <input type="number" name="price-min" id="price-min" value="0" placeholder="Min price" />
+                                                    <input type="number" name="price-min" id="price-min" value="0"
+                                                        placeholder="Min price" />
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- Price Max -->
                                             <div class="form-group flex">
                                                 <i class="icon-money"></i>
                                                 <div class="search-bar-group">
                                                     <label>Giá tối đa</label>
-                                                    <input type="number" name="price-max" id="price-max" value="10000" placeholder="Max price" />
+                                                    <input type="number" name="price-max" id="price-max" value="10000"
+                                                        placeholder="Max price" />
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- Guests -->
                                             <div class="form-group flex">
                                                 <i class="icon-user"></i>
                                                 <div class="search-bar-group">
                                                     <label>Khách</label>
-                                                    <input type="number" name="guests" id="guests" value="0" placeholder="Number of guests" />
+                                                    <input type="number" name="guests" id="guests" value="0"
+                                                        placeholder="Number of guests" />
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- Number of Rooms -->
                                             <div class="form-group flex">
                                                 <i class="icon-room"></i>
                                                 <div class="search-bar-group">
                                                     <label>Số phòng</label>
-                                                    <input type="number" name="rooms" id="rooms" value="1" placeholder="Number of rooms" />
+                                                    <input type="number" name="rooms" id="rooms" value="1"
+                                                        placeholder="Number of rooms" />
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- Number of Beds -->
                                             <div class="form-group flex">
                                                 <i class="icon-bed"></i>
                                                 <div class="search-bar-group">
                                                     <label>Số giường</label>
-                                                    <input type="number" name="beds" id="beds" value="1" placeholder="Number of beds" />
+                                                    <input type="number" name="beds" id="beds" value="1"
+                                                        placeholder="Number of beds" />
                                                 </div>
                                             </div>
-                                    
+
                                             <!-- Search Button -->
                                             <div class="form-group flex-two">
-                                                <button type="submit" class="btn-search"><i class="icon-Vector5"></i>Search</button>
+                                                <button type="submit" class="btn-search"><i
+                                                        class="icon-Vector5"></i>Search</button>
                                             </div>
                                         </div>
                                     </form>
@@ -238,7 +349,8 @@
                             <div class="col-lg-12">
                                 <div class="tab-tour-list">
                                     <div class="tab-content" id="myTabContent">
-                                        <div class="tab-pane fade show active" id="new-york-tab-pane" role="tabpanel" aria-labelledby="new-york-tab" tabindex="0">
+                                        <div class="tab-pane fade show active" id="new-york-tab-pane" role="tabpanel"
+                                            aria-labelledby="new-york-tab" tabindex="0">
                                             <div id="homestay-container"></div> <!-- Container để thêm homestay -->
                                         </div>
                                     </div>
@@ -256,109 +368,171 @@
     </div>
 
 
-<script>
-document.getElementById('search-form-slider').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Ngăn không reload trang
+    <script>
+        document.getElementById('search-form-slider').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Ngăn không reload trang
 
-    // Thu thập dữ liệu từ form
-    const location = document.getElementById('destination').value.trim();
-    const priceMin = document.getElementById('price-min').value.trim();
-    const priceMax = document.getElementById('price-max').value.trim();
-    const guests = document.getElementById('guests').value.trim();
-    const rooms = document.getElementById('rooms').value.trim();
-    const beds = document.getElementById('beds').value.trim();
+            // Thu thập dữ liệu từ form
+            const location = document.getElementById('destination').value.trim();
+            const priceMin = document.getElementById('price-min').value.trim();
+            const priceMax = document.getElementById('price-max').value.trim();
+            const guests = document.getElementById('guests').value.trim();
+            const rooms = document.getElementById('rooms').value.trim();
+            const beds = document.getElementById('beds').value.trim();
 
-    // Chuẩn bị dữ liệu query
-    const queryParams = new URLSearchParams();
-    if (location) queryParams.append('location', location);
-    if (priceMin) queryParams.append('price_min', priceMin);
-    if (priceMax) queryParams.append('price_max', priceMax);
-    if (guests) queryParams.append('max_guests', guests);
-    if (rooms) queryParams.append('rooms', rooms);
-    if (beds) queryParams.append('beds', beds);
+            // Chuẩn bị dữ liệu query
+            const queryParams = new URLSearchParams();
+            if (location) queryParams.append('location', location);
+            if (priceMin) queryParams.append('price_min', priceMin);
+            if (priceMax) queryParams.append('price_max', priceMax);
+            if (guests) queryParams.append('max_guests', guests);
+            if (rooms) queryParams.append('rooms', rooms);
+            if (beds) queryParams.append('beds', beds);
 
-    // Gửi request đến API
-    try {
-        const response = await fetch(`http://localhost:3000/api/searchhomestay?${queryParams.toString()}`);
-        const homestays = await response.json();
+            // Xác định route dựa trên trạng thái đăng nhập
+            const token = localStorage.getItem('token'); // Giả định token được lưu trong localStorage
+            const endpoint = token ? '/api/searchhomestay' : '/api/searchhomestaysvisitor';
 
-        // Hiển thị dữ liệu trả về
-        displayHomestays(homestays);
-    } catch (error) {
-        console.error('Error fetching homestays:', error);
-        document.getElementById('homestay-container').innerHTML = '<p>Failed to load homestays. Please try again later.</p>';
-    }
-});
+            // Gửi request đến API
+            try {
+                const response = await fetch(`http://localhost:3000${endpoint}?${queryParams.toString()}`, {
+                    method: 'GET',
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                });
 
-// Hàm hiển thị danh sách homestay
-function displayHomestays(homestays) {
-    const container = document.getElementById('homestay-container');
-    container.innerHTML = ''; // Reset nội dung cũ
+                if (!response.ok) {
+                    throw new Error('Failed to fetch homestays');
+                }
 
-    if (!homestays || homestays.length === 0) {
-        container.innerHTML = '<p>No homestays found.</p>';
-        return;
-    }
+                const homestays = await response.json();
 
-    let row; // Hàng hiển thị homestay
-    homestays.forEach((homestay, index) => {
-        // Tạo hàng mới sau mỗi 4 homestay
-        if (index % 4 === 0) {
-            row = document.createElement('div');
-            row.classList.add('row');
-            container.appendChild(row);
-        }
+                // Hiển thị dữ liệu trả về
+                displayHomestays(homestays);
+            } catch (error) {
+                console.error('Error fetching homestays:', error);
+                document.getElementById('homestay-container').innerHTML = '<p>Failed to load homestays. Please try again later.</p>';
+            }
+        });
 
-        // Lấy hình ảnh đầu tiên từ danh sách hình ảnh
-        const images = homestay.images.split(',');
-        const firstImage = images[0]?.trim() || './global/assets/images/default-image.jpg';
+        function displayHomestays(homestays) {
+            const container = document.getElementById('homestay-container');
+            container.innerHTML = ''; // Reset nội dung cũ
 
-        const locationParts = homestay.location.split(',').map(part => part.trim());
-        const shortLocation = locationParts.slice(-2).join(', ');
+            if (!homestays || homestays.length === 0) {
+                container.innerHTML = '<p>No homestays found.</p>';
+                return;
+            }
 
-        // Tạo HTML cho mỗi homestay
-        const homestayHTML = `
-            <div class="col-sm-6 col-lg-3">
-                <div class="tour-listing wow fadeInUp animated" data-wow-delay="0.1s">
-                    <a href="/roomdetail/${homestay.homestay_id}" class="tour-listing-image">
-                        <img src="${firstImage}" alt="Image Listing">
-                    </a>
-                    <div class="tour-listing-content">
-                        <span class="map"><i class="icon-Vector4"></i>${shortLocation}</span>
-                        <h3 class="title-tour-list"><a href="/roomdetail/${homestay.homestay_id}">${homestay.name}</a></h3>
-                        <div class="review">
-                            ${generateStars(homestay.rating || 0)} <span>(${homestay.review_count || 0} Reviews)</span>
-                        </div>
-                        <div class="icon-box flex-three">
-                            <div class="icons flex-three">
-                                <span>${homestay.max_guests} Guests</span>
-                            </div>
-                        </div>
-                        <div class="flex-two">
-                            <div class="price-box flex-three">
-                                <p><span class="price-sale">${homestay.price} VND</span></p>
-                            </div>
-                        </div>
-                    </div>
+            let row;
+            homestays.forEach((homestay, index) => {
+                if (index % 4 === 0) {
+                    row = document.createElement('div');
+                    row.classList.add('row');
+                    container.appendChild(row);
+                }
+
+                const image = homestay.image || './global/assets/images/default-image.jpg';
+
+                const homestayHTML = `
+<div class="col-sm-6 col-lg-3">
+    <div class="tour-listing wow fadeInUp animated" data-wow-delay="0.1s">
+        <!-- Icon Trái Tim -->
+<i class="favorite-heart fas fa-heart ${homestay.wishlist_homestay ? 'active' : ''}" 
+   onclick="toggleFavorite(this, ${homestay.homestay_id})"></i>
+        <!-- Hình Ảnh -->
+        <a href="/roomdetail/${homestay.homestay_id}" class="tour-listing-image">
+            <img src="${image}" alt="Image Listing">
+        </a>
+        <!-- Nội dung -->
+        <div class="tour-listing-content">
+            <span class="map"><i class="icon-Vector4"></i>${homestay.location}</span>
+            <h3 class="title-tour-list">
+                <a href="/roomdetail/${homestay.homestay_id}">${homestay.name}</a>
+            </h3>
+            <div class="review">
+                ${generateStars(homestay.average_rating || 0)} 
+                <span>(${homestay.review_count || 0} Reviews)</span>
+            </div>
+            <div class="icons flex-three">
+                <span>Người: ${homestay.max_guests}</span>
+                <span>Phòng: ${homestay.rooms}</span>
+                <span>Giường: ${homestay.beds}</span>
+            </div>
+            <div class="flex-two">
+                <div class="price-box flex-three">
+                    <p><span class="price-sale">${homestay.price} VND</span>/đêm</p>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
         `;
 
-        // Thêm HTML vào hàng hiện tại
-        row.innerHTML += homestayHTML;
-    });
-}
+                row.innerHTML += homestayHTML;
+            });
+        }
 
-// Hàm tạo sao đánh giá
-function generateStars(rating) {
-    let starsHTML = '';
-    for (let i = 1; i <= 5; i++) {
-        starsHTML += `<i class="icon-Star ${i <= rating ? 'active' : ''}"></i>`;
-    }
-    return starsHTML;
-}
 
-</script>
+        function toggleFavorite(element, homestayId) {
+            const isActive = element.classList.contains('active'); // Kiểm tra trạng thái hiện tại
+            const token = localStorage.getItem('token'); // Lấy token từ localStorage
+
+            if (!token) {
+                alert('Please login to use this feature.');
+                return;
+            }
+
+            // Gửi yêu cầu API
+            fetch('http://localhost:3000/api/homestay/wishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    homestayId: homestayId,
+                    isActive: !isActive, // Đảo ngược trạng thái
+                }),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update wishlist');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        // Thay đổi trạng thái trái tim
+                        element.classList.toggle('active');
+                        console.log(`Wishlist updated for Homestay ID: ${homestayId}`);
+                    } else {
+                        alert(data.message || 'Failed to update wishlist');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error updating wishlist:', error);
+                    alert('Failed to update wishlist. Please try again.');
+                });
+        }
+
+        function generateStars(rating) {
+            let starsHTML = '';
+            const maxStars = 5; // Tổng số sao tối đa
+            const roundedRating = Math.round(rating); // Làm tròn rating
+
+            for (let i = 1; i <= maxStars; i++) {
+                if (i <= roundedRating) {
+                    // Sao đầy đủ
+                    starsHTML += `<i class="icon-Star active" style="color: orange;"></i>`;
+                } else {
+                    // Sao trống
+                    starsHTML += `<i class="icon-Star" style="color: #ddd;"></i>`;
+                }
+            }
+            return starsHTML;
+        }
+    </script>
+
 
     <!-- Javascript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -138,9 +138,17 @@ const getAllBookingsForAdmin = async () => {
 };
 
 
+const getBookedDatesByHomestayId = async (homestayId) => {
+  try {
+    const bookedDates = await Booking.getBookedDatesByHomestayId(homestayId);
+    return bookedDates;
+  } catch (error) {
+    throw new Error('Error fetching booked dates: ' + error.message);
+  }
+};
 
 
 module.exports = { createBooking, getAllBookings, getBookingById, 
   updateBooking, deleteBooking, calculateTotalAmount, getBookingsByUserId, 
   getPendingBookingsByHostId, updateBookingStatus,getPendingBookingsByUserId,
-  getBookingWaitingPayment, getAllBookingsForAdmin };
+  getBookingWaitingPayment, getAllBookingsForAdmin, getBookedDatesByHomestayId };

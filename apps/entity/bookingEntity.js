@@ -1,7 +1,7 @@
 class BookingEntity {
-  constructor(booking_id, guest_id, homestay_id, check_in, check_out, total_amount, status, payment_status, booking_date, updated_at, adults_count, children_count) {
+  constructor(booking_id, user_id, homestay_id, check_in, check_out, total_amount, status, payment_status, booking_date, updated_at, adults_count, children_count) {
     this.booking_id = booking_id;
-    this.guest_id = guest_id;
+    this.user_id = user_id;
     this.homestay_id = homestay_id;
     this.check_in = check_in;
     this.check_out = check_out;

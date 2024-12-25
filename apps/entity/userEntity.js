@@ -1,5 +1,7 @@
 // apps/models/userEntity.js
-class User {
+
+  
+  class User {
     constructor(user_id, username, password, email, role, full_name, phone, address, date_joined, status, last_login, profile_picture) {
       this.user_id = user_id;
       this.username = username;
@@ -17,4 +19,3 @@ class User {
   }
   
   module.exports = User;
-  

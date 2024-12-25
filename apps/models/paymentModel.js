@@ -1,43 +1,48 @@
 const db = require('../config/database');
 
-// Thêm bản ghi thanh toán vào bảng payments
-const createPayment = async (bookingId, amount, transactionNo, responseCode) => {
-  const query = `
-    INSERT INTO payments (booking_id, amount, transaction_no, response_code, payment_status)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-  
-  return new Promise((resolve, reject) => {
-    db.query(query, [bookingId, amount, transactionNo, responseCode, 'success'], (err, result) => {
-      if (err) {
-        console.error("Error inserting payment record:", err);
-        return reject(err);
-      }
-      resolve(result);
+const getBookingById = (bookingId, userId) => {
+    const query = `SELECT * FROM bookings WHERE booking_id = ? AND user_id = ? AND payment_status = 'pending'`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [bookingId, userId], (err, result) => {
+            if (err) reject(err);
+            else resolve(result[0]);
+        });
     });
-  });
 };
 
-// Cập nhật trạng thái thanh toán trong bảng bookings
-const updateBookingPaymentStatus = async (bookingId, status) => {
-  const query = `
-    UPDATE bookings
-    SET payment_status = ?
-    WHERE booking_id = ?
-  `;
-  
-  return new Promise((resolve, reject) => {
-    db.query(query, [status, bookingId], (err, result) => {
-      if (err) {
-        console.error("Error updating booking status:", err);
-        return reject(err);
-      }
-      resolve(result);
+const insertPaymentRecord = (paymentData) => {
+    const query = `
+        INSERT INTO payments (booking_id, payment_method, amount, payment_status) 
+        VALUES (?, ?, ?, ?)
+    `;
+    const { booking_id, payment_method, amount, payment_status } = paymentData;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [booking_id, payment_method, amount, payment_status], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
     });
-  });
 };
 
-module.exports = {
-  createPayment,
-  updateBookingPaymentStatus
+const updatePaymentStatus = (bookingId, status) => {
+    const query = `UPDATE payments SET payment_status = ? WHERE booking_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [status, bookingId], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
 };
+
+const updateBookingStatus = (bookingId, status) => {
+    const query = `UPDATE bookings SET payment_status = ? WHERE booking_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [status, bookingId], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+};
+
+module.exports = { getBookingById, insertPaymentRecord, updatePaymentStatus, updateBookingStatus };
