@@ -18,9 +18,9 @@ const insertPaymentRecord = (paymentData) => {
     const { booking_id, payment_method, amount, payment_status } = paymentData;
 
     return new Promise((resolve, reject) => {
-        db.query(query, [booking_id, payment_method, amount, payment_status], (err) => {
+        db.query(query, [booking_id, payment_method, amount, payment_status], (err, result) => {
             if (err) reject(err);
-            else resolve();
+            else resolve({ payment_id: result.insertId });
         });
     });
 };
@@ -44,5 +44,9 @@ const updateBookingStatus = (bookingId, status) => {
         });
     });
 };
+
+
+
+
 
 module.exports = { getBookingById, insertPaymentRecord, updatePaymentStatus, updateBookingStatus };

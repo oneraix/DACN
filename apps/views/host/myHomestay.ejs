@@ -10,7 +10,7 @@
       background-color: #f5f5f5;
       color: #333;
       margin: 0;
-      padding: 20px;
+      padding: 0px;
     }
 
     h2 {
@@ -51,7 +51,23 @@
       background-color: #f9f9f9;
     }
 
-    .image-popup {
+    .description {
+      text-align: left;
+      width: 30%;
+    }
+
+    .short-description {
+      display: inline;
+    }
+
+    .view-more {
+      color: #2196F3;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #description-popup {
       display: none;
       position: fixed;
       top: 50%;
@@ -62,56 +78,31 @@
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       padding: 20px;
       z-index: 1000;
+      width: 80%;
+      max-width: 500px;
       text-align: center;
     }
 
-    .image-popup img {
-      max-width: 100%;
-      max-height: 80vh;
-      border-radius: 8px;
+    #popup-description {
+      font-size: 16px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      text-align: justify;
+      margin-bottom: 20px;
     }
 
-    .popup-controls {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .popup-controls button {
+    .close-popup {
       padding: 10px 15px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 14px;
+      background-color: #F44336;
+      color: white;
       transition: background-color 0.3s ease;
     }
 
-    .popup-controls .close-popup {
-      background-color: #F44336;
-      color: white;
-    }
-
-    .popup-controls .close-popup:hover {
+    .close-popup:hover {
       background-color: #D32F2F;
-    }
-
-    .popup-controls .prev-button {
-      background-color: #2196F3;
-      color: white;
-    }
-
-    .popup-controls .prev-button:hover {
-      background-color: #1976D2;
-    }
-
-    .popup-controls .next-button {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .popup-controls .next-button:hover {
-      background-color: #388E3C;
     }
 
     #overlay {
@@ -124,30 +115,11 @@
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 999;
     }
-
-    td.description {
-      text-align: left;
-      width: 30%;
-    }
-
-    button {
-      padding: 8px 15px;
-      border-radius: 5px;
-      border: none;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #388E3C;
-    }
   </style>
 </head>
 <body>
 
-<h2>Danh Sách Homestay Của Tôi</h2>
+<h2>Danh Sách Homestay Của Tôi</h2>
 
 <table id="homestay-table">
   <thead>
@@ -165,19 +137,14 @@
 </table>
 
 <div id="overlay" onclick="closePopup()"></div>
-<div class="image-popup" id="image-popup">
-  <img id="popup-image" src="" alt="Homestay Image">
-  <div class="popup-controls">
-    <button class="prev-button" onclick="prevImage()">Trước</button>
-    <button class="next-button" onclick="nextImage()">Sau</button>
-    <button class="close-popup" onclick="closePopup()">Đóng</button>
-  </div>
+
+<div id="description-popup">
+  <p id="popup-description"></p>
+  <button class="close-popup" onclick="closePopup()">Đóng</button>
 </div>
 
 <script>
   const token = localStorage.getItem('token');
-  let currentImageIndex = 0;
-  let currentImages = [];
 
   async function loadHostHomestays() {
     if (!token) {
@@ -212,7 +179,10 @@
         row.innerHTML = `
           <td>${homestay.homestay_name}</td>
           <td>${homestay.location}</td>
-          <td class="description">${homestay.description}</td>
+          <td class="description">
+            <span class="short-description">${homestay.description.slice(0, 50)}...</span>
+            <span class="view-more" onclick="showFullDescription('${homestay.description.replace(/'/g, "\\'")}')">Xem thêm</span>
+          </td>
           <td>${homestay.amenities.join(', ')}</td>
           <td><button onclick="showImages('${homestay.images.join(',')}')">Xem Ảnh</button></td>
         `;
@@ -225,43 +195,17 @@
     }
   }
 
-  function showImages(images) {
-    currentImages = images.split(',');
-    currentImageIndex = 0;
-    updatePopupImage();
+  function showFullDescription(description) {
+    const popupDescription = document.getElementById('popup-description');
+    popupDescription.textContent = description;
 
-    const overlay = document.getElementById('overlay');
-    const popup = document.getElementById('image-popup');
-
-    overlay.style.display = 'block';
-    popup.style.display = 'block';
-  }
-
-  function updatePopupImage() {
-    const popupImage = document.getElementById('popup-image');
-    popupImage.src = currentImages[currentImageIndex];
-  }
-
-  function prevImage() {
-    if (currentImageIndex > 0) {
-      currentImageIndex--;
-      updatePopupImage();
-    }
-  }
-
-  function nextImage() {
-    if (currentImageIndex < currentImages.length - 1) {
-      currentImageIndex++;
-      updatePopupImage();
-    }
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('description-popup').style.display = 'block';
   }
 
   function closePopup() {
-    const overlay = document.getElementById('overlay');
-    const popup = document.getElementById('image-popup');
-
-    overlay.style.display = 'none';
-    popup.style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('description-popup').style.display = 'none';
   }
 
   document.addEventListener('DOMContentLoaded', loadHostHomestays);

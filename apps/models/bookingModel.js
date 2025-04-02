@@ -304,6 +304,45 @@ static getBookedDatesByHomestayId(homestayId) {
 }
 
 
+static getConfirmedPaidBookingsByUser(userId) {
+  const query = `
+    SELECT 
+        b.booking_id,
+        b.user_id,
+        b.homestay_id,
+        h.name AS homestay_name,
+        b.check_in,
+        b.check_out,
+        b.total_amount,
+        b.status,
+        b.payment_status,
+        b.booking_date,
+        p.payment_date,
+        p.amount AS payment_amount,
+        p.payment_method
+    FROM bookings b
+    JOIN payments p ON b.booking_id = p.booking_id
+    JOIN homestays h ON b.homestay_id = h.homestay_id
+    WHERE b.user_id = ? 
+      AND b.status = 'confirmed' 
+      AND b.payment_status = 'paid'
+    ORDER BY p.payment_date DESC;
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error('Database query error:', err.message); // Log lỗi query
+        return reject(err);
+      }
+      resolve(results); // Trả về danh sách các booking
+    });
+  });
+}
+
+
+
+
 }
 
 

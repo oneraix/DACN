@@ -92,15 +92,14 @@ const searchHomestay = async (filters, userId) => {
   try {
     // Gọi model để lấy dữ liệu
     const homestays = await Homestay.searchHomestay(filters, userId);
+
+    // Trả về kết quả sau khi truy vấn
     return homestays;
   } catch (error) {
+    console.error('Error fetching homestays:', error.message);
     throw new Error('Error fetching homestays: ' + error.message);
   }
 };
-
-
-
-
 
 
 
@@ -180,8 +179,36 @@ const getWishlistHomestays = async (userId) => {
 
 
 
+const addCategory = async (category_name) => {
+  try {
+    const newCategory = await Homestay.addCategory(category_name);
+    return newCategory;
+  } catch (error) {
+    throw new Error('Error adding category: ' + error.message);
+  }
+};
+
+const updateCategory = async (id, category_name) => {
+  try {
+    const updatedCategory = await Homestay.updateCategory(id, category_name);
+    return updatedCategory;
+  } catch (error) {
+    throw new Error('Error updating category: ' + error.message);
+  }
+};
+
+const deleteCategory = async (id) => {
+  try {
+    const result = await Homestay.deleteCategory(id);
+    return result;
+  } catch (error) {
+    throw new Error('Error deleting category: ' + error.message);
+  }
+};
+
+
 module.exports = { createHomestay, getAllHomestays, getHomestayById, 
   updateHomestay, deleteHomestay, searchHomestay, getAllAmenities ,getCategory,
   getUnavailableHomestays,approveHomestay, getHostHomestays, addWishlist, removeWishlist,
-  getWishlistHomestays
+  getWishlistHomestays, addCategory, updateCategory, deleteCategory
 };

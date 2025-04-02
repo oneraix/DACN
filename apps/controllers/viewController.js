@@ -74,10 +74,10 @@ exports.renderManageAccount = (req, res) => {
   });
 };
 
-exports.renderManageBlog = (req, res) => {
-  res.render('admin/manageBlog', {
+exports.renderManageCategory = (req, res) => {
+  res.render('admin/manageCategory', {
     layout: 'layout/adminLayout', 
-    title: 'Quản lí bài đăng',
+    title: 'Quản lí loại Homestay',
   });
 };
 exports.renderManageHomestay = (req, res) => {
@@ -123,4 +123,9 @@ exports.renderUserProfile = (req, res) => {
     layout: 'layout/userLayout', 
     title: 'Đặt phòng',
   });
+};
+
+
+exports.renderMomoCallback = (req, res) => {
+  res.render('public/momocallback',{ layout: false  });
 };

@@ -1,11 +1,7 @@
 const db = require('../config/database'); // Kết nối với cơ sở dữ liệu
 
 class HomestayModel {
-  /**
-   * Phương thức tạo mới homestay
-   * @param {Object} data - Dữ liệu homestay cần tạo
-   * @returns {Object} - Homestay vừa được tạo
-   */
+
 static createHomestay(data) {
     const { host_id, name, description, location, price, images, beds, rooms, max_guests, category_id } = data;
 
@@ -45,10 +41,7 @@ static createHomestay(data) {
     });
   }
 
-  /**
-   * Phương thức lấy tất cả homestay
-   * @returns {Array} - Mảng tất cả homestay
-   */
+
   static getAllHomestays(available = null) {
     let query = 'SELECT * FROM homestays';
     const values = [];
@@ -67,11 +60,7 @@ static createHomestay(data) {
       });
     });
   }
-  /**
-   * Phương thức lấy homestay theo ID
-   * @param {number} id - ID của homestay
-   * @returns {Object|null} - Homestay hoặc null nếu không tìm thấy
-   */
+
   static getHomestayById(id) {
     const query = `
       SELECT 
@@ -105,12 +94,7 @@ static createHomestay(data) {
     });
   }
 
-  /**
-   * Phương thức cập nhật homestay theo ID
-   * @param {number} id - ID của homestay cần cập nhật
-   * @param {Object} data - Dữ liệu mới cần cập nhật
-   * @returns {Object|null} - Homestay sau khi cập nhật hoặc null nếu không tìm thấy
-   */
+
   static updateHomestay(id, data) {
     const { name, description, location, price, amenities, images, available, beds, rooms, max_guests } = data;
     
@@ -136,16 +120,8 @@ static createHomestay(data) {
     });
   }
 
-/**
- * Phương thức tìm kiếm homestay theo các điều kiện
- * @param {Object} filters - Các điều kiện tìm kiếm (ví dụ: location, price, max_guests, host_id)
- * @returns {Array} - Mảng các homestay phù hợp với các điều kiện
- */
-/**
- * Phương thức tìm kiếm homestay theo các điều kiện
- * @param {Object} filters - Các điều kiện tìm kiếm (location, price, max_guests, host_id,...)
- * @returns {Promise<Array>} - Mảng các homestay phù hợp với các điều kiện
- */
+
+
 // static searchHomestay(filters) {
 //   let query = `
 //     SELECT 
@@ -205,87 +181,89 @@ static createHomestay(data) {
 //     });
 //   });
 // }
+
 static searchHomestay(filters, userId) {
   let query = `
-      SELECT 
-          h.homestay_id,
-          h.name,
-          REVERSE(SUBSTRING_INDEX(REVERSE(h.location), ',', 2)) AS location,
-          h.price,
-          h.max_guests,
-          h.beds,
-          h.rooms,
-          h.available,
-          SUBSTRING_INDEX(h.images, ',', 1) AS image,
-          COUNT(r.review_id) AS review_count,
-          ROUND(AVG(IFNULL(r.rating, 0)), 1) AS average_rating,
-          CASE 
-              WHEN EXISTS (
-                  SELECT 1 
-                  FROM wishlist wl 
-                  WHERE wl.homestay_id = h.homestay_id 
-                    AND wl.user_id = ?
-              ) THEN 1 
-              ELSE 0 
-          END AS wishlist_homestay
-      FROM homestays h
-      LEFT JOIN reviews r ON h.homestay_id = r.homestay_id
-      WHERE 1=1
+    SELECT 
+        h.homestay_id,
+        h.name,
+        REVERSE(SUBSTRING_INDEX(REVERSE(h.location), ',', 2)) AS location,
+        h.price,
+        h.max_guests,
+        h.beds,
+        h.rooms,
+        h.available,
+        SUBSTRING_INDEX(h.images, ',', 1) AS image,
+        COUNT(r.review_id) AS review_count,
+        ROUND(AVG(IFNULL(r.rating, 0)), 1) AS average_rating,
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM wishlist wl 
+                WHERE wl.homestay_id = h.homestay_id 
+                  AND wl.user_id = ?
+            ) THEN 1 
+            ELSE 0 
+        END AS wishlist_homestay
+    FROM homestays h
+    LEFT JOIN reviews r ON h.homestay_id = r.homestay_id
+    WHERE 1=1
   `;
+
   const values = [userId || null];
 
-  // Áp dụng các bộ lọc
+  // Xử lý location: Loại bỏ dấu trước khi so sánh
   if (filters.location) {
-      query += ' AND h.location LIKE ?';
-      values.push(`%${filters.location}%`);
+    const locationKeywords = filters.location
+      .normalize('NFD') // Chuyển đổi sang dạng Normalization Form D
+      .replace(/[\u0300-\u036f]/g, '') // Loại bỏ dấu
+      .split(' ')
+      .map(keyword => `%${keyword}%`);
+
+    query += ` AND (${locationKeywords.map(() => `CONVERT(h.location USING utf8) LIKE ?`).join(' AND ')})`;
+    values.push(...locationKeywords);
   }
-  if (filters.priceMin) {
-      query += ' AND h.price >= ?';
-      values.push(filters.priceMin);
+
+  // Xử lý các điều kiện khác
+  if (filters.priceMin !== undefined) {
+    query += ' AND h.price >= ?';
+    values.push(filters.priceMin);
   }
-  if (filters.priceMax) {
-      query += ' AND h.price <= ?';
-      values.push(filters.priceMax);
+  if (filters.priceMax !== undefined) {
+    query += ' AND h.price <= ?';
+    values.push(filters.priceMax);
   }
-  if (filters.guests) {
-      query += ' AND h.max_guests >= ?';
-      values.push(filters.guests);
+  if (filters.guests !== undefined) {
+    query += ' AND h.max_guests >= ?';
+    values.push(filters.guests);
   }
-  if (filters.rooms) {
-      query += ' AND h.rooms >= ?';
-      values.push(filters.rooms);
+  if (filters.rooms !== undefined) {
+    query += ' AND h.rooms >= ?';
+    values.push(filters.rooms);
+  }
+  if (filters.beds !== undefined) {
+    query += ' AND h.beds >= ?';
+    values.push(filters.beds);
   }
 
   // Nhóm và sắp xếp
   query += `
-      GROUP BY h.homestay_id
-      ORDER BY average_rating DESC, review_count DESC
+    GROUP BY h.homestay_id
+    ORDER BY average_rating DESC, review_count DESC
   `;
 
   return new Promise((resolve, reject) => {
-      db.query(query, values, (err, result) => {
-          if (err) {
-              return reject(new Error('Error executing search query: ' + err.message));
-          }
-          resolve(result);
-      });
+    db.query(query, values, (err, result) => {
+      if (err) {
+        return reject(new Error('Error executing search query: ' + err.message));
+      }
+      resolve(result);
+    });
   });
 }
 
 
 
-
-
-
-
-
-
-
-  /**
-   * Phương thức xóa homestay theo ID
-   * @param {number} id - ID của homestay cần xóa
-   * @returns {boolean} - True nếu xóa thành công, false nếu không tìm thấy
-   */
   static deleteHomestay(id) {
     const query = 'DELETE FROM homestays WHERE homestay_id = ?';
     
@@ -376,68 +354,109 @@ static getCategory() {
 }
 
 
-static searchHomestay(filters, userId) {
-  let query = `
-      SELECT 
-          h.homestay_id,
-          h.name,
-          REVERSE(SUBSTRING_INDEX(REVERSE(h.location), ',', 2)) AS location,
-          h.price,
-          h.max_guests,
-          h.beds,
-          h.rooms,
-          h.available,
-          SUBSTRING_INDEX(h.images, ',', 1) AS image,
-          COUNT(r.review_id) AS review_count,
-          ROUND(AVG(IFNULL(r.rating, 0)), 1) AS average_rating,
-          IF(wl.user_id IS NOT NULL, 1, 0) AS wishlist_homestay
-      FROM homestays h
-      LEFT JOIN reviews r ON h.homestay_id = r.homestay_id
-      LEFT JOIN wishlist wl ON h.homestay_id = wl.homestay_id AND wl.user_id = ?
-      WHERE 1=1
-  `;
-  const values = [userId || null];
+// static searchHomestay(filters, userId) {
+//   let query = `
+//       SELECT 
+//           h.homestay_id,
+//           h.name,
+//           REVERSE(SUBSTRING_INDEX(REVERSE(h.location), ',', 2)) AS location,
+//           h.price,
+//           h.max_guests,
+//           h.beds,
+//           h.rooms,
+//           h.available,
+//           SUBSTRING_INDEX(h.images, ',', 1) AS image,
+//           COUNT(r.review_id) AS review_count,
+//           ROUND(AVG(IFNULL(r.rating, 0)), 1) AS average_rating,
+//           IF(wl.user_id IS NOT NULL, 1, 0) AS wishlist_homestay
+//       FROM homestays h
+//       LEFT JOIN reviews r ON h.homestay_id = r.homestay_id
+//       LEFT JOIN wishlist wl ON h.homestay_id = wl.homestay_id AND wl.user_id = ?
+//       WHERE 1=1
+//   `;
+//   const values = [userId || null];
 
-  // Áp dụng các bộ lọc
-  if (filters.location) {
-      query += ' AND h.location LIKE ?';
-      values.push(`%${filters.location}%`);
-  }
-  if (filters.priceMin) {
-      query += ' AND h.price >= ?';
-      values.push(filters.priceMin);
-  }
-  if (filters.priceMax) {
-      query += ' AND h.price <= ?';
-      values.push(filters.priceMax);
-  }
-  if (filters.guests) {
-      query += ' AND h.max_guests >= ?';
-      values.push(filters.guests);
-  }
-  if (filters.rooms) {
-      query += ' AND h.rooms >= ?';
-      values.push(filters.rooms);
-  }
+//   // Áp dụng các bộ lọc
+//   if (filters.location) {
+//       query += ' AND h.location LIKE ?';
+//       values.push(`%${filters.location}%`);
+//   }
+//   if (filters.priceMin) {
+//       query += ' AND h.price >= ?';
+//       values.push(filters.priceMin);
+//   }
+//   if (filters.priceMax) {
+//       query += ' AND h.price <= ?';
+//       values.push(filters.priceMax);
+//   }
+//   if (filters.guests) {
+//       query += ' AND h.max_guests >= ?';
+//       values.push(filters.guests);
+//   }
+//   if (filters.rooms) {
+//       query += ' AND h.rooms >= ?';
+//       values.push(filters.rooms);
+//   }
 
-  // Nhóm và sắp xếp
-  query += `
-      GROUP BY h.homestay_id
-      ORDER BY average_rating DESC, review_count DESC
+//   // Nhóm và sắp xếp
+//   query += `
+//       GROUP BY h.homestay_id
+//       ORDER BY average_rating DESC, review_count DESC
+//   `;
+
+//   return new Promise((resolve, reject) => {
+//       db.query(query, values, (err, result) => {
+//           if (err) {
+//               console.error('SQL Error:', err.message);
+//               return reject(new Error('Error executing search query: ' + err.message));
+//           }
+//           resolve(result);
+//           console.log('Query Result:', result);
+
+//       });
+//   });
+// }
+
+
+
+static getUnavailableHomestays() {
+  const query = `
+    SELECT 
+      h.homestay_id,
+      h.name AS homestay_name,
+      h.location,
+      h.description,
+      h.beds,
+      h.rooms,
+      h.max_guests,
+      c.category_name,
+      u.full_name AS host_name,
+      u.email AS host_email,
+      u.phone AS host_phone,
+      u.address AS host_address,
+      h.images,
+      GROUP_CONCAT(a.name SEPARATOR ', ') AS amenities
+    FROM homestays h
+    LEFT JOIN categories c ON h.category_id = c.category_id
+    LEFT JOIN users u ON h.host_id = u.user_id
+    LEFT JOIN homestay_amenities ha ON h.homestay_id = ha.homestay_id
+    LEFT JOIN amenities a ON ha.amenity_id = a.amenity_id
+    WHERE h.available = 0
+    GROUP BY h.homestay_id
   `;
 
   return new Promise((resolve, reject) => {
-      db.query(query, values, (err, result) => {
-          if (err) {
-              console.error('SQL Error:', err.message);
-              return reject(new Error('Error executing search query: ' + err.message));
-          }
-          resolve(result);
-          console.log('Query Result:', result);
-
-      });
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error fetching unavailable homestays:', err.message);
+        return reject(new Error('Error fetching unavailable homestays: ' + err.message));
+      }
+      resolve(results);
+    });
   });
 }
+
+
 
 
 
@@ -558,6 +577,66 @@ static getWishlistHomestays(userId) {
           }
           resolve(result);
       });
+  });
+}
+
+
+
+
+
+// Thêm danh mục Homestay
+static addCategory(category_name) {
+  const query = `
+    INSERT INTO categories (category_name)
+    VALUES (?)
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [category_name], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve({ category_id: result.insertId, category_name });
+    });
+  });
+}
+
+// Sửa danh mục Homestay
+static updateCategory(id, category_name) {
+  const query = `
+    UPDATE categories
+    SET category_name = ?
+    WHERE category_id = ?
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [category_name, id], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      if (result.affectedRows > 0) {
+        resolve({ category_id: id, category_name });
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
+// Xóa danh mục Homestay
+static deleteCategory(id) {
+  const query = `
+    DELETE FROM categories
+    WHERE category_id = ?
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, [id], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(result.affectedRows > 0);
+    });
   });
 }
 

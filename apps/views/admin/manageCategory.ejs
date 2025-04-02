@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Loại Homestay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .category-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .add-category {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .add-category button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-category button:hover {
+            background-color: #0056b3;
+        }
+
+        .category-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .category-table th,
+        .category-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .category-table th {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .category-table td {
+            background-color: #f9f9f9;
+        }
+
+        .category-table tr:hover td {
+            background-color: #f1f1f1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .action-buttons .edit {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .action-buttons .edit:hover {
+            background-color: #218838;
+        }
+
+        .action-buttons .delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .action-buttons .delete:hover {
+            background-color: #c82333;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #007BFF;
+        }
+
+        .modal-body {
+            margin-bottom: 15px;
+        }
+
+        .modal-body label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .modal-body input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
+        .modal-footer button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .modal-footer .close {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .modal-footer .close:hover {
+            background-color: #5a6268;
+        }
+
+        .modal-footer .save {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .modal-footer .save:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quản Lý Danh Mục Homestay</h1>
+    <div class="category-container">
+        <div class="add-category">
+            <button id="add-category-btn"><i class="fas fa-plus"></i> Thêm Danh Mục</button>
+        </div>
+        <table class="category-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Danh Mục</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody id="category-list">
+                <!-- Nội dung danh mục sẽ được thêm ở đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div id="category-modal" class="modal">
+        <div class="modal-header">Thêm / Sửa Danh Mục</div>
+        <div class="modal-body">
+            <form id="category-form">
+                <input type="hidden" id="category-id">
+                <label for="category-name">Tên Danh Mục:</label>
+                <input type="text" id="category-name" required placeholder="Nhập tên danh mục...">
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="close">Đóng</button>
+            <button class="save">Lưu</button>
+        </div>
+    </div>
+
+    <script>
+        // Fetch categories
+        async function fetchCategories() {
+            try {
+                const response = await fetch('/api/homestay/category');
+                if (!response.ok) throw new Error('Failed to fetch categories');
+
+                const categories = await response.json();
+                const categoryList = document.getElementById('category-list');
+                categoryList.innerHTML = '';
+
+                categories.forEach(category => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${category.category_id}</td>
+                        <td>${category.category_name}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit" onclick="editCategory(${category.category_id}, '${category.category_name}')"><i class="fas fa-edit"></i> Sửa</button>
+                                <button class="delete" onclick="deleteCategory(${category.category_id})"><i class="fas fa-trash"></i> Xóa</button>
+                            </div>
+                        </td>
+                    `;
+                    categoryList.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching categories:', error.message);
+            }
+        }
+
+        // Edit category
+        function editCategory(id, name) {
+            const modal = document.getElementById('category-modal');
+            document.getElementById('category-id').value = id;
+            document.getElementById('category-name').value = name;
+            modal.classList.add('active');
+        }
+
+        // Delete category
+        function deleteCategory(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+                fetch(`/api/homestay/category/${id}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to delete category');
+                        fetchCategories();
+                    })
+                    .catch(error => alert('Error deleting category: ' + error.message));
+            }
+        }
+
+        // Open modal to add category
+        document.getElementById('add-category-btn').addEventListener('click', () => {
+            const modal = document.getElementById('category-modal');
+            document.getElementById('category-id').value = '';
+            document.getElementById('category-name').value = '';
+            modal.classList.add('active');
+        });
+
+        // Close modal
+        document.querySelector('.modal-footer .close').addEventListener('click', () => {
+            const modal = document.getElementById('category-modal');
+            modal.classList.remove('active');
+        });
+
+        // Save category
+        document.querySelector('.modal-footer .save').addEventListener('click', async () => {
+            const id = document.getElementById('category-id').value;
+            const name = document.getElementById('category-name').value.trim();
+
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const endpoint = id ? `/api/homestay/category/${id}` : '/api/homestay/category';
+                const response = await fetch(endpoint, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ category_name: name }),
+                });
+
+                if (!response.ok) throw new Error('Failed to save category');
+                document.getElementById('category-modal').classList.remove('active');
+                fetchCategories();
+            } catch (error) {
+                alert('Error saving category: ' + error.message);
+            }
+        });
+
+        // Load categories when the page loads
+        document.addEventListener('DOMContentLoaded', fetchCategories);
+    </script>
+</body>
+
+</html>

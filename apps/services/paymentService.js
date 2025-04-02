@@ -1,5 +1,7 @@
 const https = require('https');
 const crypto = require('crypto');
+const querystring = require('querystring');
+const paymentModel = require('../models/paymentModel'); 
 
 const createMoMoPayment = async (bookingId, totalAmount, userId) => {
     const partnerCode = 'MOMO';
@@ -8,9 +10,9 @@ const createMoMoPayment = async (bookingId, totalAmount, userId) => {
     const requestId = `${partnerCode}_${Date.now()}`;
     const orderId = `${partnerCode}_BOOKING_${bookingId}_${Date.now()}`;
     const orderInfo = `Payment for booking ${bookingId}`;
-    const redirectUrl = 'http://localhost:3000/payments/momo-success';
+    const redirectUrl = 'http://localhost:3000/momocallback';
     const ipnUrl = 'http://localhost:3000/api/payments/momo-callback';
-    const requestType = 'captureWallet';
+    const requestType = 'payWithCC';
     const extraData = `userId=${userId}`;
     const amount = totalAmount.toString();
 
@@ -81,4 +83,89 @@ const createMoMoPayment = async (bookingId, totalAmount, userId) => {
     });
 };
 
-module.exports = { createMoMoPayment };
+
+
+const updatePaymentStatus = async (bookingId, status) => {
+    try {
+        await paymentModel.updatePaymentStatus(bookingId, status);
+    } catch (error) {
+        console.error(`Error updating payment status for booking ${bookingId}:`, error.message);
+        throw error;
+    }
+};
+
+const updateBookingStatus = async (bookingId, status) => {
+    try {
+        await paymentModel.updateBookingStatus(bookingId, status);
+    } catch (error) {
+        console.error(`Error updating booking status for booking ${bookingId}:`, error.message);
+        throw error;
+    }
+};
+
+const insertPaymentRecord = async (paymentData) => {
+    try {
+        const result = await paymentModel.insertPaymentRecord(paymentData);
+        return result;
+    } catch (error) {
+        console.error('Error inserting payment record:', error.message);
+        throw error;
+    }
+};
+
+
+const createVNPayPayment = (bookingId, totalAmount, userId) => {
+    const vnp_TmnCode = 'RSDIALQ7'; // Mã TmnCode của bạn
+    const vnp_HashSecret = 'R0DF9SB1APLWNC7W3PJ85Q8CB67STZSN'; // Secret key
+    const vnp_Url = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'; // URL thanh toán VNPay
+    const vnp_ReturnUrl = 'http://localhost:3000/payments/vnpay-success'; // URL chuyển hướng khi thanh toán thành công
+    const vnp_IpnUrl = 'http://localhost:3000/api/payments/vnpay-callback'; // URL callback khi thanh toán thành công
+
+    const date = new Date();
+    const vnp_TxnRef = `${bookingId}_${date.getTime()}`; // Mã giao dịch
+    const vnp_OrderInfo = `Payment for booking ${bookingId}`;
+    const vnp_Amount = totalAmount * 100; // Đơn vị VNPay tính bằng VND * 100
+    const vnp_CreateDate = date.toISOString().replace(/[-T:\.Z]/g, '').substring(0, 14); // Format ngày giờ theo chuẩn VNPay
+
+    const inputData = {
+        vnp_Version: '2.1.0',
+        vnp_Command: 'pay',
+        vnp_TmnCode,
+        vnp_Amount: vnp_Amount.toString(),
+        vnp_CurrCode: 'VND',
+        vnp_TxnRef,
+        vnp_OrderInfo,
+        vnp_OrderType: 'other',
+        vnp_Locale: 'vn',
+        vnp_ReturnUrl,
+        vnp_IpnUrl,
+        vnp_CreateDate,
+        vnp_IpAddr: '127.0.0.1', // IP máy khách
+    };
+
+    // Sắp xếp inputData theo thứ tự tăng dần
+    const sortedInput = Object.keys(inputData)
+        .sort()
+        .reduce((obj, key) => {
+            obj[key] = inputData[key];
+            return obj;
+        }, {});
+
+    const signData = querystring.stringify(sortedInput, { encode: false });
+    const hmac = crypto.createHmac('sha512', vnp_HashSecret);
+    const secureHash = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+
+    sortedInput.vnp_SecureHash = secureHash;
+    console.log('VNPay Input Data:', sortedInput);
+    console.log('VNPay SecureHash:', secureHash);
+    const paymentUrl = `${vnp_Url}?${querystring.stringify(sortedInput)}`;
+    return paymentUrl;
+};
+
+
+
+
+
+
+
+module.exports = { createMoMoPayment, createVNPayPayment, updatePaymentStatus,updateBookingStatus, insertPaymentRecord  };

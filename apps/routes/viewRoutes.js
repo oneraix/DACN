@@ -11,6 +11,7 @@ router.get('/', viewController.renderIndex);  // Khi truy cập trang chủ sẽ
 router.get('/login', viewController.renderLogin);
 router.get('/register',viewController.renderSignup);
 router.get('/roomdetail/:id',viewController.renderRoomDetail);
+router.get('/momocallback',viewController.renderMomoCallback);
 
 //host
 router.get('/host/createhomestay',viewController.renderCreateHomestay);
@@ -24,7 +25,7 @@ router.get('/host/rentalhistory', viewController.renderRentHistory);
 router.get('/admin/accepthomestay', viewController.renderAcceptHomestay);
 router.get('/admin', viewController.renderAdminIndex);
 router.get('/admin/manageaccount', viewController.renderManageAccount);
-router.get('/admin/manageblog', viewController.renderManageBlog);
+router.get('/admin/managecategory', viewController.renderManageCategory);
 router.get('/admin/managehomestay', viewController.renderManageHomestay);
 router.get('/admin/managebooking', viewController.renderManageBooking);
 

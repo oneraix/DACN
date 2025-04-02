@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xử Lý Thanh Toán MoMo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .status.success {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status.failed {
+      color: red;
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .retry {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .retry a {
+      color: #007BFF;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .retry a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Xử Lý Thanh Toán MoMo</h1>
+  <div class="loading">Vui lòng chờ, chúng tôi đang xử lý giao dịch của bạn...</div>
+  <div id="status" class="status"></div>
+  <div id="retry" class="retry" style="display: none;">
+    <a href="http://localhost:3000/user/bookinghistory">Nhấp vào đây để kiểm tra lịch sử giao dịch</a>
+  </div>
+
+  <script>
+    async function handleMoMoCallback() {
+      const params = new URLSearchParams(window.location.search); // Lấy toàn bộ query params
+      const data = Object.fromEntries(params.entries()); // Chuyển đổi thành object
+
+      let loadingDots = 0;
+      const loadingElement = document.querySelector('.loading');
+      const loadingInterval = setInterval(() => {
+        loadingDots = (loadingDots + 1) % 4; // Tạo hiệu ứng dấu chấm động
+        loadingElement.textContent = `Vui lòng chờ, chúng tôi đang xử lý giao dịch của bạn${'.'.repeat(loadingDots)}`;
+      }, 500);
+      console.log('Data gửi lên API:', data);
+
+      try {
+        // Gửi dữ liệu đến API `momo-callback` qua phương thức POST
+        const response = await fetch('/api/payments/momo-callback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify(data), // Gửi dữ liệu từ URL qua body
+        });
+
+        const result = await response.json();
+
+        // Dừng hiệu ứng loading
+        clearInterval(loadingInterval);
+        loadingElement.style.display = 'none';
+
+        const statusElement = document.getElementById('status');
+
+        if (response.ok && result.message === 'Payment successful') {
+          statusElement.textContent = 'Giao dịch thành công!';
+          statusElement.classList.add('success');
+          setTimeout(() => {
+            window.location.href = 'http://localhost:3000/user/bookinghistory';
+          }, 3000); // Chuyển hướng sau 3 giây
+        } else {
+          statusElement.textContent = `Giao dịch thất bại: ${result.message || 'Không rõ lý do.'}`;
+          statusElement.classList.add('failed');
+          document.getElementById('retry').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Lỗi khi xử lý giao dịch MoMo:', error.message);
+
+        // Dừng hiệu ứng loading
+        clearInterval(loadingInterval);
+        loadingElement.style.display = 'none';
+
+        const statusElement = document.getElementById('status');
+        statusElement.textContent = 'Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại sau.';
+        statusElement.classList.add('failed');
+        document.getElementById('retry').style.display = 'block';
+      }
+    }
+
+    // Gọi hàm xử lý callback khi trang được tải
+    document.addEventListener('DOMContentLoaded', () => {
+      handleMoMoCallback();
+    });
+  </script>
+</body>
+
+</html>

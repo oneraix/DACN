@@ -97,11 +97,7 @@ const deleteHomestay = async (req, res) => {
 };
 
 
-/**
- * Controller: Lấy tất cả amenities
- * @param {Request} req - Yêu cầu từ client
- * @param {Response} res - Phản hồi từ server
- */
+
 const getAllAmenities = async (req, res) => {
   try {
     const amenities = await homestayService.getAllAmenities();
@@ -113,36 +109,32 @@ const getAllAmenities = async (req, res) => {
 
 
 const searchHomestay = async (req, res) => {
-  const { location, priceMin, priceMax, guests, rooms } = req.query;
+  console.log('Request Query:', req.query);
 
-  // Lấy userId từ middleware hoặc null nếu chưa đăng nhập
+  const { location, priceMin, priceMax, guests, rooms, beds } = req.query;
   const userId = req.user?.user_id || null;
-  console.log('User ID:', userId);
 
   const filters = {
-    location,
-    priceMin: priceMin ? parseFloat(priceMin) : undefined,
-    priceMax: priceMax ? parseFloat(priceMax) : undefined,
-    guests: guests ? parseInt(guests) : undefined,
-    rooms: rooms ? parseInt(rooms) : undefined,
+      location,
+      priceMin: priceMin ? parseFloat(priceMin) : undefined,
+      priceMax: priceMax ? parseFloat(priceMax) : undefined,
+      guests: guests ? parseInt(guests) : undefined,
+      rooms: rooms ? parseInt(rooms) : undefined,
+      beds: beds ? parseInt(beds) : undefined,
   };
 
   try {
-    // Gửi filters và userId đến service
-    const homestays = await homestayService.searchHomestay(filters, userId);
-
-    // Kiểm tra và trả về kết quả
-    if (homestays.length > 0) {
-      return res.status(200).json(homestays);
-    } else {
-      return res.status(404).json({ message: 'No homestays found' });
-    }
+      const homestays = await homestayService.searchHomestay(filters, userId);
+      if (homestays.length > 0) {
+          return res.status(200).json(homestays);
+      } else {
+          return res.status(404).json({ message: 'No homestays found' });
+      }
   } catch (error) {
-    console.error('Error fetching homestays:', error.message);
-    return res.status(500).json({ message: 'Error fetching homestays: ' + error.message });
+      console.error('Error fetching homestays:', error.message);
+      return res.status(500).json({ message: 'Error fetching homestays: ' + error.message });
   }
 };
-
 
 
 
@@ -174,7 +166,25 @@ const getPendingHomestays = async (req, res) => {
 const getUnavailableHomestays = async (req, res) => {
   try {
     const homestays = await homestayService.getUnavailableHomestays();
-    res.status(200).json(homestays); // Trả về danh sách homestay kèm hình ảnh
+
+    const formattedHomestays = homestays.map(homestay => ({
+      homestay_id: homestay.homestay_id,
+      homestay_name: homestay.homestay_name,
+      location: homestay.location,
+      description: homestay.description || '',
+      beds: homestay.beds || 0,
+      rooms: homestay.rooms || 0,
+      max_guests: homestay.max_guests || 0,
+      category_name: homestay.category_name || 'Unknown',
+      host_name: homestay.host_name || 'Unknown',
+      host_email: homestay.host_email || 'N/A',
+      host_phone: homestay.host_phone || 'N/A',
+      host_address: homestay.host_address || 'N/A',
+      images: homestay.images ? homestay.images.split(',') : [],
+      amenities: homestay.amenities ? homestay.amenities.split(', ') : [],
+    }));
+
+    res.status(200).json(formattedHomestays);
   } catch (error) {
     console.error('Error fetching unavailable homestays:', error.message);
     res.status(500).json({
@@ -183,7 +193,6 @@ const getUnavailableHomestays = async (req, res) => {
     });
   }
 };
-
 
 const approveHomestay = async (req, res) => {
   const { homestay_id } = req.body;
@@ -282,8 +291,63 @@ const getWishlistHomestays = async (req, res) => {
 
 
 
+// Thêm danh mục Homestay
+const addCategory = async (req, res) => {
+  const { category_name } = req.body;
+
+  if (!category_name) {
+    return res.status(400).json({ message: 'Category name is required' });
+  }
+
+  try {
+    const newCategory = await homestayService.addCategory(category_name);
+    res.status(201).json(newCategory);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Sửa danh mục Homestay
+const updateCategory = async (req, res) => {
+  const { id } = req.params;
+  const { category_name } = req.body;
+
+  if (!category_name) {
+    return res.status(400).json({ message: 'Category name is required' });
+  }
+
+  try {
+    const updatedCategory = await homestayService.updateCategory(id, category_name);
+    if (updatedCategory) {
+      res.status(200).json(updatedCategory);
+    } else {
+      res.status(404).json({ message: 'Category not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Xóa danh mục Homestay
+const deleteCategory = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await homestayService.deleteCategory(id);
+    if (result) {
+      res.status(200).json({ message: 'Category deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Category not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 
 module.exports = { createHomestay, getAllHomestays, getHomestayById, 
   updateHomestay, deleteHomestay, searchHomestay, getAllAmenities,
   getCategory, getPendingHomestays, getUnavailableHomestays,
-  approveHomestay, getHostHomestays, toggleWishlist,   getWishlistHomestays};
+  approveHomestay, getHostHomestays, toggleWishlist,   getWishlistHomestays, addCategory, updateCategory, deleteCategory};

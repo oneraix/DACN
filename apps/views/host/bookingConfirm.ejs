@@ -10,7 +10,7 @@
       background-color: #f5f5f5;
       color: #333;
       margin: 0;
-      padding: 20px;
+      padding: 0px;
     }
 
     h2 {
@@ -227,10 +227,10 @@
             document.getElementById('popup-fullname').textContent = booking.guest_name;
             document.getElementById('popup-email').textContent = booking.guest_email;
             document.getElementById('popup-homestay-name').textContent = booking.homestay_name;
-            document.getElementById('popup-checkin').textContent = booking.check_in;
-            document.getElementById('popup-checkout').textContent = booking.check_out;
-            document.getElementById('popup-adults').textContent = booking.adults;
-            document.getElementById('popup-children').textContent = booking.children;
+            document.getElementById('popup-checkin').textContent = new Date(booking.check_in).toLocaleDateString();
+            document.getElementById('popup-checkout').textContent = new Date(booking.check_out).toLocaleDateString();
+            document.getElementById('popup-adults').textContent = booking.adults_count;
+            document.getElementById('popup-children').textContent = booking.children_count;
             document.getElementById('popup-total').textContent = booking.total_amount;
             document.getElementById('booking-details-popup').style.display = 'flex';
           });

@@ -202,8 +202,23 @@ const getBookedDatesByHomestayId = async (req, res) => {
   }
 };
 
+
+
+const getBookingPaidedByUserId = async (req, res) => {
+  try {
+      const userId = req.user.user_id; // Giải mã user_id từ token
+      const bookings = await bookingService.getConfirmedBookingsByUser(userId);
+      res.status(200).json(bookings);
+  } catch (error) {
+      console.error('Error fetching confirmed bookings for user:', error.message);
+      res.status(500).json({ message: 'Failed to fetch confirmed bookings.' });
+  }
+};
+
+
+
 module.exports = {
   createBooking, getAllBookings, getBookingById, updateBooking, deleteBooking, calculateTotalAmount,
   getPendingBookingsByHostId, updateBookingStatus, getPendingBookingsByUserId, getBookingWaitingPayment, getAllBookingsForAdmin,
-  getBookedDatesByHomestayId
+  getBookedDatesByHomestayId, getBookingPaidedByUserId
 };

@@ -148,7 +148,18 @@ const getBookedDatesByHomestayId = async (homestayId) => {
 };
 
 
+const getConfirmedBookingsByUser = async (userId) => {
+  try {
+      const bookings = await Booking.getConfirmedPaidBookingsByUser(userId);
+      return bookings;
+  } catch (error) {
+      console.error('Error in service fetching confirmed bookings by user:', error.message);
+      throw error;
+  }
+};
+
+
 module.exports = { createBooking, getAllBookings, getBookingById, 
   updateBooking, deleteBooking, calculateTotalAmount, getBookingsByUserId, 
   getPendingBookingsByHostId, updateBookingStatus,getPendingBookingsByUserId,
-  getBookingWaitingPayment, getAllBookingsForAdmin, getBookedDatesByHomestayId };
+  getBookingWaitingPayment, getAllBookingsForAdmin, getBookedDatesByHomestayId, getConfirmedBookingsByUser };

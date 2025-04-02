@@ -283,7 +283,7 @@
                                                 <i class="icon-money"></i>
                                                 <div class="search-bar-group">
                                                     <label>Giá tối thiểu</label>
-                                                    <input type="number" name="price-min" id="price-min" value="0"
+                                                    <input type="number" name="price-min" id="price-min" value=""
                                                         placeholder="Min price" />
                                                 </div>
                                             </div>
@@ -293,7 +293,7 @@
                                                 <i class="icon-money"></i>
                                                 <div class="search-bar-group">
                                                     <label>Giá tối đa</label>
-                                                    <input type="number" name="price-max" id="price-max" value="10000"
+                                                    <input type="number" name="price-max" id="price-max" value=""
                                                         placeholder="Max price" />
                                                 </div>
                                             </div>
@@ -303,7 +303,7 @@
                                                 <i class="icon-user"></i>
                                                 <div class="search-bar-group">
                                                     <label>Khách</label>
-                                                    <input type="number" name="guests" id="guests" value="0"
+                                                    <input type="number" name="guests" id="guests" value=""
                                                         placeholder="Number of guests" />
                                                 </div>
                                             </div>
@@ -313,7 +313,7 @@
                                                 <i class="icon-room"></i>
                                                 <div class="search-bar-group">
                                                     <label>Số phòng</label>
-                                                    <input type="number" name="rooms" id="rooms" value="1"
+                                                    <input type="number" name="rooms" id="rooms" value=""
                                                         placeholder="Number of rooms" />
                                                 </div>
                                             </div>
@@ -323,7 +323,7 @@
                                                 <i class="icon-bed"></i>
                                                 <div class="search-bar-group">
                                                     <label>Số giường</label>
-                                                    <input type="number" name="beds" id="beds" value="1"
+                                                    <input type="number" name="beds" id="beds" value=""
                                                         placeholder="Number of beds" />
                                                 </div>
                                             </div>
@@ -369,50 +369,40 @@
 
 
     <script>
-        document.getElementById('search-form-slider').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Ngăn không reload trang
+document.getElementById('search-form-slider').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Ngăn không reload trang
 
-            // Thu thập dữ liệu từ form
-            const location = document.getElementById('destination').value.trim();
-            const priceMin = document.getElementById('price-min').value.trim();
-            const priceMax = document.getElementById('price-max').value.trim();
-            const guests = document.getElementById('guests').value.trim();
-            const rooms = document.getElementById('rooms').value.trim();
-            const beds = document.getElementById('beds').value.trim();
+    const params = new URLSearchParams({
+        location: document.getElementById('destination').value.trim(),
+        priceMin: document.getElementById('price-min').value.trim(),
+        priceMax: document.getElementById('price-max').value.trim(),
+        guests: document.getElementById('guests').value.trim(),
+        rooms: document.getElementById('rooms').value.trim(),
+        beds: document.getElementById('beds').value.trim(),
+    });
 
-            // Chuẩn bị dữ liệu query
-            const queryParams = new URLSearchParams();
-            if (location) queryParams.append('location', location);
-            if (priceMin) queryParams.append('price_min', priceMin);
-            if (priceMax) queryParams.append('price_max', priceMax);
-            if (guests) queryParams.append('max_guests', guests);
-            if (rooms) queryParams.append('rooms', rooms);
-            if (beds) queryParams.append('beds', beds);
+    const token = localStorage.getItem('token');
+    const endpoint = token ? '/api/searchhomestay' : '/api/searchhomestaysvisitor';
 
-            // Xác định route dựa trên trạng thái đăng nhập
-            const token = localStorage.getItem('token'); // Giả định token được lưu trong localStorage
-            const endpoint = token ? '/api/searchhomestay' : '/api/searchhomestaysvisitor';
-
-            // Gửi request đến API
-            try {
-                const response = await fetch(`http://localhost:3000${endpoint}?${queryParams.toString()}`, {
-                    method: 'GET',
-                    headers: token ? { Authorization: `Bearer ${token}` } : {},
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch homestays');
-                }
-
-                const homestays = await response.json();
-
-                // Hiển thị dữ liệu trả về
-                displayHomestays(homestays);
-            } catch (error) {
-                console.error('Error fetching homestays:', error);
-                document.getElementById('homestay-container').innerHTML = '<p>Failed to load homestays. Please try again later.</p>';
-            }
+    try {
+        const response = await fetch(`http://localhost:3000${endpoint}?${params.toString()}`, {
+            method: 'GET',
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to fetch homestays');
+        }
+
+        const homestays = await response.json();
+        displayHomestays(homestays);
+    } catch (error) {
+        console.error('Error fetching homestays:', error.message);
+        document.getElementById('homestay-container').innerHTML = '<p>Failed to load homestays. Please try again later.</p>';
+    }
+});
+
 
         function displayHomestays(homestays) {
             const container = document.getElementById('homestay-container');
