@@ -1,7 +1,3 @@
-# DEMO
-
-[![Demo Video](https://img.youtube.com/vi/g_JkK6NfVu4/0.jpg)](https://youtu.be/g_JkK6NfVu4)
-
 |![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.001.jpeg)|<p><a name="_toc186104365"></a>BỘ GIÁO DỤC VÀ ĐÀO TẠO</p><p>**TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP. HỒ CHÍ MINH**</p>|
 | :- | :-: |
 
@@ -677,6 +673,9 @@ Hình 3.6.4.2 Giao diện duyệt homestay
 
 Hình 3.6.4.3 giao diện quản lí booking
 
+# DEMO
+
+[![Demo Video](https://img.youtube.com/vi/g_JkK6NfVu4/0.jpg)](https://youtu.be/g_JkK6NfVu4)
 
 # <a name="_toc186104412"></a>**CHƯƠNG 4: KẾT LUẬN VÀ KIẾN NGHỊ**
 ## <a name="_toc186104413"></a>**4.1 Kết quả đạt được**
