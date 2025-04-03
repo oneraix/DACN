@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danh Sách Homestay Không Khả Dụng</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+      margin: 20px 0;
+    }
+
+    #homestay-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #homestay-table th,
+    #homestay-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #homestay-table th {
+      background-color: #4CAF50;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .approve-button {
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .approve-button:hover {
+      background-color: #388E3C;
+    }
+
+    .reject-button {
+      padding: 8px 12px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .reject-button:hover {
+      background-color: #d32f2f;
+    }
+
+    .image-popup,
+    .description-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      z-index: 1000;
+      text-align: center;
+      max-width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .popup-controls {
+      margin-top: 10px;
+    }
+
+    .popup-controls button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .popup-controls .close-popup {
+      background-color: #f44336;
+      color: white;
+    }
+
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    td.description {
+      text-align: left;
+    }
+
+    td.description .show-more {
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    td.description .show-more:hover {
+      color: #0056b3;
+    }
+
+    td.name {
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      #homestay-table th,
+      #homestay-table td {
+        font-size: 14px;
+      }
+
+      .approve-button,
+      .reject-button {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2> Homestay Chờ Duyệt</h2>
+
+  <table id="homestay-table">
+    <thead>
+      <tr>
+        <th>Tên Homestay</th>
+        <th>Vị Trí</th>
+        <th>Mô Tả</th>
+        <th>Tiện Nghi</th>
+        <th>Chủ Homestay</th>
+        <th>Hình Ảnh</th>
+        <th>Hành Động</th>
+      </tr>
+    </thead>
+    <tbody id="homestay-list">
+      <!-- Dữ liệu homestay sẽ được hiển thị tại đây -->
+    </tbody>
+  </table>
+
+  <div id="overlay" onclick="closePopup()"></div>
+  <div class="image-popup" id="image-popup">
+    <img id="popup-image" src="" alt="Homestay Image">
+    <div class="popup-controls">
+      <button class="prev-button" onclick="prevImage()">Trước</button>
+      <button class="next-button" onclick="nextImage()">Sau</button>
+      <button class="close-popup" onclick="closePopup()">Đóng</button>
+    </div>
+  </div>
+
+  <div class="description-popup" id="description-popup">
+    <p id="popup-description"></p>
+    <button class="close-popup" onclick="closePopup()">Đóng</button>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    let currentImageIndex = 0;
+    let currentImages = [];
+
+    async function loadUnavailableHomestays() {
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/homestays/unavailable', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Lỗi khi lấy danh sách homestay.');
+        }
+
+        const homestayList = document.getElementById('homestay-list');
+        homestayList.innerHTML = '';
+
+        data.forEach(homestay => {
+          const row = document.createElement('tr');
+
+          row.innerHTML = `
+            <td class="name">${homestay.homestay_name}</td>
+            <td>${homestay.location}</td>
+            <td class="description">
+              ${homestay.description.length > 50 ? 
+                `${homestay.description.substring(0, 50)}... <span class="show-more" onclick="showFullDescription('${encodeURIComponent(homestay.description)}')">Xem thêm</span>` : 
+                homestay.description}
+            </td>
+            <td>
+              ${homestay.beds} giường, ${homestay.rooms} phòng, ${homestay.max_guests} khách<br>
+              Tiện nghi: ${homestay.amenities.join(', ')}
+            </td>
+            <td>
+              ${homestay.host_name}<br>
+              Email: ${homestay.host_email}<br>
+              SĐT: ${homestay.host_phone}<br>
+              Địa chỉ: ${homestay.host_address || 'N/A'}
+            </td>
+            <td><button onclick="showImages('${homestay.images.join(',')}')">Xem Ảnh</button></td>
+            <td>
+              <button class="approve-button" onclick="approveHomestay(${homestay.homestay_id})">Đồng Ý</button>
+              <button class="reject-button" onclick="rejectHomestay(${homestay.homestay_id})">Từ Chối</button>
+            </td>
+          `;
+
+          homestayList.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching unavailable homestays:', error.message);
+        alert('Lỗi khi tải danh sách homestay.');
+      }
+    }
+
+    function showFullDescription(description) {
+      const overlay = document.getElementById('overlay');
+      const popup = document.getElementById('description-popup');
+      const descriptionContent = document.getElementById('popup-description');
+
+      descriptionContent.textContent = decodeURIComponent(description);
+      overlay.style.display = 'block';
+      popup.style.display = 'block';
+    }
+
+    function showImages(images) {
+      currentImages = images.split(',');
+      currentImageIndex = 0;
+      updatePopupImage();
+
+      const overlay = document.getElementById('overlay');
+      const popup = document.getElementById('image-popup');
+
+      overlay.style.display = 'block';
+      popup.style.display = 'block';
+    }
+
+    function updatePopupImage() {
+      const popupImage = document.getElementById('popup-image');
+     
+      popupImage.src = currentImages[currentImageIndex];
+    }
+
+    function prevImage() {
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updatePopupImage();
+      }
+    }
+
+    function nextImage() {
+      if (currentImageIndex < currentImages.length - 1) {
+        currentImageIndex++;
+        updatePopupImage();
+      }
+    }
+
+    function closePopup() {
+      const overlay = document.getElementById('overlay');
+      const popups = document.querySelectorAll('.image-popup, .description-popup');
+
+      overlay.style.display = 'none';
+      popups.forEach(popup => popup.style.display = 'none');
+    }
+
+    async function approveHomestay(homestayId) {
+      if (!homestayId) {
+        alert('Không thể phê duyệt vì thiếu Homestay ID.');
+        return;
+      }
+
+      const confirmAction = confirm('Bạn có chắc chắn muốn phê duyệt homestay này không?');
+      if (!confirmAction) return;
+
+      try {
+        const response = await fetch('/api/homestays/approve', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ homestay_id: homestayId }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Lỗi khi phê duyệt homestay.');
+        }
+
+        alert('Phê duyệt thành công!');
+        loadUnavailableHomestays(); // Tải lại danh sách sau khi phê duyệt
+      } catch (error) {
+        console.error('Error approving homestay:', error.message);
+        alert('Lỗi khi phê duyệt homestay.');
+      }
+    }
+
+    async function rejectHomestay(homestayId) {
+      if (!homestayId) {
+        alert('Không thể từ chối vì thiếu Homestay ID.');
+        return;
+      }
+
+      const confirmAction = confirm('Bạn có chắc chắn muốn từ chối homestay này không?');
+      if (!confirmAction) return;
+
+      try {
+        const response = await fetch(`/api/homestay/${homestayId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Lỗi khi từ chối homestay.');
+        }
+
+        alert('Từ chối thành công!');
+        loadUnavailableHomestays(); // Tải lại danh sách sau khi từ chối
+      } catch (error) {
+        console.error('Error rejecting homestay:', error.message);
+        alert('Lỗi khi từ chối homestay.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadUnavailableHomestays);
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <title>Vitour - Travel & Tour Booking HTML Template</title>
+
+    <meta name="author" content="themesflat.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="global/app/css/app.css">
+    <link rel="stylesheet" href="global/app/css/jquery.fancybox.min.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="global/assets/images/favico.png">
+    <link rel="global/apple-touch-icon-precomposed" href="global/assets/images/favico.png">
+
+</head>
+
+<body class="body header-fixed ">
+
+    <div class="preload preload-container">
+        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+        </svg>
+    </div>
+
+    <!-- /preload -->
+
+    <div id="wrglobal/apper">
+        <div id="pagee" class="clearfix">
+
+            <main id="main">
+                <section class="login">
+                    <div class="tf-container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="login-wrap flex">
+                                    <div class="image">
+                                        <img src="./global/assets/images/page/sign-up.jpg" alt="image">
+                                    </div>
+                                    <div class="content">
+                                        <div class="inner-header-login">
+                                            <h3 class="title">Welcome to P2P Homestay</h3>
+                                            <div class="flex-three">
+                                            </div>
+                                        </div>
+                                        <form id="login-form" class="login-user">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="input-wrap">
+                                                        <label>Account</label>
+                                                        <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Enter your username or email" required>
+                                                    </div>
+                                                </div>
+                                        
+                                                <div class="col-lg-12">
+                                                    <div class="input-wrap">
+                                                        <div class="flex-two">
+                                                            <label>Your password</label>
+                                                            <a href="#" class="mb-15">Forgot Password?</a>
+                                                        </div>
+                                                        <input type="password" id="password" name="password" placeholder="Enter your password*" required>
+                                                    </div>
+                                                </div>
+                                        
+                                                <div class="col-lg-12 mb-40">
+                                                    <div class="input-wrap-social ">
+                                                        <span class="or">or</span>
+                                                        <div class="flex-three">
+                                                            <a href="#" class="login-social flex-three">
+                                                                <img src="./global/assets/images/page/gg.png" alt="image">
+                                                                <span>Sign in with Google</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        
+                                                <div class="col-lg-12 mb-30">
+                                                    <button type="submit" class="btn-submit">Sign in</button>
+                                                </div>
+                                        
+                                                <div class="col-md-12">
+                                                    <div class="flex-three">
+                                                        <span class="account">Don’t have an account?</span>
+                                                        <a href="/register" class="link-login">Register</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Bottom -->
+        </div>
+        <!-- /#page -->
+    </div>
+
+    <!-- Modal Popup Bid -->
+
+    <a id="scroll-top" class="button-go"></a>
+
+    <!-- Javascript -->
+
+    <script>
+        // Lắng nghe sự kiện submit của form
+        document.getElementById('login-form').addEventListener('submit', async function (event) {
+            event.preventDefault();  // Ngừng hành động mặc định của form
+    
+            // Lấy giá trị từ các input
+            const usernameOrEmail = document.getElementById('usernameOrEmail').value;
+            const password = document.getElementById('password').value;
+    
+            // Kiểm tra dữ liệu đầu vào
+            if (!usernameOrEmail || !password) {
+                alert('Vui lòng nhập đầy đủ thông tin');
+                return;
+            }
+    
+            try {
+                // Gửi request đăng nhập tới API
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ usernameOrEmail, password }),
+                });
+    
+                const data = await response.json();
+    
+                // Kiểm tra nếu đăng nhập thành công
+                if (response.status === 200) {
+                    // Lưu token vào localStorage hoặc sessionStorage
+                    localStorage.setItem('token', data.token);
+                  //  localStorage.setItem('user', JSON.stringify(data.user));
+                    // Chuyển hướng người dùng sau khi đăng nhập thành công
+                    window.location.href = '/'; 
+                } else {
+                    alert(data.message || 'Đăng nhập thất bại');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại');
+            }
+        });
+    </script>
+    <script src="global/app/js/jquery.min.js"></script>
+    <script src="global/app/js/jquery.nice-select.min.js"></script>
+    <script src="global/app/js/bootstrap.min.js"></script>
+    <script src="global/app/js/swiper-bundle.min.js"></script>
+    <script src="global/app/js/swiper.js"></script>
+    <script src="global/app/js/plugin.js"></script>
+    <script src="global/app/js/jquery.fancybox.js"></script>
+    <script src="global/app/js/shortcodes.js"></script>
+    <script src="global/app/js/main.js"></script>
+
+</body>
+
+</html>

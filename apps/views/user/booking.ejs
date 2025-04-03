@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danh Sách Đặt Phòng Chờ Xác Nhận</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: #4caf50;
+      margin-bottom: 20px;
+      margin-top: 20px;
+    }
+
+    #booking-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #booking-table th, #booking-table td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #booking-table th {
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+    }
+
+    #booking-table td {
+      background-color: #fefefe;
+    }
+
+    #booking-table tr:hover td {
+      background-color: #f1f1f1;
+    }
+
+    .cancel-button, .pay-button {
+      padding: 8px 15px;
+      font-size: 14px;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .cancel-button {
+      background-color: #f44336;
+    }
+
+    .cancel-button:hover {
+      background-color: #d32f2f;
+    }
+
+    .pay-button {
+      background-color: #4caf50;
+    }
+
+    .pay-button:hover {
+      background-color: #388e3c;
+    }
+
+    @media (max-width: 768px) {
+      #booking-table th, #booking-table td {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .cancel-button, .pay-button {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+    }
+
+    .empty-message {
+      text-align: center;
+      font-size: 16px;
+      color: #888;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="pagee" class="clearfix">
+      <main id="main">
+        <h2>Danh Sách Đặt Phòng Chờ Xác Nhận</h2>
+
+        <table id="booking-table">
+          <thead>
+            <tr>
+              <th>Tên Homestay</th>
+              <th>Ngày Đến</th>
+              <th>Ngày Đi</th>
+              <th>Tổng Tiền</th>
+              <th>Trạng Thái</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="booking-list">
+            <!-- Dữ liệu booking sẽ được hiển thị ở đây -->
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    async function loadPendingBookings() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/bookings/pendingbyuser', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Lỗi khi tải danh sách đặt phòng chờ xác nhận.');
+        }
+
+        const bookings = await response.json();
+        const bookingList = document.getElementById('booking-list');
+        bookingList.innerHTML = '';
+
+        if (bookings.length === 0) {
+          bookingList.innerHTML = '<tr><td colspan="6" class="empty-message">Không có đặt phòng chờ xác nhận.</td></tr>';
+        }
+
+        bookings.forEach(booking => {
+          const row = document.createElement('tr');
+          row.dataset.bookingId = booking.booking_id;
+
+          row.innerHTML = `
+            <td>${booking.homestay_name}</td>
+            <td>${booking.check_in}</td>
+            <td>${booking.check_out}</td>
+            <td>${booking.total_amount}</td>
+            <td>${booking.status}</td>
+            <td>
+              <button class="cancel-button" onclick="cancelBooking(${booking.booking_id})">Hủy Đặt Phòng</button>
+            </td>
+          `;
+          bookingList.appendChild(row);
+        });
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function cancelBooking(bookingId) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+
+      if (!confirm('Bạn có chắc chắn muốn hủy đặt phòng này?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'cancelled' })
+        });
+
+        const responseBody = await response.json();
+
+        if (!response.ok) {
+          throw new Error(responseBody.message || 'Unknown error');
+        }
+
+        alert(responseBody.message);
+        loadPendingBookings();
+      } catch (error) {
+        alert('Lỗi khi hủy đặt phòng: ' + error.message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadPendingBookings);
+  </script>
+</body>
+</html>

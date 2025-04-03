@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển hồ sơ</title>
+    <link rel="stylesheet" href="app/css/app.css">
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="pagee" class="clearfix">
+            <main id="main">
+                <section class="profile-dashboard">
+                    <form id="editProfileForm" class="edit-profile" enctype="multipart/form-data">
+                        <div class="inner-header mb-40">
+                            <h3 class="title">Hồ sơ của tôi</h3>
+                            <p class="des">Quản lý thông tin hồ sơ của bạn</p>
+                        </div>
+                        <div class="upload-image-dashboard flex mb-80">
+                            <span class="title-avata">Ảnh đại diện:</span>
+                            <div class="upload-image-wrap">
+                                <div class="avata relative">
+                                    <img id="profilePicture" src="./assets/images/page/update-profile.jpg" alt="Ảnh đại diện">
+                                    <img id="profilePicturePreview" style="display:none; margin-left:10px;" alt="Xem trước ảnh đại diện mới">
+                                    <div class="icon-delete">
+                                        <i class="icon-delete-1"></i>
+                                    </div>
+                                </div>
+                                <span class="upload">Tải lên ảnh đại diện mới</span>
+                                <div class="upload-file">
+                                    <input type="file" id="profilePictureInput" accept="image/*">
+                                </div>
+                                <p id="fileSizeWarning" style="color: red; display: none;">Dung lượng file không được vượt quá 2MB.</p>
+                            </div>
+                        </div>
+                        <div class="infomation-dashboard mb-70">
+                            <h4 class="title">Thông tin người dùng</h4>
+                            <div class="widget-dash-board">
+                                <div class="grid-input-2">
+                                    <div class="input-wrap">
+                                        <label>Họ và tên</label>
+                                        <input type="text" id="userFullName" name="full_name" placeholder="Nhập họ và tên">
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label>Số điện thoại</label>
+                                        <input type="tel" id="userPhone" name="phone" placeholder="Nhập số điện thoại">
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label>Email*</label>
+                                        <input type="email" id="userEmail" name="email" placeholder="Nhập email">
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label>Địa chỉ*</label>
+                                        <input type="text" id="userAddress" name="address" placeholder="Nhập địa chỉ">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="otp-dashboard">
+                                <div class="flex-three">
+                                    <div class="button-wrap">
+                                        <button type="button" id="saveInfo" class="save">Lưu thông tin</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="infomation-dashboard mb-70">
+                            <h4 class="title">Yêu cầu thay đổi mật khẩu</h4>
+                            <div class="widget-dash-board">
+                                <div class="grid-input-2">
+                                    <div class="input-wrap">
+                                        <label>Mật khẩu cũ</label>
+                                        <input type="password" id="oldPassword" name="old_password" placeholder="Nhập mật khẩu cũ">
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label>Mật khẩu mới</label>
+                                        <input type="password" id="newPassword" name="new_password" placeholder="Nhập mật khẩu mới">
+                                    </div>
+                                    <div class="input-wrap">
+                                        <label>Nhập lại mật khẩu mới</label>
+                                        <input type="password" id="retypeNewPassword" placeholder="Nhập lại mật khẩu mới">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="otp-dashboard">
+                            <div class="flex-three">
+                                <div class="button-wrap">
+                                    <button type="button" id="savePassword" class="save">Lưu mật khẩu</button>
+                                    <button type="reset" class="reset">Đặt lại tất cả</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token') || '';
+
+        // Hàm lấy thông tin người dùng từ API getProfile
+        async function fetchProfile() {
+            try {
+                const response = await fetch('/api/users/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Không thể lấy thông tin hồ sơ');
+                const { data } = await response.json();
+
+                document.getElementById('profilePicture').src = data.profile_picture || './assets/images/page/update-profile.jpg';
+                document.getElementById('userFullName').value = data.full_name || '';
+                document.getElementById('userPhone').value = data.phone || '';
+                document.getElementById('userEmail').value = data.email || '';
+                document.getElementById('userAddress').value = data.address || '';
+            } catch (error) {
+                console.error('Lỗi khi lấy thông tin hồ sơ:', error.message);
+            }
+        }
+
+        // Hàm lưu thông tin người dùng
+        async function saveInfo() {
+            const formData = new FormData();
+            const profilePicture = document.getElementById('profilePictureInput').files[0];
+
+            if (profilePicture) {
+                if (profilePicture.size > 2 * 1024 * 1024) {
+                    alert('Dung lượng file không được vượt quá 2MB.');
+                    return;
+                }
+                formData.append('profile_picture', profilePicture);
+            }
+
+            formData.append('full_name', document.getElementById('userFullName').value);
+            formData.append('phone', document.getElementById('userPhone').value);
+            formData.append('email', document.getElementById('userEmail').value);
+            formData.append('address', document.getElementById('userAddress').value);
+
+            try {
+                const response = await fetch('/api/users/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Thông tin hồ sơ được cập nhật thành công!');
+                    fetchProfile(); // Tải lại dữ liệu hồ sơ
+                } else {
+                    alert(result.message || 'Cập nhật hồ sơ thất bại');
+                }
+            } catch (error) {
+                console.error('Lỗi khi cập nhật hồ sơ:', error.message);
+            }
+        }
+
+        // Hàm lưu mật khẩu
+        async function savePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const retypeNewPassword = document.getElementById('retypeNewPassword').value;
+
+            // Kiểm tra mật khẩu cũ và mật khẩu mới
+            if (!oldPassword) {
+                alert('Vui lòng nhập mật khẩu cũ.');
+                return;
+            }
+
+            if (newPassword && newPassword !== retypeNewPassword) {
+                alert('Mật khẩu mới không khớp!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/users/change-password', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        old_password: oldPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Mật khẩu đã được thay đổi thành công!');
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('retypeNewPassword').value = '';
+                } else {
+                    alert(result.message || 'Thay đổi mật khẩu thất bại');
+                }
+            } catch (error) {
+                console.error('Lỗi khi thay đổi mật khẩu:', error.message);
+            }
+        }
+
+        document.getElementById('profilePictureInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const fileSizeWarning = document.getElementById('fileSizeWarning');
+            const profilePicturePreview = document.getElementById('profilePicturePreview');
+
+            if (file) {
+                // Kiểm tra kích thước file
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    fileSizeWarning.style.display = 'block';
+                    event.target.value = '';
+                    profilePicturePreview.style.display = 'none';
+                    return;
+                } else {
+                    fileSizeWarning.style.display = 'none';
+                }
+
+                // Hiển thị preview ảnh mới
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    profilePicturePreview.src = e.target.result;
+                    profilePicturePreview.style.display = 'inline-block';
+                    profilePicturePreview.style.width = '100px'; // Điều chỉnh kích thước preview
+                    profilePicturePreview.style.height = '100px';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('saveInfo').addEventListener('click', saveInfo);
+        document.getElementById('savePassword').addEventListener('click', savePassword);
+
+        fetchProfile(); // Gọi hàm lấy thông tin ngay khi trang được tải
+    </script>
+</body>
+
+</html>

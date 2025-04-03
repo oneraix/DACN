@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="/global/app/css/app.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/magnific-popup.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/jquery.fancybox.min.css">
+    <link rel="stylesheet" type="text/css" href="/global/app/css/textanimation.css">
+    <link rel="stylesheet" href="/global/app/css/map.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <!-- Favicon and Touch Icons -->
+    <link rel="shortcut icon" href="/global/assets/images/favico.png">
+    <link rel="apple-touch-icon-precomposed" href="/global/assets/images/favico.png">
+
+    <meta charset="utf-8">
+    <title>Vitour - </title>
+    <meta name="author" content="themesflat.com">
+
+
+    <style>
+        select {
+            appearance: none;
+            /* Xóa bỏ kiểu mặc định của trình duyệt */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            width: 50%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Tạo hiệu ứng khi hover vào dropdown */
+        select:hover {
+            border-color: #a5a5a5;
+        }
+
+        /* Tạo mũi tên dropdown custom */
+        select::-ms-expand {
+            display: none;
+            /* Ẩn mũi tên mặc định của trình duyệt */
+        }
+
+        select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6"><path d="M5 6l5-5H0z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+
+        /* Cải thiện bố cục của các input và dropdown */
+        .input-wrap-sellect {
+            position: relative;
+        }
+
+        /* Thiết kế button để trông đẹp hơn */
+        button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .image-gallery-single img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #rating-stars i {
+            color: gray;
+            cursor: pointer;
+        }
+
+        /* Khi sao được chọn */
+        #rating-stars i.selected {
+            color: gold;
+            /* Màu vàng cho sao đã chọn */
+        }
+
+        .address-container {
+            display: flex;
+            /* Sử dụng flexbox để xếp hàng ngang */
+            align-items: center;
+            /* Canh giữa theo chiều dọc */
+            gap: 8px;
+            /* Khoảng cách giữa icon và text */
+        }
+
+        .address-container i {
+            font-size: 24px;
+            /* Kích thước của icon */
+            color: #666;
+            /* Màu icon */
+        }
+
+        .address-container p {
+            margin: 0;
+            /* Xóa margin mặc định của thẻ p */
+            font-size: 16px;
+            /* Kích thước font chữ */
+            color: #333;
+            /* Màu chữ */
+        }
+    </style>
+</head>
+
+<body class="body header-fixed ">
+    <div id="wrapper">
+        <div id="pagee" class="clearfix">
+            <main id="main">
+                <section class="tour-single">
+                    <div class="tf-container">
+                        <div class="row"></div>
+                        <div class="row pd-main">
+                            <div class="col-lg-12">
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-information" role="tabpanel"
+                                        aria-labelledby="pills-information-tab" tabindex="0">
+                                        <div class="row mb-50">
+                                            <div class="col-lg-12">
+                                                <div class="inner-heading-wrap flex-two">
+                                                    <div class="inner-heading">
+                                                        <h2 class="title" id="homestay-name">Đang tải...</h2>
+                                                        <ul class="flex-three list-wrap-heading">
+                                                            <li class="flex-three">
+                                                                <i class="icon-user"></i>
+                                                                <span id="max-guests">Số khách tối đa: Đang
+                                                                    tải...</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-bed"></i>
+                                                                <span id="beds">Số giường: Đang tải...</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-room"></i>
+                                                                <span id="rooms">Số phòng: Đang tải...</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-18"></i>
+                                                                <span id="location">Đang tải...</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-tag"></i>
+                                                                <span id="category">Đang tải...</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="inner-price">
+                                                        <p class="price-sale text-main">
+                                                            <span id="price">0.00 VND</span><span>/Đêm</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-40 image-gallery-single" id="image-gallery">
+                                            <!-- Ảnh sẽ được thêm động tại đây -->
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-8">
+                                                <div class="information-content-tour">
+                                                    <!-- Mô tả -->
+                                                    <div class="description-wrap mb-40">
+                                                        <span class="description">Mô tả:</span>
+                                                        <p class="des" id="description">Đang tải...</p>
+                                                    </div>
+
+                                                    <!-- Tiện nghi -->
+                                                    <div class="description-wrap mb-40">
+                                                        <h4 class="title mb-40">Tiện nghi</h4>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <ul class="listing-icon" id="amenitiesList1"></ul>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <ul class="listing-icon" id="amenitiesList2"></ul>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <ul class="listing-icon" id="amenitiesList3"></ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Vị trí -->
+                                                    <div class="description-wrap mb-40">
+                                                        <h4 class="title mb-40">Vị trí</h4>
+                                                        <div class="address-container">
+                                                            <i class="icon-18"></i>
+                                                            <p id="address">Đang tải...</p>
+                                                        </div>
+                                                        <div id="map" style="height: 400px; width: 100%; z-index: 0;">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Thư viện ảnh -->
+                                                    <div class="gallery-content-tour" id="gallery">
+                                                        <h4 class="title mb-40">Thư viện ảnh</h4>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Đánh giá -->
+                                                <div class="review-content-tour">
+                                                    <div class="client-review mb-80">
+                                                        <div class="flex-two mb-50 inner-header">
+                                                            <h4 class="title-review">Đánh giá của khách hàng</h4>
+                                                            <div class="client-review-summary flex">
+                                                                <span id="review-count">0 Đánh giá</span>
+                                                                <div class="start" id="average-rating-stars"></div>
+                                                                <span id="average-rating">(0 trên 5)</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="client-review-list" id="review-list"></div>
+                                                    </div>
+
+                                                    <!-- Gửi đánh giá -->
+                                                    <div class="form-review bg-1">
+                                                        <h4 class="title-review mb-60">Gửi đánh giá của bạn</h4>
+                                                        <div id="not-logged-in-message" class="alert alert-warning"
+                                                            style="display: none;">
+                                                            Bạn cần đăng nhập để gửi đánh giá.
+                                                        </div>
+                                                        <div id="review-form-container" style="display: none;">
+                                                            <div class="inner-review flex-one mb-50">
+                                                                <div class="inner-review-item">
+                                                                    <span class="text-review">Điểm đánh giá</span>
+                                                                    <div class="stars" id="rating-stars">
+                                                                        <i class="icon-Star" data-value="1"></i>
+                                                                        <i class="icon-Star" data-value="2"></i>
+                                                                        <i class="icon-Star" data-value="3"></i>
+                                                                        <i class="icon-Star" data-value="4"></i>
+                                                                        <i class="icon-Star" data-value="5"></i>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <form action="/" id="form-review">
+                                                                <div class="row">
+                                                                    <div class="col-lg-12">
+                                                                        <fieldset class="relative input-wrap mb-37">
+                                                                            <i class="icon-content"></i>
+                                                                            <textarea name="review" id="review-text"
+                                                                                rows="6"
+                                                                                placeholder="Viết đánh giá của bạn tại đây"></textarea>
+                                                                        </fieldset>
+                                                                    </div>
+                                                                    <div class="col-lg-12 text-right">
+                                                                        <button type="submit"
+                                                                            class="btn btn-primary submit">Gửi đánh
+                                                                            giá</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Thanh bên đặt phòng -->
+                                            <div class="col-lg-4">
+                                                <div class="side-bar-right">
+                                                    <div class="sidebar-widget">
+                                                        <h6 class="block-heading">Đặt phòng</h6>
+                                                        <form action="/" id="form-book-tour">
+                                                            <div class="input-wrap mb-30">
+                                                                <p>Ngày nhận phòng</p>
+                                                                <input type="date" id="check-in-date">
+                                                            </div>
+                                                            <div class="input-wrap mb-30">
+                                                                <p>Ngày trả phòng</p>
+                                                                <input type="date" id="check-out-date">
+                                                            </div>
+                                                            <div class="input-wrap-sellect mb-30">
+                                                                <span class="label">Khách</span>
+                                                                <div class="flex-two mb-15">
+                                                                    <p>Người lớn (13+ tuổi)</p>
+                                                                    <select id="adults-count"></select>
+                                                                </div>
+                                                                <div class="flex-two mb-15">
+                                                                    <p>Trẻ em (Dưới 13 tuổi)</p>
+                                                                    <select id="children-count"></select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-two mb-40">
+                                                                <span class="label">Tổng cộng:</span>
+                                                                <span class="total text-main" id="total-price">0
+                                                                    VND</span>
+                                                            </div>
+                                                            <button type="submit">Tiến hành đặt phòng</button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="sidebar-widget">
+                                                        <h6 class="block-heading">Lý do chọn chúng tôi</h6>
+                                                        <ul class="category-confidence">
+                                                            <li class="flex-three">
+                                                                <i class="icon-customer-service-1"></i>
+                                                                <span>Hỗ trợ khách hàng 24/7</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-Vector-6"></i>
+                                                                <span>Tour và hoạt động được chọn lọc</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-insurance-1"></i>
+                                                                <span>Bảo hiểm du lịch miễn phí</span>
+                                                            </li>
+                                                            <li class="flex-three">
+                                                                <i class="icon-price-tag-1-1"></i>
+                                                                <span>Cam kết giá tốt nhất</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+
+    <a id="scroll-top" class="button-go"></a>
+
+
+    <!-- Hiển thị thông tin homestay -->
+    <script>
+        // Lấy ID homestay từ URL
+        const path = window.location.pathname;
+        const regex = /\/roomdetail\/(\d+)/;
+        const match = path.match(regex);
+
+        if (match) {
+            const homestayId = match[1];  // Lấy ID từ URL
+
+            // Hàm gọi API để lấy dữ liệu homestay
+            async function fetchHomestayData(id) {
+                try {
+                    const response = await fetch(`/api/homestay/${id}`);  // URL API của bạn
+                    const homestay = await response.json();
+
+                    if (response.ok) {
+                        // Cập nhật thông tin homestay vào trang
+                        document.getElementById('homestay-name').innerText = homestay.name;
+                        document.getElementById('max-guests').innerText = `Max Guests: ${homestay.max_guests}`;
+                        if (homestay.location) {
+                            const locationParts = homestay.location.split(','); // Tách chuỗi bằng dấu phẩy
+                            if (locationParts.length >= 3) {
+                                // Lấy 2 phần tử cuối cùng
+                                const trimmedLocation = locationParts.slice(-2).join(',').trim();
+                                document.getElementById('location').innerText = trimmedLocation;
+                            } else {
+                                document.getElementById('location').innerText = homestay.location; // Trả về toàn bộ nếu không đủ dấu phẩy
+                            }
+                        } else {
+                            document.getElementById('location').innerText = 'Location not available'; // Trường hợp không có location
+                        }
+                        document.getElementById('category').innerText = homestay.category_name;
+                        document.getElementById('price').innerText = `${homestay.price}VND`;
+
+                        // Cập nhật thông tin số giường và số phòng
+                        document.getElementById('beds').innerText = homestay.beds ? `Beds: ${homestay.beds}` : 'Beds: N/A';
+                        document.getElementById('rooms').innerText = homestay.rooms ? `Rooms: ${homestay.rooms}` : 'Rooms: N/A';
+
+                        // Gọi hàm render bản đồ với địa chỉ từ API
+                        fetchAndRenderMap(homestay.location);
+                        // Cập nhật mô tả
+                        document.getElementById('description').innerText = homestay.description;
+
+
+                        // Cập nhật gallery ảnh
+                        const gallery = document.getElementById('image-gallery');
+                        const images = homestay.images.split(',');
+                        const firstThreeImages = images.slice(0, 3);
+                        firstThreeImages.forEach((image, index) => {
+                            const imageElement = document.createElement('div');
+                            if (index === 0) {
+                                imageElement.classList.add('col-12', 'col-sm-6');
+                            } else {
+                                imageElement.classList.add('col-6', 'col-sm-3');
+                            }
+                            imageElement.innerHTML = `<img src="${image.trim()}" alt="image" class="item1">`;
+                            gallery.appendChild(imageElement);
+                        });
+
+
+                        if (Array.isArray(homestay.amenities) && homestay.amenities.length > 0) {
+                            const amenities = homestay.amenities; // Mảng tiện nghi từ JSON
+
+                            // Chia tiện nghi thành ba cột
+                            const columns = [amenitiesList1, amenitiesList2, amenitiesList3];
+                            amenities.forEach((amenity, index) => {
+                                const columnIndex = index % 3; // Chia đều vào 3 cột
+                                const listItem = document.createElement('li');
+                                listItem.classList.add('flex-three');
+                                listItem.innerHTML = `<i class="icon-10"></i><p>${amenity}</p>`; // Hiển thị tiện nghi
+                                columns[columnIndex].appendChild(listItem); // Thêm tiện nghi vào cột tương ứng
+                            });
+                        } else {
+                            // Nếu không có tiện nghi, hiển thị thông báo
+                            const amenitiesContainer = document.getElementById('amenities-container');
+                            amenitiesContainer.innerHTML = '<p>No amenities available</p>';
+                        }
+
+
+                        // Cập nhật địa chỉ
+                        document.getElementById('address').innerText = homestay.location;
+
+                        const galleryContainer = document.getElementById('gallery');
+                        const allImages = homestay.images.split(','); // Tách chuỗi các ảnh
+
+                        if (allImages.length > 0) {
+                            galleryContainer.innerHTML = ''; // Xóa nội dung cũ, nếu có
+
+                            allImages.forEach((image) => {
+                                const imageElement = document.createElement('div');
+                                imageElement.classList.add('gallery-item'); // Thêm class cho các ảnh nếu cần thiết
+                                imageElement.innerHTML = `
+            <img src="${image.trim()}" alt="Homestay Image" class="gallery-img" />
+        `;
+                                galleryContainer.appendChild(imageElement); // Thêm ảnh vào gallery
+                            });
+                        } else {
+                            galleryContainer.innerHTML = '<p>No images available</p>'; // Nếu không có ảnh
+                        }
+
+                        // Cập nhật thông tin số khách
+                        updateGuestOptions(homestay.max_guests);
+
+                        // Cập nhật tính năng chọn ngày và tính tổng tiền
+                        setupDateAndPriceCalculation(homestay.price, homestay.max_guests);
+
+                    } else {
+                        console.error('Error fetching homestay data');
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch homestay data:', error);
+                }
+            }
+
+            // Gọi hàm để lấy dữ liệu homestay khi trang được tải
+            fetchHomestayData(homestayId);
+        } else {
+            console.error('Homestay ID not found in URL');
+        }
+        async function fetchAndRenderMap(address) {
+            try {
+                // Gọi API OpenStreetMap Nominatim để lấy tọa độ
+                const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+
+                const response = await fetch(geocodeUrl);
+                const geocodeData = await response.json();
+
+                if (geocodeData.length > 0) {
+                    const lat = parseFloat(geocodeData[0].lat);
+                    const lon = parseFloat(geocodeData[0].lon);
+
+                    // Render bản đồ với Leaflet
+                    const map = L.map('map').setView([lat, lon], 15);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    // Thêm marker hiển thị địa chỉ
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup(`<b>${address}</b>`)
+                        .openPopup();
+                } else {
+                    console.error('Không tìm thấy tọa độ từ địa chỉ.');
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy tọa độ từ địa chỉ:', error);
+            }
+        }
+
+    </script>
+
+    <!-- FormBooking -->
+    <script>
+        let bookedDates = []; // Lưu danh sách các ngày đã được booking từ API
+        // Gọi API để lấy danh sách ngày đã booking
+        async function fetchBookedDates(homestayId) {
+            try {
+                const response = await fetch(`/api/bookings/dates/${homestayId}`);
+                if (!response.ok) throw new Error('Failed to fetch booked dates');
+                bookedDates = await response.json();
+            } catch (error) {
+                console.error('Error fetching booked dates:', error);
+            }
+        }
+
+        // Khởi tạo input và disable ngày đã booking
+        function setupDateInputs() {
+            const checkInInput = document.getElementById('check-in-date');
+            const checkOutInput = document.getElementById('check-out-date');
+
+            // Sự kiện cho input check-in
+            checkInInput.addEventListener('change', function () {
+                if (bookedDates.includes(this.value)) {
+                    alert('This date is already booked. Please choose another date.');
+                    this.value = ''; // Reset giá trị ngày check-in
+                } else {
+                    // Cập nhật minDate cho check-out để không nhỏ hơn ngày check-in
+                    checkOutInput.min = this.value;
+                    checkOutInput.value = ''; // Reset ngày check-out
+                }
+            });
+
+            // Sự kiện cho input check-out
+            checkOutInput.addEventListener('change', function () {
+                if (bookedDates.includes(this.value)) {
+                    alert('This date is already booked. Please choose another date.');
+                    this.value = ''; // Reset giá trị ngày check-out
+                }
+            });
+        }
+
+        // Hàm thiết lập ngày check-in tối thiểu
+        function setMinCheckInDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const minDate = `${yyyy}-${mm}-${dd}`;
+
+            const checkInInput = document.getElementById('check-in-date');
+            checkInInput.setAttribute('min', minDate);
+        }
+
+        // Hàm disable các ngày đã có booking trực tiếp trên input
+        function disableBookedDates(inputElement) {
+            const unavailableDates = new Set(bookedDates);
+
+            inputElement.addEventListener('input', () => {
+                const selectedDate = inputElement.value;
+
+                if (unavailableDates.has(selectedDate)) {
+                    alert('This date is already booked. Please choose another date.');
+                    inputElement.value = '';
+                }
+            });
+        }
+
+        // Hàm cập nhật lựa chọn khách dựa trên max_guests từ API
+        function updateGuestOptions(maxGuests) {
+            const adultsSelect = document.getElementById('adults-count');
+            const childrenSelect = document.getElementById('children-count');
+
+            adultsSelect.innerHTML = '';
+            childrenSelect.innerHTML = '';
+
+            for (let i = 1; i <= maxGuests; i++) {
+                adultsSelect.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`);
+            }
+            for (let i = 0; i <= maxGuests / 2; i++) {
+                childrenSelect.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`);
+            }
+
+            adultsSelect.value = 1;
+            childrenSelect.value = 0;
+        }
+
+        // Hàm thiết lập logic check-in, check-out và tính tổng tiền
+        function setupDateAndPriceCalculation(pricePerNight) {
+            const checkInInput = document.getElementById('check-in-date');
+            const checkOutInput = document.getElementById('check-out-date');
+            const totalPriceElement = document.getElementById('total-price');
+
+            setMinCheckInDate();
+            disableBookedDates(checkInInput);
+            disableBookedDates(checkOutInput);
+
+            checkInInput.addEventListener('change', handleDateChange);
+            checkOutInput.addEventListener('change', handleDateChange);
+
+            function handleDateChange() {
+                const checkInDate = new Date(checkInInput.value);
+                const checkOutDate = new Date(checkOutInput.value);
+
+                if (checkOutDate <= checkInDate) {
+                    alert('Checkout date cannot be earlier than or equal to check-in date.');
+                    checkOutInput.value = '';
+                    totalPriceElement.innerText = '0 VNĐ';
+                    return;
+                }
+
+                calculateTotal();
+            }
+
+            function calculateTotal() {
+                const checkInDate = new Date(checkInInput.value);
+                const checkOutDate = new Date(checkOutInput.value);
+
+                if (!checkInDate || !checkOutDate) return;
+
+                const nights = (checkOutDate - checkInDate) / (1000 * 3600 * 24);
+                const totalAmount = pricePerNight * nights;
+
+                totalPriceElement.innerText = `${totalAmount} VNĐ`;
+            }
+        }
+
+        // Gửi dữ liệu booking
+        function handleBookingSubmit() {
+            document.getElementById('form-book-tour').addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const token = localStorage.getItem('token');
+
+                // Kiểm tra token - nếu không có hoặc đã hết hạn, hiển thị thông báo và chuyển hướng
+                if (!token) {
+                    alert('You need to log in to proceed with the booking.');
+                    window.location.href = '/login'; // Chuyển hướng đến trang đăng nhập
+                    return;
+                }
+
+                // Lấy thông tin từ input
+                const homestayId = getHomestayIdFromURL();
+                const checkInDate = document.getElementById('check-in-date').value;
+                const checkOutDate = document.getElementById('check-out-date').value;
+                const adultsCount = document.getElementById('adults-count').value;
+                const childrenCount = document.getElementById('children-count').value;
+
+                // Kiểm tra dữ liệu đầu vào
+                if (!checkInDate || !checkOutDate) {
+                    alert('Please select check-in and check-out dates.');
+                    return;
+                }
+
+                // Tạo đối tượng dữ liệu booking
+                const bookingData = {
+                    homestay_id: homestayId,
+                    check_in: checkInDate,
+                    check_out: checkOutDate,
+                    adults_count: parseInt(adultsCount),
+                    children_count: parseInt(childrenCount),
+                };
+
+                // Gửi request tới API để thực hiện booking
+                try {
+                    const response = await fetch('/api/bookings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(bookingData),
+                    });
+
+                    const result = await response.json();
+
+                    // Xử lý kết quả trả về
+                    if (response.ok) {
+                        alert('Booking successful!');
+                    } else {
+                        if (response.status === 401) {
+                            // Nếu token hết hạn hoặc không hợp lệ
+                            alert('Session expired. Please log in again.');
+                            localStorage.removeItem('token'); // Xóa token cũ
+                            window.location.href = '/login'; // Chuyển đến trang đăng nhập
+                        } else {
+                            alert(result.message || 'Error while booking.');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while booking.');
+                }
+            });
+        }
+
+        // Lấy ID homestay từ URL
+        function getHomestayIdFromURL() {
+            const path = window.location.pathname;
+            const match = path.match(/\/roomdetail\/(\d+)/);
+            return match ? match[1] : null;
+        }
+
+
+        // Hàm khởi chạy chính
+        async function initializePage() {
+            const homestayId = getHomestayIdFromURL();
+            if (!homestayId) {
+                alert('Homestay ID not found.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/homestay/${homestayId}`);
+                if (!response.ok) throw new Error('Failed to fetch homestay details');
+
+                const homestay = await response.json();
+                const pricePerNight = homestay.price;
+                const maxGuests = homestay.max_guests;
+
+                await fetchBookedDates(homestayId); // Lấy danh sách ngày đã booking
+                setupDateInputs();
+                updateGuestOptions(maxGuests);
+                setupDateAndPriceCalculation(pricePerNight);
+                handleBookingSubmit();
+            } catch (error) {
+                console.error('Error loading homestay data:', error);
+                alert('Error loading homestay details.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+
+
+    <!-- Client Comment -->
+    <script>
+        // Hàm lấy ID homestay từ URL
+        function getHomestayIdFromURL() {
+            const path = window.location.pathname;
+            const match = path.match(/\/roomdetail\/(\d+)/);
+            return match ? match[1] : null;
+        }
+
+        // Hàm tạo HTML cho sao (rating)
+        function generateStarsHTML(rating, allowHalfStar = false) {
+            let starsHTML = '';
+            const fullStars = Math.floor(rating); // Số sao đầy
+            const halfStar = allowHalfStar && rating % 1 >= 0.5 ? 1 : 0; // Kiểm tra nửa sao (chỉ cho average)
+            const emptyStars = 5 - fullStars - halfStar; // Sao còn lại
+
+            for (let i = 1; i <= fullStars; i++) {
+                starsHTML += `<i class="icon-Star filled" style="color: orange;"></i>`; // Sao đầy
+            }
+            if (halfStar) {
+                starsHTML += `<i class="icon-Star half" style="position: relative;">
+            <span style="position: absolute; width: 50%; overflow: hidden; color: orange;">★</span>
+            <span style="color: #ddd;">★</span>
+        </i>`; // Nửa sao
+            }
+            for (let i = 1; i <= emptyStars; i++) {
+                starsHTML += `<i class="icon-Star" style="color: #ddd;"></i>`; // Sao trống
+            }
+            return starsHTML;
+        }
+
+
+        // Hàm cập nhật tổng số lượng và điểm trung bình
+        function updateReviewSummary(reviews) {
+            const reviewCount = reviews.length;
+            const averageRating =
+                reviewCount > 0
+                    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount
+                    : 0;
+
+            // Cập nhật tổng số lượng đánh giá và điểm trung bình
+            document.getElementById('review-count').innerText = `${reviewCount} Reviews`;
+            document.getElementById('average-rating').innerText = `(${averageRating.toFixed(1)} out of 5)`;
+
+            // Cập nhật hiển thị sao trung bình (có nửa sao)
+            const averageRatingStars = document.getElementById('average-rating-stars');
+            averageRatingStars.innerHTML = generateStarsHTML(averageRating, true); // Cho phép nửa sao
+        }
+        // Hàm hiển thị danh sách đánh giá
+        async function fetchAndDisplayReviews(homestayId) {
+            try {
+                // Fetch reviews từ API
+                const response = await fetch(`/api/reviews/${homestayId}`);
+                if (!response.ok) throw new Error('Failed to fetch reviews');
+                const reviews = await response.json();
+
+                // Cập nhật tổng số lượng đánh giá và điểm trung bình
+                updateReviewSummary(reviews);
+
+                // Hiển thị danh sách đánh giá
+                const reviewListContainer = document.getElementById('review-list');
+                reviewListContainer.innerHTML = ''; // Clear old reviews
+
+                if (reviews.length === 0) {
+                    reviewListContainer.innerHTML = '<p>No reviews yet. Be the first to review!</p>';
+                    return;
+                }
+
+                reviews.forEach((review) => {
+                    const reviewHTML = `
+        <div class="client-review-item flex">
+            <div class="avata">
+                <img src="${review.guest_avatar || './assets/images/avata/default-avatar.jpg'}" alt="image">
+            </div>
+            <div class="content">
+                <span class="name">${review.guest_name}</span>
+                <p class="des">${review.review_text}</p>
+                <div class="start">
+                    ${generateStarsHTML(review.rating, false)} <!-- Không có nửa sao -->
+                    <span>${review.rating}</span>
+                </div>
+                <span class="date">${new Date(review.review_date).toLocaleDateString()}</span>
+            </div>
+        </div>
+    `;
+                    reviewListContainer.insertAdjacentHTML('beforeend', reviewHTML);
+                });
+
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+                document.getElementById('review-list').innerHTML = '<p>Unable to load reviews. Please try again later.</p>';
+            }
+        }
+
+        // Hàm khởi chạy chính
+        async function initializePage() {
+            const homestayId = getHomestayIdFromURL();
+            if (!homestayId) {
+                alert('Homestay ID not found.');
+                return;
+            }
+
+            try {
+                // Lấy và hiển thị đánh giá
+                await fetchAndDisplayReviews(homestayId);
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                alert('Error loading page.');
+            }
+        }
+
+        // Gọi hàm khi trang tải xong
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+
+    <!-- Form Comment -->
+    <script>
+        document.getElementById('form-review').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Ngăn chặn reload trang khi submit form
+    
+            const token = localStorage.getItem('token'); // Lấy token từ localStorage
+            if (!token) {
+                alert('You must be logged in to leave a review.');
+                window.location.href = '/login'; // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+                return;
+            }
+    
+            // Lấy ID homestay từ URL
+            const homestayId = window.location.pathname.split('/').pop();
+            console.log('Homestay ID:', homestayId);
+    
+            // Kiểm tra ID homestay có hợp lệ không
+            if (!homestayId || isNaN(homestayId)) {
+                alert('Invalid Homestay ID.');
+                return;
+            }
+    
+            const reviewText = document.getElementById('review-text').value;
+    
+            // Kiểm tra nếu chưa chọn sao hoặc chưa viết review
+            if (selectedRating === 0 || reviewText.trim() === '') {
+                alert('Please fill in both rating and review.');
+                return;
+            }
+    
+            try {
+                // Gọi API để kiểm tra quyền review
+                const permissionResponse = await fetch(`/api/check-review-permission?homestay_id=${homestayId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+    
+                const permissionData = await permissionResponse.json();
+                if (!permissionResponse.ok || !permissionData.allowed) {
+                    alert(permissionData.message || 'You are not allowed to review this homestay.');
+                    return;
+                }
+    
+                // Gửi dữ liệu review qua API nếu được phép
+                const reviewData = {
+                    homestay_id: homestayId,
+                    rating: selectedRating,
+                    review_text: reviewText.trim()
+                };
+                console.log('Review Data:', reviewData);
+
+                const reviewResponse = await fetch('/api/createreviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+    
+                const reviewResult = await reviewResponse.json();
+                if (reviewResponse.ok) {
+                    alert('Review submitted successfully!');
+                    document.getElementById('review-text').value = ''; // Clear the textarea
+                    selectedRating = 0; // Reset rating
+                    updateStarRating(); // Reset stars
+                } else {
+                    alert(reviewResult.message || 'Failed to submit review. Please try again later.');
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('There was an error. Please try again later.');
+            }
+        });
+    
+        // Kiểm tra trạng thái đăng nhập khi trang được tải
+        window.onload = function () {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('not-logged-in-message').style.display = 'block';
+                document.getElementById('review-form-container').style.display = 'none';
+            } else {
+                document.getElementById('not-logged-in-message').style.display = 'none';
+                document.getElementById('review-form-container').style.display = 'block';
+            }
+        };
+    
+        // Hàm kiểm tra đăng nhập và hiển thị hoặc ẩn form review
+        function checkLoginStatus() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const formReviewContainer = document.getElementById('review-form-container');
+            const notLoggedInMessage = document.getElementById('not-logged-in-message');
+    
+            if (user && user.user_id) {
+                formReviewContainer.style.display = 'block'; // Hiển thị form review
+                notLoggedInMessage.style.display = 'none';
+            } else {
+                formReviewContainer.style.display = 'none'; // Ẩn form review
+                notLoggedInMessage.style.display = 'block';
+            }
+        }
+    
+        // Xử lý khi người dùng chọn sao (rating)
+        let selectedRating = 0;
+    
+        const stars = document.querySelectorAll('#rating-stars .icon-Star');
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                selectedRating = parseInt(this.getAttribute('data-value'));
+                updateStarRating();
+            });
+        });
+    
+        // Cập nhật giao diện sao (highlight sao đã chọn)
+        function updateStarRating() {
+            stars.forEach(star => {
+                const ratingValue = parseInt(star.getAttribute('data-value'));
+                if (ratingValue <= selectedRating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+    </script>
+    
+
+
+
+
+
+    <!-- Javascript -->
+    <script src="/global/app/js/jquery.min.js"></script>
+    <script src="/global/app/js/jquery.nice-select.min.js"></script>
+    <script src="/global/app/js/bootstrap.min.js"></script>
+    <script src="/global/app/js/swiper-bundle.min.js"></script>
+    <script src="/global/app/js/swiper.js"></script>
+    <script src="/global/app/js/plugin.js"></script>
+    <script src="/global/app/js/jquery.fancybox.js"></script>
+    <script src="/global/app/js/map.min.js"></script>
+    <script src="/global/app/js/map.js"></script>
+    <script src="/global/app/js/shortcodes.js"></script>
+    <script src="/global/app/js/main.js"></script>
+    <script src="/global/app/js/count-down.js"></script>
+    <script src="/global/app/js/countto.js"></script>
+    <script src="/global/app/js/jquery.magnific-popup.min.js"></script>
+    <script src="/global/app/js/price-ranger.js"></script>
+    <script src="/global/app/js/textanimation.js"></script>
+    <script src="/global/app/js/wow.min.js"></script>
+
+</body>
+
+</html>

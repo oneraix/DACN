@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      margin-top: 20px;
+    }
+
+    #booking-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #booking-table th,
+    #booking-table td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #booking-table th {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    #booking-table td {
+      background-color: #ffffff;
+    }
+
+    #booking-table tr:hover td {
+      background-color: #f9f9f9;
+    }
+
+    .payment-button,
+    .vnpay-button {
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: none;
+      color: white;
+    }
+
+    .payment-button {
+      background-color: #4CAF50;
+    }
+
+    .payment-button:hover {
+      background-color: #388E3C;
+    }
+
+    .vnpay-button {
+      background-color: #007bff;
+    }
+
+    .vnpay-button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+      #booking-table th,
+      #booking-table td {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .payment-button,
+      .vnpay-button {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="wrapper">
+    <div id="pagee" class="clearfix">
+      <main id="main">
+        <h2>Danh Sách Đặt Phòng</h2>
+
+        <table id="booking-table">
+          <thead>
+            <tr>
+              <th>Tên Homestay</th>
+              <th>Ngày Đến</th>
+              <th>Ngày Đi</th>
+              <th>Tổng Tiền</th>
+              <th>Ngày Đặt</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="booking-list">
+            <!-- Dữ liệu booking sẽ được hiển thị ở đây -->
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    async function loadPendingBookings() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+  
+      try {
+        const response = await fetch('/api/bookings/waitingpayment', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+          },
+        });
+  
+        const data = await response.json();
+        const bookingList = document.getElementById('booking-list');
+        bookingList.innerHTML = '';
+  
+        if (!response.ok) {
+          if (data.message === "No bookings found") {
+            bookingList.innerHTML = '<tr><td colspan="6">Không có đặt phòng chờ thanh toán.</td></tr>';
+          } else {
+            throw new Error('Lỗi khi tải danh sách đặt phòng chờ thanh toán.');
+          }
+          return;
+        }
+  
+        if (data.message === "No bookings found" || data.length === 0) {
+          bookingList.innerHTML = '<tr><td colspan="6">Không có đặt phòng chờ thanh toán.</td></tr>';
+          return;
+        }
+  
+        data.forEach((booking) => {
+          const row = document.createElement('tr');
+          row.dataset.bookingId = booking.booking_id;
+  
+          row.innerHTML = `
+            <td>${booking.homestay_name}</td>
+            <td>${new Date(booking.check_in).toLocaleDateString()}</td>
+            <td>${new Date(booking.check_out).toLocaleDateString()}</td>
+            <td>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(booking.total_amount)}</td>
+            <td>${new Date(booking.booking_date).toLocaleDateString()}</td>
+            <td>
+              <button class="payment-button" onclick="confirmPayment(${booking.booking_id}, ${booking.total_amount}, 'MoMo')">MoMo</button>
+              <button class="vnpay-button" onclick="confirmPayment(${booking.booking_id}, ${booking.total_amount}, 'VNPay')">VNPay</button>
+            </td>
+          `;
+          bookingList.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Lỗi:', error.message);
+        alert('Có lỗi xảy ra khi tải danh sách đặt phòng.');
+      }
+    }
+  
+    function confirmPayment(bookingId, totalAmount, method) {
+      const formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount);
+      if (confirm(`Bạn có chắc chắn muốn thanh toán ${formattedAmount} qua ${method}?`)) {
+        if (method === 'MoMo') {
+          payWithMoMo(bookingId, totalAmount);
+        } else if (method === 'VNPay') {
+          payWithVNPay(bookingId, totalAmount);
+        }
+      }
+    }
+  
+    async function payWithMoMo(bookingId, totalAmount) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+  
+      try {
+        const response = await fetch('/api/payments/momo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ bookingId, totalAmount })
+        });
+  
+        const data = await response.json();
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        } else {
+          alert('Không thể tạo thanh toán MoMo.');
+        }
+      } catch (error) {
+        console.error('Lỗi khi tạo thanh toán MoMo:', error.message);
+        alert('Có lỗi xảy ra khi thanh toán.');
+      }
+    }
+  
+    async function payWithVNPay(bookingId, totalAmount) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập.');
+        return;
+      }
+  
+      try {
+        const response = await fetch('/api/payments/vnpay/create_payment_url', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ bookingId, totalAmount })
+        });
+  
+        const data = await response.json();
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        } else {
+          alert('Không thể tạo thanh toán VNPay.');
+        }
+      } catch (error) {
+        console.error('Lỗi khi tạo thanh toán VNPay:', error.message);
+        alert('Có lỗi xảy ra khi thanh toán.');
+      }
+    }
+  
+    document.addEventListener('DOMContentLoaded', loadPendingBookings);
+  </script>
+  
+
+</body>
+
+</html>

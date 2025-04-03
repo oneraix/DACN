@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 0px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    #booking-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #booking-table th, #booking-table td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #booking-table th {
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    #booking-table td {
+      background-color: #ffffff;
+    }
+
+    #booking-table tr:hover td {
+      background-color: #f9f9f9;
+    }
+
+    .popup {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      text-align: left;
+      position: relative;
+    }
+
+    .popup-content h3 {
+      color: #4caf50;
+      margin-bottom: 15px;
+    }
+
+    .popup-content p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .popup-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .popup-buttons button {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .popup-buttons button:first-child {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .popup-buttons button:first-child:hover {
+      background-color: #388e3c;
+    }
+
+    .popup-buttons button:last-child {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .popup-buttons button:last-child:hover {
+      background-color: #d32f2f;
+    }
+
+    .close-popup {
+      background-color: #757575;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .close-popup:hover {
+      background-color: #616161;
+    }
+
+    @media (max-width: 768px) {
+      #booking-table th, #booking-table td {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .popup-content {
+        width: 90%;
+      }
+
+      .popup-buttons button {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+
+      .close-popup {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Thông Tin Xác Nhận Đặt Phòng</h2>
+
+  <table id="booking-table">
+    <thead>
+      <tr>
+        <th>Tên Homestay</th>
+        <th>Tên Khách</th>
+        <th>Email</th>
+        <th>Tổng Tiền</th>
+        <th>Hành Động</th>
+      </tr>
+    </thead>
+    <tbody id="booking-list">
+      <!-- Booking rows will be dynamically loaded here -->
+    </tbody>
+  </table>
+
+  <div id="booking-details-popup" class="popup">
+    <div class="popup-content">
+      <h3>Thông Tin Đặt Phòng</h3>
+      <p><strong>Booking ID:</strong> <span id="popup-booking-id"></span></p>
+      <p><strong>Người Đặt:</strong> <span id="popup-fullname"></span></p>
+      <p><strong>Email:</strong> <span id="popup-email"></span></p>
+      <p><strong>Tên Homestay:</strong> <span id="popup-homestay-name"></span></p>
+      <p><strong>Ngày Check-in:</strong> <span id="popup-checkin"></span></p>
+      <p><strong>Ngày Check-out:</strong> <span id="popup-checkout"></span></p>
+      <p><strong>Số Người Lớn:</strong> <span id="popup-adults"></span></p>
+      <p><strong>Số Trẻ Em:</strong> <span id="popup-children"></span></p>
+      <p><strong>Tổng Tiền:</strong> <span id="popup-total"></span></p>
+      <div class="popup-buttons">
+        <button id="confirm-booking">Xác Nhận</button>
+        <button id="cancel-booking">Hủy</button>
+      </div>
+      <button id="close-popup" class="close-popup">Đóng</button>
+    </div>
+  </div>
+
+  <script>
+    async function loadBookings() {
+      try {
+        const response = await fetch('/api/bookings/pendingbyhost', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          }
+        });
+
+        const bookings = await response.json();
+        const bookingList = document.getElementById('booking-list');
+        bookingList.innerHTML = '';
+
+        bookings.forEach(booking => {
+          const row = document.createElement('tr');
+          row.classList.add('booking-row');
+          row.dataset.bookingId = booking.booking_id;
+
+          row.innerHTML = `
+            <td>${booking.homestay_name}</td>
+            <td>${booking.guest_name}</td>
+            <td>${booking.guest_email}</td>
+            <td>${booking.total_amount}</td>
+            <td><button class="view-details">Xem Chi Tiết</button></td>
+          `;
+          bookingList.appendChild(row);
+
+          row.querySelector('.view-details').addEventListener('click', () => {
+            document.getElementById('popup-booking-id').textContent = booking.booking_id;
+            document.getElementById('popup-fullname').textContent = booking.guest_name;
+            document.getElementById('popup-email').textContent = booking.guest_email;
+            document.getElementById('popup-homestay-name').textContent = booking.homestay_name;
+            document.getElementById('popup-checkin').textContent = new Date(booking.check_in).toLocaleDateString();
+            document.getElementById('popup-checkout').textContent = new Date(booking.check_out).toLocaleDateString();
+            document.getElementById('popup-adults').textContent = booking.adults_count;
+            document.getElementById('popup-children').textContent = booking.children_count;
+            document.getElementById('popup-total').textContent = booking.total_amount;
+            document.getElementById('booking-details-popup').style.display = 'flex';
+          });
+        });
+      } catch (error) {
+        alert('Không thể tải dữ liệu bookings');
+      }
+    }
+
+    document.getElementById('close-popup').addEventListener('click', () => {
+      document.getElementById('booking-details-popup').style.display = 'none';
+    });
+
+    document.getElementById('confirm-booking').addEventListener('click', async () => {
+      const bookingId = document.getElementById('popup-booking-id').textContent;
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'confirmed' })
+        });
+
+        const data = await response.json();
+        if (data.message === 'Booking status updated successfully') {
+          alert('Đặt phòng đã được xác nhận!');
+          document.getElementById('booking-details-popup').style.display = 'none';
+          loadBookings();
+        } else {
+          alert('Lỗi xác nhận đặt phòng');
+        }
+      } catch (error) {
+        alert('Lỗi khi xác nhận đặt phòng');
+      }
+    });
+
+    document.getElementById('cancel-booking').addEventListener('click', async () => {
+      const bookingId = document.getElementById('popup-booking-id').textContent;
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'cancelled' })
+        });
+
+        const data = await response.json();
+        if (data.message === 'Booking status updated successfully') {
+          alert('Đặt phòng đã bị hủy!');
+          document.getElementById('booking-details-popup').style.display = 'none';
+          loadBookings();
+        } else {
+          alert('Lỗi hủy đặt phòng');
+        }
+      } catch (error) {
+        alert('Lỗi khi hủy đặt phòng');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadBookings);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <title>Vitour - Travel & Tour Booking HTML Template</title>
+
+    <meta name="author" content="themesflat.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="global/app/css/app.css">
+    <link rel="stylesheet" href="global/app/css/jquery.fancybox.min.css">
+
+    <!-- Favicon and Touch Icons  -->
+    <link rel="shortcut icon" href="global/assets/images/favico.png">
+    <link rel="apple-touch-icon-precomposed" href="global/assets/images/favico.png">
+
+</head>
+
+<body class="body header-fixed ">
+
+    <div class="preload preload-container">
+        <svg class="pl" width="240" height="240" viewBox="0 0 240 240">
+            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+        </svg>
+    </div>
+
+    <!-- /preload -->
+
+    <div id="wrapper">
+        <div id="pagee" class="clearfix">
+            <main id="main">
+                <section class="login">
+                    <div class="tf-container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="login-wrap flex">
+                                    <div class="image">
+                                        <img src="global/assets/images/page/sign-up.jpg" alt="image">
+                                    </div>
+                                    <div class="content">
+                                        <div class="inner-header-login">
+                                            <h3 class="title">Create an account to get started</h3>
+                                        </div>
+                                        <form id="sign-up" class="login-user">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="input-wrap">
+                                                        <label>User Name</label>
+                                                        <input type="text" id="username" placeholder="Enter your user name*" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-wrap">
+                                                        <label>Email</label>
+                                                        <input type="email" id="email" placeholder="Enter your email*" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-wrap">
+                                                        <label>Name</label>
+                                                        <input type="text" id="full_name" placeholder="Enter your full name*" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="input-wrap">
+                                                        <label>Your password</label>
+                                                        <input type="password" id="password" placeholder="Enter your password*" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 mb-40">
+                                                    <div class="input-wrap-social">
+                                                        <span class="or">or</span>
+                                                        <div class="flex-three">
+                                                            <a href="#" class="login-social flex-three">
+                                                                <img src="global/assets/images/page/gg.png" alt="image">
+                                                                <span>Sign in with Google</span>
+                                                            </a>
+                                                            <a href="#" class="login-social flex-three">
+                                                                <img src="global/assets/images/page/fb.png" alt="image">
+                                                                <span>Sign in with Facebook</span>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 mb-30">
+                                                    <button type="submit" class="btn-submit">Sign Up</button>
+                                                </div>
+                                                <div class="col-lg-12 mb-30">
+                                                    <div class="checkbox">
+                                                        <input id="check-policy" type="checkbox" name="check" value="check" tabindex="0">
+                                                        <label for="check-policy">By signing up, you agree to Customers.ai’s Terms Of Service and Privacy Policy</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="flex-three">
+                                                        <span class="account">Do you have an account?</span>
+                                                        <a href="/login" class="link-login">Login</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+        <!-- /#page -->
+    </div>
+
+    <!-- Javascript -->
+    <script src="global/app/js/jquery.min.js"></script>
+    <script src="global/app/js/jquery.nice-select.min.js"></script>
+    <script src="global/app/js/bootstrap.min.js"></script>
+    <script src="global/app/js/swiper-bundle.min.js"></script>
+    <script src="global/app/js/swiper.js"></script>
+    <script src="global/app/js/plugin.js"></script>
+    <script src="global/app/js/jquery.fancybox.js"></script>
+    <script src="global/app/js/shortcodes.js"></script>
+    <script src="global/app/js/main.js"></script>
+
+    <script>
+        document.getElementById('sign-up').addEventListener('submit', async function (e) {
+            e.preventDefault();  // Ngừng hành động mặc định của form
+        
+            // Lấy giá trị từ các input
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const full_name = document.getElementById('full_name').value;
+            const password = document.getElementById('password').value;
+            const checkbox = document.getElementById('check-policy');
+    
+            // Kiểm tra dữ liệu đầu vào
+            if (!username || !email || !full_name || !password) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+    
+
+            if (!checkbox.checked) {
+    alert("You must agree to the terms and conditions.");
+    return;  // Ngừng gửi form nếu checkbox chưa được tick
+}
+
+    
+            // Kiểm tra định dạng email
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                alert('Vui lòng nhập địa chỉ email hợp lệ.');
+                return;
+            }
+    
+            // Kiểm tra username có chứa ký tự đặc biệt
+            const usernameRegex = /^[a-zA-Z0-9]+$/;  // Loại bỏ dấu gạch dưới
+            if (!usernameRegex.test(username)) {
+                alert('Username chỉ có thể chứa chữ cái và số.');
+                return;
+            }
+    
+            const userData = { username, email, full_name, password };
+    
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    alert('Đăng ký thành công!');
+                    window.location.href = '/login';  // Chuyển hướng đến trang đăng nhập
+                } else {
+                    alert(data.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+                }
+            } catch (err) {
+                console.error('Lỗi đăng ký:', err);
+                alert('Đã xảy ra lỗi, vui lòng thử lại.');
+            }
+        });
+    </script>
+    
+    
+
+
+
+</body>
+
+</html>

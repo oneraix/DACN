@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đặt Phòng Đã Thanh Toán</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .status-success {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-failed {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Chi Tiết Đặt Phòng</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Tên Homestay</th>
+          <th>Ngày Check-in</th>
+          <th>Ngày Check-out</th>
+          <th>Tổng Tiền</th>
+          <th>Ngày Thanh Toán</th>
+          <th>Trạng Thái</th>
+        </tr>
+      </thead>
+      <tbody id="booking-details">
+        <!-- Dữ liệu sẽ được render ở đây -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Hàm lấy dữ liệu booking đã thanh toán
+    async function fetchPaidBookings() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Bạn cần đăng nhập để xem thông tin đặt phòng.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/bookings/paid', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Không thể tải thông tin đặt phòng.');
+        }
+
+        const bookings = await response.json();
+        renderBookings(bookings);
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách đặt phòng:', error.message);
+        alert('Có lỗi xảy ra khi tải danh sách đặt phòng.');
+      }
+    }
+
+    // Hàm render dữ liệu booking vào bảng
+    function renderBookings(bookings) {
+      const tableBody = document.getElementById('booking-details');
+      tableBody.innerHTML = '';
+
+      if (bookings.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6">Không có đặt phòng nào đã thanh toán.</td></tr>';
+        return;
+      }
+
+      bookings.forEach(booking => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td>${booking.homestay_name}</td>
+          <td>${new Date(booking.check_in).toLocaleDateString()}</td>
+          <td>${new Date(booking.check_out).toLocaleDateString()}</td>
+          <td>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(booking.payment_amount)}</td>
+          <td>${new Date(booking.payment_date).toLocaleString()}</td>
+          <td class="${booking.status === 'confirmed' ? 'status-success' : 'status-failed'}">${booking.status === 'confirmed' ? 'Đã Thanh Toán' : 'Lỗi'}</td>
+        `;
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Tải dữ liệu khi trang được tải
+    document.addEventListener('DOMContentLoaded', fetchPaidBookings);
+  </script>
+</body>
+
+</html>

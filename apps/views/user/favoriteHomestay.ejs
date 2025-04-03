@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <title>Danh Sách Yêu Thích</title>
+
+    <meta name="author" content="themesflat.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="global/app/css/app.css">
+</head>
+
+<body>
+    <section class="wishlist-section pd-main">
+        <div class="tf-container w-1456">
+            <h1>Danh Sách Yêu Thích</h1>
+            <div id="wishlist-container"></div>
+        </div>
+    </section>
+
+    <style>
+        .wishlist-section {
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 0;
+        }
+
+        .col-sm-6 {
+            flex: 0 0 calc(50% - 20px);
+            box-sizing: border-box;
+        }
+
+        .col-lg-3 {
+            flex: 0 0 calc(25% - 20px);
+            box-sizing: border-box;
+        }
+
+        .tour-listing {
+            position: relative;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .tour-listing .favorite-heart {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .tour-listing .favorite-heart:hover {
+            color: darkred;
+        }
+
+        .tour-listing-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .tour-listing-content {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .tour-listing-content h3 {
+            font-size: 18px;
+            margin: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .tour-listing-content h3 a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .tour-listing-content h3 a:hover {
+            color: #4CAF50;
+        }
+
+        .tour-listing-content p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .col-sm-6, .col-lg-3 {
+                flex: 0 0 calc(100% - 20px);
+            }
+        }
+    </style>
+
+    <script>
+        async function fetchWishlist() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Vui lòng đăng nhập để xem danh sách yêu thích.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/wishlist', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Không thể tải danh sách yêu thích.');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayWishlist(data.wishlist);
+                } else {
+                    document.getElementById('wishlist-container').innerHTML = '<p>Danh sách yêu thích của bạn đang trống.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching wishlist:', error);
+                document.getElementById('wishlist-container').innerHTML = '<p>Không thể tải danh sách yêu thích. Vui lòng thử lại sau.</p>';
+            }
+        }
+
+        function displayWishlist(wishlist) {
+            const container = document.getElementById('wishlist-container');
+            container.innerHTML = '';
+
+            if (!wishlist || wishlist.length === 0) {
+                container.innerHTML = '<p>Danh sách yêu thích của bạn đang trống.</p>';
+                return;
+            }
+
+            let row;
+            wishlist.forEach((homestay, index) => {
+                if (index % 4 === 0) {
+                    row = document.createElement('div');
+                    row.classList.add('row');
+                    container.appendChild(row);
+                }
+
+                const image = homestay.image || './global/assets/images/default-image.jpg';
+
+                const homestayHTML = `
+<div class="col-sm-6 col-lg-3">
+    <div class="tour-listing">
+        <i class="favorite-heart fas fa-heart" onclick="removeFromWishlist(${homestay.homestay_id}, this)"></i>
+        <a href="/roomdetail/${homestay.homestay_id}" class="tour-listing-image">
+            <img src="${image}" alt="Image Listing">
+        </a>
+        <div class="tour-listing-content">
+            <h3><a href="/roomdetail/${homestay.homestay_id}">${homestay.name}</a></h3>
+            <p>Vị trí: ${homestay.location}</p>
+            <p>Giá: ${homestay.price} VND / đêm</p>
+        </div>
+    </div>
+</div>
+                `;
+
+                row.innerHTML += homestayHTML;
+            });
+        }
+
+        function removeFromWishlist(homestayId, element) {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Vui lòng đăng nhập để sử dụng tính năng này.');
+                return;
+            }
+
+            fetch('http://localhost:3000/api/homestay/wishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    homestayId: homestayId,
+                    isActive: false,
+                }),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Không thể cập nhật danh sách yêu thích.');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        element.closest('.tour-listing').remove();
+                        alert('Đã xóa khỏi danh sách yêu thích.');
+                    } else {
+                        alert(data.message || 'Không thể xóa khỏi danh sách yêu thích.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error updating wishlist:', error);
+                    alert('Không thể xóa khỏi danh sách yêu thích. Vui lòng thử lại.');
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchWishlist);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+<style>
+    .user-avatar {
+        width: 50px; /* Chiều rộng giới hạn */
+        height: 50px; /* Chiều cao giới hạn */
+        object-fit: cover; /* Đảm bảo ảnh không bị méo */
+        border-radius: 50%; /* Nếu muốn ảnh tròn */
+    }
+    .user-name {
+            color: #ffffff; /* Màu chữ dễ thấy hơn */
+            font-weight: bold; /* In đậm chữ */
+            margin-left: 10px; /* Khoảng cách giữa ảnh và tên */
+        }
+    
+    </style>
+    
+    <header class="main-header flex">
+        <!-- Header Lower -->
+        <div id="header">
+    
+            <div class="header-dashboard">
+                <div class="tf-container full">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="inner-container flex justify-space align-center">
+                                <!-- Logo Box -->
+                                <div class="header-account flex align-center" style="margin-left: auto;">
+                                    <div class="user-area">
+                                        <ul class="flex align-center">
+                                            <li id="user-menu">
+                                                <!-- Nội dung sẽ được cập nhật bằng JavaScript -->
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- End Header Lower -->
+    
+    
+        <!-- Mobile Menu  -->
+        <div class="close-btn"><span class="icon flaticon-cancel-1"></span></div>
+        <div class="mobile-menu">
+            <div class="menu-backdrop"></div>
+            <nav class="menu-box">
+                <div class="nav-logo"><a href="index.html">
+                        <img src="assets/images/logo2.png" alt=""></a></div>
+                <div class="bottom-canvas">
+                    <div class="menu-outer">
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- End Mobile Menu -->   
+    </header>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userMenu = document.getElementById('user-menu');
+        
+            // Lấy token từ localStorage
+            const token = localStorage.getItem('token');
+        
+            if (token) {
+                // Gọi API để lấy thông tin người dùng
+                fetch('/api/users/information', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch user information');
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        const avatarUrl = data.profile_picture || '/global/assets/images/avata/default.png'; // Đường dẫn ảnh trả về từ API hoặc ảnh mặc định
+                        const profileUrl = getProfilePage(data.role); // Lấy URL trang tài khoản dựa trên role
+        
+                        // Hiển thị thông tin người dùng với avatar và menu dropdown
+                        userMenu.innerHTML = `
+                            <div class="dropdown">
+                                <a class="dropdown-toggle flex align-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${avatarUrl}" alt="Avatar" class="user-avatar">
+                                     <span class="user-name">${data.full_name}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="${profileUrl}">Tài khoản</a></li>
+                                    <li><a class="dropdown-item" id="logout" href="#">Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        `;
+        
+                        // Thêm sự kiện xử lý đăng xuất
+                        document.getElementById('logout').addEventListener('click', () => {
+                            localStorage.removeItem('token'); // Xóa token khỏi localStorage
+                            window.location.href = '/login'; // Chuyển hướng đến trang đăng nhập
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user information:', error);
+                        // Hiển thị mặc định nút đăng nhập nếu không lấy được thông tin
+                        userMenu.innerHTML = `
+                            <a href="/login" class="login-btn flex align-center">
+                                <span>Đăng nhập</span>
+                            </a>
+                        `;
+                    });
+            } else {
+                // Nếu không có token, hiển thị nút Đăng nhập
+                userMenu.innerHTML = `
+                    <a href="/login" class="login-btn flex align-center">
+                        <span>Đăng nhập</span>
+                    </a>
+                `;
+            }
+        
+            // Hàm lấy URL trang tài khoản dựa trên vai trò
+            function getProfilePage(role) {
+                switch (role) {
+                    case 'admin':
+                        return '/admin';
+                    case 'host':
+                        return '/host';
+                    default:
+                        return '/user/profile';
+                }
+            }
+        });
+    </script>

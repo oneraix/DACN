@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Homestay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        .homestay-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .homestay-table th, .homestay-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .homestay-table th {
+            background-color: #f4f4f4;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-buttons .edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-buttons .delete {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .view-more {
+            color: #007BFF;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .view-more:hover {
+            text-decoration: underline;
+        }
+
+        .description-cell {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
+        .modal-footer button {
+            padding: 5px 10px;
+        }
+
+        .modal-footer .close {
+            background-color: #ccc;
+            border: none;
+        }
+
+        .modal-footer .save {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .carousel img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .carousel-controls button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quản Lý Homestay</h1>
+    <div class="homestay-container">
+        <table class="homestay-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Homestay</th>
+                    <th>Mô Tả</th>
+                    <th>Địa Chỉ</th>
+                    <th>Giá</th>
+                    <th>Số Giường</th>
+                    <th>Số Phòng</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody id="homestay-list">
+                <!-- Nội dung homestay sẽ được thêm ở đây -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Mô Tả -->
+    <div id="description-modal" class="modal">
+        <div class="modal-header">Mô Tả Homestay</div>
+        <div class="modal-body" id="description-content"></div>
+        <div class="modal-footer">
+            <button class="close">Đóng</button>
+        </div>
+    </div>
+
+    <!-- Modal Hình Ảnh -->
+    <div id="image-modal" class="modal">
+        <div class="modal-header">Hình Ảnh Homestay</div>
+        <div class="carousel">
+            <img id="carousel-image" src="" alt="">
+        </div>
+        <div class="carousel-controls">
+            <button id="prev-image">Trước</button>
+            <button id="next-image">Tiếp</button>
+        </div>
+        <div class="modal-footer">
+            <button class="close">Đóng</button>
+        </div>
+    </div>
+
+    <!-- Modal Chỉnh Sửa -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-header">Chỉnh Sửa Homestay</div>
+        <div class="modal-body">
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label for="edit-name">Tên Homestay:</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                <div>
+                    <label for="edit-location">Địa Chỉ:</label>
+                    <input type="text" id="edit-location" required>
+                </div>
+                <div>
+                    <label for="edit-price">Giá:</label>
+                    <input type="number" id="edit-price" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="close">Đóng</button>
+            <button class="save">Lưu</button>
+        </div>
+    </div>
+
+    <script>
+        let currentImages = [];
+        let currentImageIndex = 0;
+
+        async function fetchHomestays() {
+            try {
+                const response = await fetch('/api/homestay');
+                if (!response.ok) throw new Error('Failed to fetch homestays');
+
+                const homestays = await response.json();
+                const homestayList = document.getElementById('homestay-list');
+                homestayList.innerHTML = '';
+
+                homestays.forEach(homestay => {
+                    const truncatedDescription = homestay.description.length > 50
+                        ? homestay.description.slice(0, 50) + '... <span class="view-more" onclick="viewDescription(\'' + homestay.description.replace(/'/g, "\\'") + '\')">Xem thêm</span>'
+                        : homestay.description;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${homestay.homestay_id}</td>
+                        <td>${homestay.name}</td>
+                        <td class="description-cell">${truncatedDescription}</td>
+                        <td>${homestay.location}</td>
+                        <td>${homestay.price} VND</td>
+                        <td>${homestay.beds}</td>
+                        <td>${homestay.rooms}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="edit" onclick="openEditModal(${homestay.homestay_id}, '${homestay.name}', '${homestay.location}', ${homestay.price})">Sửa</button>
+                                <button class="delete" onclick="deleteHomestay(${homestay.homestay_id})">Xóa</button>
+                                <span class="view-more" onclick="viewImages('${homestay.images}')">Hình Ảnh</span>
+                            </div>
+                        </td>
+                    `;
+                    homestayList.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching homestays:', error.message);
+            }
+        }
+
+        function viewDescription(description) {
+            const modal = document.getElementById('description-modal');
+            document.getElementById('description-content').textContent = description;
+            modal.classList.add('active');
+        }
+
+        function viewImages(images) {
+            currentImages = images.split(',');
+            currentImageIndex = 0;
+            updateCarousel();
+            document.getElementById('image-modal').classList.add('active');
+        }
+
+        function updateCarousel() {
+            const carouselImage = document.getElementById('carousel-image');
+            carouselImage.src = currentImages[currentImageIndex];
+        }
+
+        document.getElementById('prev-image').addEventListener('click', () => {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateCarousel();
+            }
+        });
+
+        document.getElementById('next-image').addEventListener('click', () => {
+            if (currentImageIndex < currentImages.length - 1) {
+                currentImageIndex++;
+                updateCarousel();
+            }
+        });
+
+        function openEditModal(id, name, location, price) {
+            const modal = document.getElementById('edit-modal');
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-location').value = location;
+            document.getElementById('edit-price').value = price;
+            modal.classList.add('active');
+        }
+
+        async function deleteHomestay(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa homestay này?')) {
+                try {
+                    const response = await fetch(`/api/homestay/${id}`, { method: 'DELETE' });
+                    if (!response.ok) throw new Error('Failed to delete homestay');
+                    fetchHomestays();
+                } catch (error) {
+                    alert('Error deleting homestay: ' + error.message);
+                }
+            }
+        }
+
+        document.querySelectorAll('.modal .close').forEach(button => {
+            button.addEventListener('click', () => {
+                button.closest('.modal').classList.remove('active');
+            });
+        });
+
+        document.querySelector('#edit-modal .save').addEventListener('click', async () => {
+            const id = document.getElementById('edit-id').value;
+            const name = document.getElementById('edit-name').value.trim();
+            const location = document.getElementById('edit-location').value.trim();
+            const price = document.getElementById('edit-price').value.trim();
+
+            try {
+                const response = await fetch(`/api/homestay/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, location, price }),
+                });
+
+                if (!response.ok) throw new Error('Failed to update homestay');
+
+                document.getElementById('edit-modal').classList.remove('active');
+                fetchHomestays();
+            } catch (error) {
+                alert('Error updating homestay: ' + error.message);
+            }
+        });
+
+        // Load homestays on page load
+        document.addEventListener('DOMContentLoaded', fetchHomestays);
+    </script>
+</body>
+
+</html>
