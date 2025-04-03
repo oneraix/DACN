@@ -1,6 +1,4 @@
-|![A blue and red text on a white background
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.001.jpeg)|<p><a name="_toc186104365"></a>BỘ GIÁO DỤC VÀ ĐÀO TẠO</p><p>**TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP. HỒ CHÍ MINH**</p>|
+|![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.001.jpeg)|<p><a name="_toc186104365"></a>BỘ GIÁO DỤC VÀ ĐÀO TẠO</p><p>**TRƯỜNG ĐẠI HỌC CÔNG NGHỆ TP. HỒ CHÍ MINH**</p>|
 | :- | :-: |
 
 
@@ -535,207 +533,143 @@ Hình 2.1.5 hình logo dịch vụ momo
    - Hỗ trợ quản lý và kiểm tra giao dịch một cách minh bạch, giúp hệ thống hoạt động hiệu quả và đáng tin cậy.
 ## <a name="_toc186104403"></a>**2.2 Phân tích và thiết kế cơ sở dữ liệu**
 ### <a name="_toc186104404"></a>*2.2.1 Mô hình Class Diagram*
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.006.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.006.png)
 
 Hình 2..2.2  Mô hình Class Diagram cơ sở dữ liệu Booking Homestay
 # <a name="_toc186104405"></a>**CHƯƠNG 3: KẾT QUẢ THỰC NGHIỆM**
 ## <a name="_toc186104406"></a>**3.1 Sơ đồ ERD**
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.007.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.007.png)
 
 Hình 3.1 Mô hình ERD cơ sở dữ liệu booking homestay
 ## <a name="_toc186104407"></a>**3.2 Sơ đồ use case tổng quát**
-![A diagram of a diagram
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.008.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.008.png)
 
 Hình 3.2 Sơ đồ use case tổng quát
 ## <a name="_toc186104408"></a>**3.3 Các Use Case phân rã chức năng**
-![A diagram of a person's relationship
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.009.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.009.png)
 
 Hình 3.3.1 Use Case phân rã chức năng quản lí tài khoản
 
-![A diagram of a diagram
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.010.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.010.png)
 
 Hình 3.3.2 use case chức năng đặt phòng
 
-![A diagram of a diagram
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.011.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.011.png)
 
 Hình 3.3.3 use case chức năng thanh toán
 
-![A diagram of a home
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.012.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.012.png)
 
 Hình 3.3.4 Use Case quản lí homestay
 
-![A diagram with text on it
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.013.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.013.png)
 
 Hình 3.3.5 Use Case đánh giá homestay
 
 
 ## <a name="_toc186104409"></a>**3.4 Sơ đồ tuần tự**
-![A screenshot of a computer screen
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.014.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.014.png)
 
 Hình 3.4.1 sơ đồ tuần tự tìm kiếm homestay
 
-![A diagram of a home stay system
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.015.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.015.png)
 
 Hình 3.4.2 sơ đồ tuần tự chức năng đặt phòng
 
-![A screenshot of a computer screen
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.016.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.016.png)
 
 Hình 3.4.3 sơ đồ tuần tự chức năng đánh giá
 
-![A diagram of a system
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.017.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.017.png)
 
 Hình 3.4.1 sơ đồ tuần tự chức năng quản lí tài khoản
 ## <a name="_toc186104410"></a>**3.5 Sơ đồ Active**
-![A diagram with text and images
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.018.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.018.png)
 
 Hình 3.5.1 sơ đồ active chức năng đăng nhập
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.019.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.019.png)
 
 Hình 3.5.2 sơ đồ active chức năng thanh toán
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.020.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.020.png)
 
 Hình 3.5.3 sơ đồ active chức năng đánh giá
 ## <a name="_toc186104411"></a>**3.6 Giao diện ứng dụng đặt Homestay**
 ### *3.6.1 Giao diện cho người dùng chưa đăng kí*
-![A screenshot of a login form
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.021.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.021.png)
 
 Hình 3.6.1.1 Trang đăng kí
 
 
-![A screenshot of a login form
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.022.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.022.png)
 
 Hình 3.6.1.2 Trang đăng nhập
 ### *3.6.2 Giao diện guest*
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.023.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.023.png)
 
 Hình 3.6.2.1 Giao diện tìm kiếm homestay
 
 
 
-`       `**![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.024.png)**
+`       `**![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.024.png)**
 
 Hình 3.6.2.2 Trang chi tiết homestay
 
 
-`                  `![A screenshot of a chat
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.025.png)
+`                  `![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.025.png)
 
 Hình 3.6.2.3 Giao diện xem đánh giá và viết dánh giá
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.026.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.026.png)
 
 Hình 3.6.2.4 Giao diện xem danh sách đặt homestay đang chờ xác nhận
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.027.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.027.png)
 
 Hình 3.6.2.5 Giao diện thanh toán
 
 
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.028.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.028.png)
 
 Hình 3.6.2.6 Giao diện khi chuyển hướng đến trang thanh toán momo
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.029.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.029.png)
 
 Hình 3.6.2.7 Giao diện hiển thị danh sách đặt phòng đã thanh toán
 
-![A screenshot of a phone
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.030.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.030.png)
 
 Hình 3.6.2.8 Giao diện wishlist
 
 ### *3.6.3 Giao diện Host*
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.031.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.031.png)
 
 Hình 3.6.3.1 Trang xác nhận đặt phòng
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.032.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.032.png)
 
 Hình 3. 6.3.2 trang quản lí homestay của host
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.033.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.033.png)
 
 Hình 3. 6.3.3 Giao diện tạo mới homestay
 
-![A white rectangular object with text
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.034.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.034.png)
 
 Hình 3.6.3.4 Giao diện cập nhật thông tin cá nhân
 ###
 ### *3.6.4 Giao diện Admin*
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.035.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.035.png)
 
 Hình 3.6.4.1 Giao diện quản lí tài khoản
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.036.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.036.png)
 
 Hình 3.6.4.2 Giao diện duyệt homestay
 
-![A screenshot of a computer
-
-AI-generated content may be incorrect.](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.037.png)
+![](demo/Aspose.Words.c271aa20-6217-4186-a932-43049e27d6f9.037.png)
 
 Hình 3.6.4.3 giao diện quản lí booking
 
